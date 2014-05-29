@@ -110,13 +110,12 @@ NON_TOR_WHONIXG="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
 ## correlation through circuit sharing.
 
 ## Transparent Proxy Ports for Whonix-Workstation
-TRANS_PORT_WHONIXW="9040"
-
+TRANS_PORT_WORKSTATION="9040"
 DNS_PORT_WORKSTATION="53"
 
 ## Transparent Proxy Ports for Whonix-Gateway
-TRANS_PORT_WHONIXG="9041"
-DNS_PORT_WHONIXG="54"
+TRANS_PORT_GATEWAY="9041"
+DNS_PORT_GATEWAY="54"
 
 ## Control Port Filter Proxy Port
 CONTROL_PORT_FILTER_PROXY_PORT="9052"
@@ -268,7 +267,7 @@ fi
 ## Allow TCP traffic TransPort.
 ##+# SEE #OptionalFeatureNr.5#
 if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
-   iptables -A INPUT -i "$INT_IF" -p tcp --dport "$TRANS_PORT_WHONIXW" -j ACCEPT
+   iptables -A INPUT -i "$INT_IF" -p tcp --dport "$TRANS_PORT_WORKSTATION" -j ACCEPT
 fi
 
 ## Allow TCP traffic to Control Port Filter Proxy.
@@ -407,12 +406,12 @@ fi
 ## Only user installed applications not configured to use a SocksPort are affected.
 ##+# SEE #OptionalFeatureNr.5#
 if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
-   iptables -t nat -A PREROUTING -i "$INT_IF" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WHONIXW"
+   iptables -t nat -A PREROUTING -i "$INT_IF" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
 fi
 
 ##+# #OptionalFeatureNr.3# Restrict TransPort.
 ##+# Replace above rule with a more restrictive one, e.g.:
-#iptables -t nat -A PREROUTING -i "$INT_IF" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WHONIXW"
+#iptables -t nat -A PREROUTING -i "$INT_IF" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
 
 ## Log.
 #iptables -A INPUT -j LOG --log-prefix "Whonix blocked input4: "
@@ -457,7 +456,7 @@ fi
 ## Redirect of T-G DNS traffic to DnsPort_WHONIXG.
 ## DISABLED BY DEFAULT. default. Using SocksPort instead.
 if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
-   iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_WHONIXG"
+   iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_GATEWAY"
 fi
 
 ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor.
@@ -468,7 +467,7 @@ done
 ## Redirect all T-G TCP traffic to TransPort_WHONIXG.
 ## DISABLED BY DEFAULT. Using SocksPort instead.
 if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
-   iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WHONIXG"
+   iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
 fi
 
 ## Existing connections are accepted.
