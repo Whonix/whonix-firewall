@@ -14,5 +14,5 @@ Standards-Version: 3.9.4
 
 Package: whonix-gw-firewall
 Architecture: all
-Depends: iptables, sudo, ${misc:Depends}
+Depends: iptables, sudo, whonix-gw-network-conf, ${misc:Depends}
 Description: Whonix-Gateway's Firewall
