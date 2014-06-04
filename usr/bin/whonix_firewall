@@ -116,8 +116,8 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ###########################
 
 ## The following ports are used
-## - here in /usr/bin/whonix_firewall
-## - by Tor in /etc/torrc
+## - here in /usr/bin/whonix_firewall (package: whonix-gw-firewall)
+## - by Tor in /usr/share/tor/tor-service-defaults-torrc (package: anon-gw-anonymizer-config)
 ##
 ## The following applications will be separated, preventing identity
 ## correlation through circuit sharing.
