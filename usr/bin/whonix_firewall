@@ -66,12 +66,12 @@ echo "OK: Loading Whonix firewall..."
 ###########################
 
 ## Get Tor username, distro specific!
-TOR_USER="$(id -u debian-tor)"
+[ -n "$TOR_USER" ] || TOR_USER="$(id -u debian-tor)"
 
 ## Get user uids.
-CLEARNET_USER="$(id -u clearnet)"
-USER_USER="$(id -u user)"
-ROOT_USER="$(id -u root)"
+[ -n "$CLEARNET_USER" ] || CLEARNET_USER="$(id -u clearnet)"
+[ -n "$USER_USER" ] || USER_USER="$(id -u user)"
+[ -n "$ROOT_USER" ] || ROOT_USER="$(id -u root)"
 
 echo "OK: TOR_USER: $TOR_USER"
 echo "OK: CLEARNET_USER: $CLEARNET_USER"
@@ -83,20 +83,20 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ###########################
 
 ## External interface
-EXT_IF="eth0"
+[ -n "$EXT_IF" ] || EXT_IF="eth0"
 ## Internal interface
-INT_IF="eth1"
+[ -n "$INT_IF" ] || INT_IF="eth1"
 ## Internal "tunnel" interface, usually the same as
 ## the Internal interface unless using vpn tunnels
 ## between workstations and gateway
-INT_TIF="eth1"
+[ -n "$INT_TIF" ] || INT_TIF="eth1"
 
 ###########################
 ## NON_TOR_WHONIXG
 ###########################
 
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
-NON_TOR_WHONIXG="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
+[ -n "$NON_TOR_WHONIXG" ] || NON_TOR_WHONIXG="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
 
 ################
 ## VPN related #
@@ -123,45 +123,47 @@ NON_TOR_WHONIXG="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
 ## correlation through circuit sharing.
 
 ## Transparent Proxy Ports for Whonix-Workstation
-TRANS_PORT_WORKSTATION="9040"
-DNS_PORT_WORKSTATION="53"
+[ -n "$TRANS_PORT_WORKSTATION" ] || TRANS_PORT_WORKSTATION="9040"
+[ -n "$DNS_PORT_WORKSTATION" ] || DNS_PORT_WORKSTATION="53"
 
 ## Transparent Proxy Ports for Whonix-Gateway
-TRANS_PORT_GATEWAY="9041"
-DNS_PORT_GATEWAY="54"
+[ -n "$TRANS_PORT_GATEWAY" ] || TRANS_PORT_GATEWAY="9041"
+[ -n "$DNS_PORT_GATEWAY" ] || DNS_PORT_GATEWAY="54"
 
 ## Control Port Filter Proxy Port
-CONTROL_PORT_FILTER_PROXY_PORT="9052"
+[ -n "$CONTROL_PORT_FILTER_PROXY_PORT" ] || CONTROL_PORT_FILTER_PROXY_PORT="9052"
+
+## Flash Proxy Port
+[ -n "$FLASHPROXY_PORT" ] || FLASHPROXY_PORT="9000"
 
 ## Socks Ports for per application circuits.
-## Note: FLASHPROXY_PORT=9000
-SOCKS_PORT_TOR_DEFAULT="9050"
-SOCKS_PORT_TB="9100"
-SOCKS_PORT_IRC="9101"
-SOCKS_PORT_TORBIRDY="9102"
-SOCKS_PORT_IM="9103"
-SOCKS_PORT_APT_GET="9104"
-SOCKS_PORT_GPG="9105"
-SOCKS_PORT_SSH="9106"
-SOCKS_PORT_GIT="9107"
-SOCKS_PORT_SDWDATE="9108"
-SOCKS_PORT_WGET="9109"
-SOCKS_PORT_WHONIXCHECK="9110"
-SOCKS_PORT_BITCOIN="9111"
-SOCKS_PORT_PRIVOXY="9112"
-SOCKS_PORT_POLIPO="9113"
-SOCKS_PORT_WHONIX_NEWS="9114"
-SOCKS_PORT_TBB_DOWNLOAD="9115"
-SOCKS_PORT_TBB_GPG="9116"
-SOCKS_PORT_CURL="9117"
-SOCKS_PORT_RSS="9118"
-SOCKS_PORT_TORCHAT="9119"
-SOCKS_PORT_MIXMASTERUPDATE="9120"
-SOCKS_PORT_MIXMASTER="9121"
-SOCKS_PORT_KDE="9122"
-SOCKS_PORT_GNOME="9123"
-SOCKS_PORT_APTITUDE="9124"
-SOCKS_PORT_TBB_DEFAULT="9150"
+[ -n "$SOCKS_PORT_TOR_DEFAULT" ] || SOCKS_PORT_TOR_DEFAULT="9050"
+[ -n "$SOCKS_PORT_TB" ] || SOCKS_PORT_TB="9100"
+[ -n "$SOCKS_PORT_IRC" ] || SOCKS_PORT_IRC="9101"
+[ -n "$SOCKS_PORT_TORBIRDY" ] || SOCKS_PORT_TORBIRDY="9102"
+[ -n "$SOCKS_PORT_IM" ] || SOCKS_PORT_IM="9103"
+[ -n "$SOCKS_PORT_APT_GET" ] || SOCKS_PORT_APT_GET="9104"
+[ -n "$SOCKS_PORT_GPG" ] || SOCKS_PORT_GPG="9105"
+[ -n "$SOCKS_PORT_SSH" ] || SOCKS_PORT_SSH="9106"
+[ -n "$SOCKS_PORT_GIT" ] || SOCKS_PORT_GIT="9107"
+[ -n "$SOCKS_PORT_SDWDATE" ] || SOCKS_PORT_SDWDATE="9108"
+[ -n "$SOCKS_PORT_WGET" ] || SOCKS_PORT_WGET="9109"
+[ -n "$SOCKS_PORT_WHONIXCHECK" ] || SOCKS_PORT_WHONIXCHECK="9110"
+[ -n "$SOCKS_PORT_BITCOIN" ] || SOCKS_PORT_BITCOIN="9111"
+[ -n "$SOCKS_PORT_PRIVOXY" ] || SOCKS_PORT_PRIVOXY="9112"
+[ -n "$SOCKS_PORT_POLIPO" ] || SOCKS_PORT_POLIPO="9113"
+[ -n "$SOCKS_PORT_WHONIX_NEWS" ] || SOCKS_PORT_WHONIX_NEWS="9114"
+[ -n "$SOCKS_PORT_TBB_DOWNLOAD" ] || SOCKS_PORT_TBB_DOWNLOAD="9115"
+[ -n "$SOCKS_PORT_TBB_GPG" ] || SOCKS_PORT_TBB_GPG="9116"
+[ -n "$SOCKS_PORT_CURL" ] || SOCKS_PORT_CURL="9117"
+[ -n "$SOCKS_PORT_RSS" ] || SOCKS_PORT_RSS="9118"
+[ -n "$SOCKS_PORT_TORCHAT" ] || SOCKS_PORT_TORCHAT="9119"
+[ -n "$SOCKS_PORT_MIXMASTERUPDATE" ] || SOCKS_PORT_MIXMASTERUPDATE="9120"
+[ -n "$SOCKS_PORT_MIXMASTER" ] || SOCKS_PORT_MIXMASTER="9121"
+[ -n "$SOCKS_PORT_KDE" ] || SOCKS_PORT_KDE="9122"
+[ -n "$SOCKS_PORT_GNOME" ] || SOCKS_PORT_GNOME="9123"
+[ -n "$SOCKS_PORT_APTITUDE" ] || SOCKS_PORT_APTITUDE="9124"
+[ -n "$SOCKS_PORT_TBB_DEFAULT" ] || SOCKS_PORT_TBB_DEFAULT="9150"
 
 ##+# #OptionalFeatureNr.4# More Socks Ports.
 ##
