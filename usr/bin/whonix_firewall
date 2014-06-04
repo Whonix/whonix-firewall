@@ -92,11 +92,11 @@ echo "OK: ROOT_USER: $ROOT_USER"
 [ -n "$INT_TIF" ] || INT_TIF="eth1"
 
 ###########################
-## NON_TOR_WHONIXG
+## NON_TOR_GATEWAY
 ###########################
 
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
-[ -n "$NON_TOR_WHONIXG" ] || NON_TOR_WHONIXG="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
+[ -n "$NON_TOR_GATEWAY" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
 
 ################
 ## VPN related #
@@ -493,7 +493,7 @@ if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
 fi
 
 ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor.
-for NET in $NON_TOR_WHONIXG; do
+for NET in $NON_TOR_GATEWAY; do
    iptables -t nat -A OUTPUT -d "$NET" -j RETURN
 done
 
@@ -510,7 +510,7 @@ iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 ## unless VPN_FIREWALL mode is enabled.
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
-   for NET in $NON_TOR_WHONIXG; do
+   for NET in $NON_TOR_GATEWAY; do
       iptables -A OUTPUT -d "$NET" -j ACCEPT
    done
 fi
