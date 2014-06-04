@@ -113,6 +113,29 @@ GATEWAY_TRANSPARENT_UDP=0
 ## Enable this only if you know what you are doing!
 GATEWAY_TRANSPARENT_DNS=0
 
+###########################
+## VPN-Firewall Settings ##
+###########################
+
+## Make sure Tor always connects through the VPN.
+## Enable: 1
+## Disable: 0
+## DISABELD BY DEFAULT, because it requires a VPN provider.
+#VPN_FIREWALL=1
+
+## IP address of the VPN server.
+## Get the IP using: nslookup vpn-example-server.org
+## Example: seattle.vpn.riseup.net
+## Some providers provide multiple VPN servers.
+## You can enter multiple IP addresses, separated by spaces.
+#VPN_SERVERS="198.252.153.26"
+
+## For OpenVPN.
+#VPN_INTERFACE=tun0
+
+## Destinations you don not want routed through the VPN.
+#LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
+
 ################################################################
 ## Torify Gateway / Hide the fact, that you are a Whonix user ##
 ################################################################

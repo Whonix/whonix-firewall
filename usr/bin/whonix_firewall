@@ -98,6 +98,19 @@ INT_TIF="eth1"
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
 NON_TOR_WHONIXG="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
 
+################
+## VPN related #
+################
+
+## Space separated list of VPN servers,
+## which Whonix-Gateway is allowed to connect to.
+[ -n "$VPN_SERVERS" ] || VPN_SERVERS="198.252.153.26"
+
+[ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
+
+## Destinations you do not routed through VPN, only for Whonix-Gateway.
+[ -n "$LOCAL_NET" ] || LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
+
 ###########################
 ## ports
 ###########################
@@ -221,6 +234,13 @@ iptables -A INPUT -i lo -j ACCEPT
 
 ## Established incoming connections are accepted.
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+## Allow all incoming connections on the virtual VPN network interface,
+## when VPN_FIREWALL mode is enabled.
+## DISABLED BY DEFAULT.
+if [ "$VPN_FIREWALL" = "1" ]; then
+   iptables -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
+fi
 
 ## Allow incoming SSH connections on the external interface.
 ## DISABLED BY DEFAULT. For testing/debugging only.
@@ -435,8 +455,19 @@ iptables -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
 ## IPv4 OUTPUT
 ###########################
 
-## No NAT for Tor itself.
-iptables -t nat -A OUTPUT -m owner --uid-owner "$TOR_USER" -j RETURN
+## Allow outgoing traffic on VPN interface,
+## if VPN_FIREWALL mode is enabled.
+## DISABLED BY DEFAULT.
+if [ "$VPN_FIREWALL" = "1" ]; then
+   iptables -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
+fi
+
+## No NAT for Tor itself,
+## unless VPN_FIREWALL mode is enabled.
+## ENABLED BY DEFAULT.
+if [ ! "$VPN_FIREWALL" = "1" ]; then
+   iptables -t nat -A OUTPUT -m owner --uid-owner "$TOR_USER" -j RETURN
+fi
 
 ## No NAT for clearnet user.
 iptables -t nat -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j RETURN
@@ -473,13 +504,39 @@ fi
 ## Existing connections are accepted.
 iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
-## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox.
-for NET in $NON_TOR_WHONIXG; do
-   iptables -A OUTPUT -d "$NET" -j ACCEPT
-done
+## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
+## unless VPN_FIREWALL mode is enabled.
+## ENABLED BY DEFAULT.
+if [ ! "$VPN_FIREWALL" = "1" ]; then
+   for NET in $NON_TOR_WHONIXG; do
+      iptables -A OUTPUT -d "$NET" -j ACCEPT
+   done
+fi
 
-## Tor is allowed to connect any outside target.
-iptables -A OUTPUT -m owner --uid-owner "$TOR_USER" -j ACCEPT
+## Accept outgoing connections to local network,
+## when VPN_FIREWALL mode is enabled.
+## DISABLED BY DEFAULT.
+if [ "$VPN_FIREWALL" = "1" ]; then
+   for NET in $LOCAL_NET; do
+      iptables -A OUTPUT -d "$NET" -j ACCEPT
+   done
+fi
+
+## Tor is allowed to connect any outside target,
+## unless VPN_FIREWALL mode is enabled.
+## ENABLED BY DEFAULT.
+if [ ! "$VPN_FIREWALL" = "1" ]; then
+   iptables -A OUTPUT -m owner --uid-owner "$TOR_USER" -j ACCEPT
+fi
+
+## Connections to VPN servers are allowed,
+## when VPN_FIREWALL mode is enabled.
+## DISABLED BY DEFAULT.
+if [ "$VPN_FIREWALL" = "1" ]; then
+   for SERVER in $VPN_SERVERS; do
+      iptables -A OUTPUT -d "$SERVER" -j ACCEPT
+   done
+fi
 
 ## clearnet user is allowed to connect any outside target.
 iptables -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j ACCEPT
