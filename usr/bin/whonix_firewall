@@ -206,9 +206,9 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 
-############################
-## IPv4 DROP INVALID PACKAGES
-############################
+######################################
+## IPv4 DROP INVALID INCOMING PACKAGES
+######################################
 
 ## DROP INVALID
 iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
@@ -454,9 +454,9 @@ iptables -A INPUT -j DROP
 ## Reject everything.
 iptables -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
 
-###########################
-## IPv4 OUTPUT
-###########################
+########################################
+## IPv4 REJECT INVALID OUTGOING PACKAGES
+########################################
 
 ## Drop invalid outgoing packages,
 ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
@@ -481,6 +481,10 @@ if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
    ## DROP INCOMING MALFORMED NULL PACKETS
    iptables -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
 fi
+
+###########################
+## IPv4 OUTPUT
+###########################
 
 ## Allow outgoing traffic on VPN interface,
 ## if VPN_FIREWALL mode is enabled.
