@@ -457,6 +457,16 @@ iptables -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
 ## IPv4 OUTPUT
 ###########################
 
+## Drop invalid outgoing packages,
+## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
+if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
+   ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
+   iptables -A OUTPUT -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
+   iptables -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
+   #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
+   #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
+fi
+
 ## Allow outgoing traffic on VPN interface,
 ## if VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.

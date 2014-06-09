@@ -173,4 +173,10 @@ ALLOW_GATEWAY_USER_USER=0
 ## Experts only!
 GATEWAY_ALLOW_INCOMING_SSH=0
 
+##########
+## Misc ##
+##########
+
+NO_REJECT_INVALID_OUTGOING_PACKAGES=0
+
 ## End of Whonix /etc/whonix_firewall.d/30_default
