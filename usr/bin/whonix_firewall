@@ -211,6 +211,7 @@ iptables -t mangle -X
 ############################
 
 ## DROP INVALID
+iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
 iptables -A INPUT -m state --state INVALID -j DROP
 
 ## DROP INVALID SYN PACKETS
