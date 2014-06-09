@@ -466,6 +466,20 @@ if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
    iptables -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
    #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
    #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
+
+   ## DROP INVALID SYN PACKETS
+   iptables -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+   iptables -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+   iptables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
+
+   ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
+   iptables -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
+
+   ## DROP INCOMING MALFORMED XMAS PACKETS
+   iptables -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
+
+   ## DROP INCOMING MALFORMED NULL PACKETS
+   iptables -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
 fi
 
 ## Allow outgoing traffic on VPN interface,
