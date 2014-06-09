@@ -96,7 +96,7 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ###########################
 
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
-[ -n "$NON_TOR_GATEWAY" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
+[ -n "$NON_TOR_GATEWAY" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 11.150.150.150/24"
 
 ################
 ## VPN related #
