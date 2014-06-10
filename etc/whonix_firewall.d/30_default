@@ -177,6 +177,10 @@ GATEWAY_ALLOW_INCOMING_SSH=0
 ## Misc ##
 ##########
 
+## Reject invalid outgoing packages (0) or do not reject them (1).
 NO_REJECT_INVALID_OUTGOING_PACKAGES=0
+
+## Destinations you don not want routed through Tor, only for Whonix-Gateway!
+#NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 11.150.150.150/24"
 
 ## End of Whonix /etc/whonix_firewall.d/30_default
