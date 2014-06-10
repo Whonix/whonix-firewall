@@ -134,7 +134,7 @@ GATEWAY_TRANSPARENT_DNS=0
 #VPN_INTERFACE=tun0
 
 ## Destinations you don not want routed through the VPN.
-#LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8"
+#LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24"
 
 ################################################################
 ## Torify Gateway / Hide the fact, that you are a Whonix user ##
@@ -181,6 +181,6 @@ GATEWAY_ALLOW_INCOMING_SSH=0
 NO_REJECT_INVALID_OUTGOING_PACKAGES=0
 
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
-#NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 11.150.150.150/24"
+#NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24"
 
 ## End of Whonix /etc/whonix_firewall.d/30_default

@@ -95,7 +95,7 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ## NON_TOR_GATEWAY
 ###########################
 
-[ -n "$NON_TOR_GATEWAY" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 11.150.150.150/24"
+[ -n "$NON_TOR_GATEWAY" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24"
 
 ################
 ## VPN related #
@@ -108,7 +108,7 @@ echo "OK: ROOT_USER: $ROOT_USER"
 [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
 
 ## Destinations you do not routed through VPN, only for Whonix-Gateway.
-[ -n "$LOCAL_NET" ] || LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 11.150.150.150/24"
+[ -n "$LOCAL_NET" ] || LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24"
 
 ###########################
 ## ports
