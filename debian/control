@@ -14,5 +14,8 @@ Standards-Version: 3.9.4
 
 Package: whonix-gw-firewall
 Architecture: all
-Depends: iptables, sudo, whonix-gw-network-conf, ${misc:Depends}
+## ifupdown, netbase are dependencies ov whonix-gw-network-conf, that cannot
+## be added there due to conflicts with chroot.
+Depends: iptables, sudo, whonix-gw-network-conf, ifupdown, netbase,
+ ${misc:Depends}
 Description: Whonix-Gateway's Firewall
