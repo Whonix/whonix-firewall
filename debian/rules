@@ -10,5 +10,5 @@
 	dh $@
 
 override_dh_install:
-	$(CURDIR)/build-scripts/man-helper.bsh
+	$(CURDIR)/make-helper.bsh manpages
 	dh_installman $(CURDIR)/debian/tmp-man/*
