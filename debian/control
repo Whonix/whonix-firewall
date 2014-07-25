@@ -14,8 +14,21 @@ Standards-Version: 3.9.4
 
 Package: whonix-gw-firewall
 Architecture: all
-## ifupdown, netbase are dependencies ov whonix-gw-network-conf, that cannot
-## be added there due to conflicts with chroot.
+## ifupdown, netbase are dependencies of whonix-gw-network-conf, that cannot
+## be added to whonix-gw-network-conf due to conflicts with chroot.
 Depends: iptables, sudo, whonix-gw-network-conf, ifupdown, netbase,
  ${misc:Depends}
 Description: Whonix-Gateway's Firewall
+ iptables rules script and firewall configuration file for Whonix-Gateway.
+ .
+ Features:
+  - transparent proxying
+  - stream isolation
+  - reject invalid packages
+  - fail closed mechanism
+  - optional VPN-Firewall
+  - optional isolating proxy
+  - optional incoming flash proxy
+  - optional Tor relay
+ .
+ Do not remove, unless you no longer wish to use Whonix.
