@@ -246,6 +246,14 @@ iptables -A INPUT -i lo -j ACCEPT
 ## Established incoming connections are accepted.
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
+## Drop all incoming ICMP traffic by default.
+## All incoming connections are dropped by default anyway, but should a user
+## allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should
+## still be dropped to filter for example ICMP time stamp requests.
+if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
+   iptables -A INPUT -p icmp -j DROP
+fi
+
 ## Allow all incoming connections on the virtual VPN network interface,
 ## when VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.

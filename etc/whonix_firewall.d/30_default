@@ -183,4 +183,10 @@ NO_REJECT_INVALID_OUTGOING_PACKAGES=0
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
 #NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24"
 
+## Drop all incoming ICMP traffic.
+## Enable: 1
+## Disable: 0
+## DISABLED BY DEFAULT
+GATEWAY_ALLOW_INCOMING_ICMP=0
+
 ## End of Whonix /etc/whonix_firewall.d/30_default
