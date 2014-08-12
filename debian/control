@@ -18,6 +18,7 @@ Architecture: all
 ## be added to whonix-gw-network-conf due to conflicts with chroot.
 Depends: iptables, sudo, whonix-gw-network-conf, ifupdown, netbase,
  ${misc:Depends}
+Conflicts: ufw
 Description: Whonix-Gateway's Firewall
  iptables rules script and firewall configuration file for Whonix-Gateway.
  .
