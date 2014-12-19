@@ -246,7 +246,7 @@ iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 iptables -A INPUT -i lo -j ACCEPT
 
 ## Established incoming connections are accepted.
-iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT
 
 ## Drop all incoming ICMP traffic by default.
 ## All incoming connections are dropped by default anyway, but should a user
@@ -555,7 +555,7 @@ if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
 fi
 
 ## Existing connections are accepted.
-iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
 
 ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
 ## unless VPN_FIREWALL mode is enabled.
