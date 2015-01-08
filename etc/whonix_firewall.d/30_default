@@ -86,6 +86,17 @@ OR_PORT=443
 ## For the Gateway ##
 #####################
 
+## External interface
+#EXT_IF="eth0"
+
+## Internal interface
+#INT_IF="eth1"
+
+## Internal "tunnel" interface, usually the same as
+## the Internal interface unless using vpn tunnels
+## between workstations and gateway
+#INT_TIF="eth1"
+
 ## Enable (1) or disable (0) transparent TCP proxying for the Whonix-Gateway.
 ## Experts only!
 ## Any misc TCP traffic, for example /usr/bin/wget.anondist-orig (circumventing uwt wrapper)
