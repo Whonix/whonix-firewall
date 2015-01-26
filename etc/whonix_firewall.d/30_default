@@ -90,12 +90,24 @@ OR_PORT=443
 #EXT_IF="eth0"
 
 ## Internal interface
+## defaults to:
 #INT_IF="eth1"
+## to use multiple:
+#INT_IF="\
+#eth1
+#eth2
+#eth3"
 
 ## Internal "tunnel" interface, usually the same as
 ## the Internal interface unless using vpn tunnels
 ## between workstations and gateway
+## defaults to:
 #INT_TIF="eth1"
+## to use multiple:
+#INT_TIF="\
+#eth1
+#eth2
+#eth3"
 
 ## Enable (1) or disable (0) transparent TCP proxying for the Whonix-Gateway.
 ## Experts only!
