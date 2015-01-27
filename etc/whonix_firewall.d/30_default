@@ -51,6 +51,16 @@ WORKSTATION_TRANSPARENT_UDP=0
 ## automatically routed through Tor.
 WORKSTATION_TRANSPARENT_DNS=1
 
+## Enable (1) or disable (0) access to Tor SocksPorts for the Whonix-Workstation.
+## You most likely want to leave this enabled. Otherwise most applications that
+## come with Whonix-Workstation by default will no longer function.
+## This may be useful if you are using a big number of multiple internal network
+## interfaces, but want to only use transparent proxying. Because by disabling this
+## setting, you could skip a lot iptables rules. (The more iptables rules, the slower.)
+## For a list of ports and more information on screen isolation, see:
+## https://www.whonix.org/wiki/Stream_Isolation
+WORKSTATION_ALLOW_SOCKSIFIED=1
+
 ## Enable (1) or disable (0) Control Port Filter Proxy for the Whonix-Workstation.
 ## It enables Whonix-Workstation to issue a limited set of safe Tor control port
 ## commands such as "SIGNAL NEWNYM", which enables Tor Browsers New Identity

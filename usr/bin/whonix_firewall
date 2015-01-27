@@ -324,44 +324,46 @@ for int_tif_item in $INT_TIF; do
    fi
 
    ## Allow socksified applications.
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TB" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IRC" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IM" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GPG" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SSH" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GIT" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WGET" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_CURL" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_RSS" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_KDE" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j ACCEPT
-   iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j ACCEPT
+   if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TB" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IRC" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IM" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GPG" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SSH" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GIT" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WGET" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_CURL" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_RSS" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_KDE" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j ACCEPT
+      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j ACCEPT
 
-   ##+# #OptionalFeatureNr.4# Allow more Socks Ports.
-   ## See /etc/tor/torrc for more comments.
-   ## Custom Ports #1:
-   iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9159 -j ACCEPT
-   ## Custom Ports #2:
-   iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9160:9169 -j ACCEPT
-   ## Custom Ports #3:
-   iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9170:9179 -j ACCEPT
-   ## Custom Ports #4:
-   iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9180:9189 -j ACCEPT
+      ##+# #OptionalFeatureNr.4# Allow more Socks Ports.
+      ## See /etc/tor/torrc for more comments.
+      ## Custom Ports #1:
+      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9159 -j ACCEPT
+      ## Custom Ports #2:
+      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9160:9169 -j ACCEPT
+      ## Custom Ports #3:
+      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9170:9179 -j ACCEPT
+      ## Custom Ports #4:
+      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9180:9189 -j ACCEPT
+   fi
 done
 
 for int_if_item in $INT_IF; do
