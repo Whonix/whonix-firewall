@@ -263,41 +263,43 @@ if [ "$VPN_FIREWALL" = "1" ]; then
    iptables -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
 fi
 
-## Allow incoming SSH connections on the external interface.
-## DISABLED BY DEFAULT. For testing/debugging only.
-if [ "$GATEWAY_ALLOW_INCOMING_SSH" = "1" ]; then
-   iptables -A INPUT -i "$EXT_IF" -p tcp --dport 22 -j ACCEPT
-fi
+for ext_if_item in $EXT_IF; do
+   ## Allow incoming SSH connections on the external interface.
+   ## DISABLED BY DEFAULT. For testing/debugging only.
+   if [ "$GATEWAY_ALLOW_INCOMING_SSH" = "1" ]; then
+      iptables -A INPUT -i "$ext_if_item" -p tcp --dport 22 -j ACCEPT
+   fi
 
-## Allow incoming Flash Proxy connections on the external interface.
-## This has NOTHING to do with Adobe Flash.
-## DISABLED BY DEFAULT.
-if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
-   iptables -A INPUT -i "$EXT_IF" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
-fi
+   ## Allow incoming Flash Proxy connections on the external interface.
+   ## This has NOTHING to do with Adobe Flash.
+   ## DISABLED BY DEFAULT.
+   if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
+      iptables -A INPUT -i "$ext_if_item" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
+   fi
 
-## Allow incoming DIRPORT connections for an optional Tor relay.
-## DISABLED BY DEFAULT.
-if [ "$GATEWAY_ALLOW_INCOMING_DIR_PORT" = "1" ]; then
-   iptables -A INPUT -i "$EXT_IF" -p tcp --dport "$DIR_PORT" -j ACCEPT
-fi
+   ## Allow incoming DIRPORT connections for an optional Tor relay.
+   ## DISABLED BY DEFAULT.
+   if [ "$GATEWAY_ALLOW_INCOMING_DIR_PORT" = "1" ]; then
+      iptables -A INPUT -i "$ext_if_item" -p tcp --dport "$DIR_PORT" -j ACCEPT
+   fi
 
-## Allow incoming ORPORT connections for an optional Tor relay.
-## DISABLED BY DEFAULT.
-if [ "$GATEWAY_ALLOW_INCOMING_OR_PORT" = "1" ]; then
-   iptables -A INPUT -i "$EXT_IF" -p tcp --dport "$OR_PORT" -j ACCEPT
-fi
+   ## Allow incoming ORPORT connections for an optional Tor relay.
+   ## DISABLED BY DEFAULT.
+   if [ "$GATEWAY_ALLOW_INCOMING_OR_PORT" = "1" ]; then
+      iptables -A INPUT -i "$ext_if_item" -p tcp --dport "$OR_PORT" -j ACCEPT
+   fi
 
-## Custom Open Ports on external interface
-## - untested, should work
-## - Replace 22,9050,9051,9150,9151 with any ports you like to be open, example: 9050,9051
-##   or just 9050
-## - iptables v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
-#iptables -A INPUT -i "$EXT_IF" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-#iptables -A INPUT -i "$EXT_IF" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
+   ## Custom Open Ports on external interface
+   ## - untested, should work
+   ## - Replace 22,9050,9051,9150,9151 with any ports you like to be open, example: 9050,9051
+   ##   or just 9050
+   ## - iptables v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
+   #iptables -A INPUT -i "$ext_if_item" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
+   #iptables -A INPUT -i "$ext_if_item" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
 
-## OPTIONAL Allow incoming OpenVPN connections on the external interface.
-#iptables -A INPUT -i "$EXT_IF" -p tcp --dport 1194 -j ACCEPT
+   ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
+   #iptables -A INPUT -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
+done
 
 for int_tif_item in $INT_TIF; do
    ## Allow DNS traffic to DnsPort.

@@ -87,7 +87,13 @@ OR_PORT=443
 #####################
 
 ## External interface
+## defaults to:
 #EXT_IF="eth0"
+## to use multiple:
+#EXT_IF="\
+#eth0
+#eth4
+#eth5"
 
 ## Internal interface
 ## defaults to:
