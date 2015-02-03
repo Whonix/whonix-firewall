@@ -12,3 +12,6 @@
 override_dh_install:
 	$(CURDIR)/make-helper.bsh manpages
 	dh_installman $(CURDIR)/debian/tmp-man/*
+
+override_dh_installchangelogs:
+	dh_installchangelogs changelog.upstream upstream
