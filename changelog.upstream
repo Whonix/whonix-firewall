@@ -1,0 +1,350 @@
+commit 638ee1a2d7efe1cb76f3dabe8f61683e6c1a992a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Feb 4 00:40:59 2015 +0000
+
+    updated makefile generic to version 1.3
+
+commit 2f5eff01162650a24b356c0b4ab32c9ecc022aab
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Feb 3 23:59:00 2015 +0000
+
+    Added creation of upstream changelog to debian/rules
+
+commit 9b0345f9ede5aed4c90c2d6a9f956b3220900071
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 27 00:56:00 2015 +0000
+
+    provide an option WORKSTATION_ALLOW_SOCKSIFIED to skip Tor SocksPort iptables rules - https://phabricator.whonix.org/T121
+
+commit dfdaf72382436c110ae10d835c94a3995fb47553
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 27 00:34:41 2015 +0000
+
+    support multiple external interfaces - https://phabricator.whonix.org/T120
+
+commit 917d69bd746eca05399341c1a2de61efefeb94c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 26 04:41:43 2015 +0000
+
+    support multiple internal interfaces - https://phabricator.whonix.org/T109
+
+commit b3da7972e9418258940a1ee9f1a87d1331c575a7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 8 14:41:00 2015 +0000
+
+    comments
+
+commit cdc904d0bc17070cc172d3f2539a58289c8a6f02
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 7 19:35:01 2015 +0000
+
+    bumped compat from 8 to 9
+
+commit 414c2105149e02dcff82303e4c5b2dcd60ebbd29
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 19 11:41:37 2014 +0000
+
+    RELATED,ESTABLISHED -> ESTABLISHED
+
+commit eafddb3aa33d7916018815086d642ede9ffaebfd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 5 19:01:30 2014 +0000
+
+    updated generic makefile
+
+commit dfa4654392d8f2ad88210e54e60c48814eeca9c9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 28 22:35:34 2014 +0000
+
+    makefile: refactoring, avoid using IFS
+
+commit 00708d47490b44fda49f2c7c4e18fe90bf21ea2d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Oct 25 01:58:54 2014 +0000
+
+    makefile:
+    - make debdist; make undebdist
+    - cleanup
+    - refactoring
+
+commit 797c230f3c0212c50a769e76f6c6430c955898ee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 23 22:43:05 2014 +0000
+
+    makefile:
+    - new target "make undist", which deletes the upstream tarball
+    - $DISTDIR variable for make (un)dist, which defaults to ".." and can be used to create upstream tarballs in arbitrary locations
+    - refactoring, all function names and global variables now start with "make_" to make the script `source`ing friendly
+    - made `source`able
+
+commit 81c05a294a4f75f017bf206fa4457c78f51b344f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Oct 13 12:36:59 2014 +0000
+
+    readme
+
+commit 2bb4613676c9792b6cfad9bd018af065f24ce1e2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 19 18:52:46 2014 +0000
+
+    makefile: added new feature "make deb-chl-bumpup" - Bump upstream version number in debian/changelog.
+
+commit 817ef2f6202b31f85e9ff8414fcb502d8ef6c4c0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 18 13:11:57 2014 +0000
+
+    bumped changelog version
+
+commit 827ea83bed41256bda33ab69c173df2878966a30
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 18 13:08:39 2014 +0000
+
+    Added 10.0.2.2/24 to NON_TOR_GATEWAY and LOCAL_NET to prevent spamming syslog with:
+    host dhclient: DHCPREQUEST on eth0 to 10.0.2.2 port 67
+    host dhclient: send_packet: Operation not permitted
+
+commit c2cce72af6dce21cc603abf654960b68aa9dddd9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 17 20:54:28 2014 +0000
+
+    Updated debian/changelog.
+
+commit 85d4009a41a082f17b3e0f2e208a506bff29cca5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 17 20:47:31 2014 +0000
+
+    Fixed changelog date.
+
+commit 42a23808b6146741c415e7587c65b244de3478e0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 17 18:03:33 2014 +0000
+
+    bump version number
+
+commit d3ff4f3d2c45b1326e96c2efa0d44687e79e37fc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 14 13:35:21 2014 +0000
+
+    Implemented make deb-icup: Combination of make deb-pkg, make deb-pkg-install and make deb-pkg-cleanup.
+
+commit 5598c05b4e63f389ac95f6cb0a93851ecfd74c27
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 12 19:48:08 2014 +0000
+
+    added Conflicts: ufw
+
+commit b7c14430d9554dd0c7885d11ca64905fcd3ca221
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 3 21:00:54 2014 +0000
+
+    Drop all incoming ICMP traffic by default. All incoming connections are dropped by default anyway, but should a user allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should still be dropped to filter for example ICMP time stamp requests.
+
+commit 3a7a0526f42ea75a5333fff23f5d6da80e4f8c62
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jul 28 23:25:47 2014 +0000
+
+    readme
+
+commit f681e44d283ec50ef514db05b51384819ffda9a7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 27 12:42:30 2014 +0000
+
+    packaging
+
+commit 7655a758a60cedf0ab3de5c481d61b2ca5108106
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 27 04:01:16 2014 +0000
+
+    packaging
+
+commit efa9ca9c0e1f79b283c9ca056c348afe743fe20d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 26 15:26:41 2014 +0000
+
+    packaging
+
+commit a6d063610dfb66cc0a983bcf149370b120f73469
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 26 15:16:08 2014 +0000
+
+    packaging: removed build dependency on git, since the .git folder won't be included in the upstream tarball.
+
+commit 2f6ea8246e85727ea3e16767eb5f076bc84e870f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jul 25 15:11:16 2014 +0000
+
+    extended package description to fix lintian warning; comment
+
+commit 2b3fd1c7d358652bcf395fc2a7390e7f22010d5e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 12 17:31:56 2014 +0000
+
+    packaging
+
+commit 7aca02118980b032d05a5050d6290e385e31bea9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 12 17:11:04 2014 +0000
+
+    packaging
+
+commit ba7bf6fc628d6d89b765e6f7844060d69d852f1c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 12 15:34:21 2014 +0000
+
+    packaging
+
+commit f961725d63509b4ccfa0f355cbb4876743ecb3b8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 6 11:52:40 2014 +0000
+
+    sanity test
+
+commit 598a7d5c5db364599c3ee331054f47cecb3bdebc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jul 5 08:11:01 2014 +0000
+
+    Bumped debian revision number to avoid lintian warning "new-package-should-close-itp-bug" so we can use lintian --fail-on-warnings as sanity test.
+
+commit 23dfcc888d99b7499bb8af7f08d2ecc7dfd59a25
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 24 15:45:15 2014 +0000
+
+    added debian epoch; added dotglob
+
+commit 10d97b88bd8a0f99460e08d4095b5feef4bb488d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 14 10:05:18 2014 +0000
+
+    packaging
+
+commit 404c7bff8838afbf75cfbe511259a0c380d533cf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jun 12 04:18:22 2014 +0000
+
+    packaging
+
+commit 07b2c50ee3807bac636fa3878846128b7591e099
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jun 12 04:17:40 2014 +0000
+
+    packaging
+
+commit fedf91a37e58b34859541af547a33f24b80f0f0a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 10 14:19:22 2014 +0000
+
+    update IP as per https://www.whonix.org/forum/index.php/topic,107.0.html
+
+commit dd83eb9cc08f3a3ca8cd6907e212d6928d5481c3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 10 13:03:29 2014 +0000
+
+    comments
+
+commit 75d371d171df7c0a214d7fd0a764c734f1fc28ef
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 9 13:48:42 2014 +0000
+
+    added 11.150.150.150/24 to LOCAL_NET
+
+commit d7a91031d0135cb70ed855088602393590588e07
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 9 13:35:23 2014 +0000
+
+    added 11.150.150.150/24 to NON_TOR_GATEWAY to be able to change Whonix's internal IPs
+
+commit 1cec5929ae12a5b182585f07d448cdc28fdac03e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 9 13:30:53 2014 +0000
+
+    comments
+
+commit 2cb13eb4d57a52e48ed4ffa11390001f19a94dde
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 9 13:28:18 2014 +0000
+
+    reject more invalid packages
+
+commit e545a52b190cd67223d5e1dcf4abfa9dcab5bef5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 9 13:22:33 2014 +0000
+
+    added "iptables -A INPUT -m conntrack --ctstate INVALID -j DROP" in addition to "iptables -A INPUT -m state --state INVALID -j DROP" as inspired by https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
+
+commit c7b100bab692a2498c787ee8cac96c5f8d17e14f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 9 13:18:38 2014 +0000
+
+    reject invalid outgoing packages
+
+commit dd142ad0702c1c6a88675fa9d0d7a7bc257e7e16
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 7 16:41:05 2014 +0000
+
+    merged anon-gw-clearnet-user package into whonix-gw-firewall package
+
+commit 40a418df50f996c166c9dce5add122c677ad6076
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 4 19:28:07 2014 +0000
+
+    comments
+
+commit 8c6fd1f5450cebffdbb09539373a2dec9558aaa2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 4 19:18:05 2014 +0000
+
+    comments
+
+commit 71d725e9afcd4684b98883c700f3644c052b4ec2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 4 19:11:12 2014 +0000
+
+    fix
+
+commit 106fe480dc0745ab55a5320704aa744d9879a485
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 4 19:03:01 2014 +0000
+
+    renamed variable NON_TOR_WHONIXG to NON_TOR_GATEWAY
+
+commit e89019e0f41278fdec2fd78410cd8c38152e8fd8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 4 19:00:51 2014 +0000
+
+    make variables overwrite able
+
+commit 4078969e6de62f7e939ae32e9d6374fb3c585162
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 4 13:20:27 2014 +0000
+
+    added VPN_FIREWALL feature to Whonix-Gateway's firewall
+
+commit ad298750b4089344610b309b63652565b80b757f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jun 3 18:27:40 2014 +0000
+
+    readme
+
+commit 15a8d953d2234edfb842924a8a341011ef3dc212
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 2 14:40:28 2014 +0000
+
+    packaging
+
+commit 13ee07715aeb5a596d56a84ec22e4fb077718010
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 1 15:38:55 2014 +0000
+
+    readme
+
+commit d44cffed4608357c2df3411495bb759d8d16d11b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu May 29 11:03:24 2014 +0000
+
+    variable names; cleanup
+
+commit 91172def085f3e503602a9403a1f1adbb3c0db92
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu May 29 10:58:37 2014 +0000
+
+    initial import from https://github.com/Whonix/Whonix
