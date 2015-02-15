@@ -238,6 +238,14 @@ iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
 ## DROP INCOMING MALFORMED NULL PACKETS
 iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 
+######################################
+## IPv4 DROP INVALID INCOMING PACKAGES POST HOOK
+######################################
+
+if [ ! "$GATEWAY_IPv4_DROP_INVALID_INCOMING_PACKAGES_POST_HOOK" = "" ]; then
+   $GATEWAY_IPv4_DROP_INVALID_INCOMING_PACKAGES_POST_HOOK
+fi
+
 ###########################
 ## IPv4 INPUT
 ###########################
