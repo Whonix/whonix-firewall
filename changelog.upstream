@@ -1,3 +1,27 @@
+commit 281f6970e0ee9fbc5a0e3133e074dd29d7855b75
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Mar 24 17:27:00 2015 +0000
+
+    updated makefile generic to version 1.4
+
+commit 5ebca43416269a5fd42c98a80af1b0b3d38adecf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Feb 15 17:59:20 2015 +0000
+
+    provide hook after drop ipv4 invalid packages through variable GATEWAY_IPv4_DROP_INVALID_INCOMING_PACKAGES_POST_HOOK - https://phabricator.whonix.org/T176
+
+commit 75624f8ca739ae670a7cd6eff6e0bf64ff25bb42
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 6 04:25:33 2015 +0000
+
+    maintainer script output
+
+commit e37d00c4bf6869104b4c3ca1e0a42c4fcc20e73c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Feb 4 00:56:43 2015 +0000
+
+    bumped changelog version
+
 commit bc5efa48f696fa10a0dccc8c94ce403a4e2e8ed2
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Feb 4 00:45:06 2015 +0000
