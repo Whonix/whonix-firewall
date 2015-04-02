@@ -10,7 +10,7 @@
 	dh $@
 
 override_dh_install:
-	$(CURDIR)/make-helper.bsh manpages
+	make manpages
 	dh_installman $(CURDIR)/debian/tmp-man/*
 
 override_dh_installchangelogs:
