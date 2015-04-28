@@ -10,3 +10,4 @@ GenericName=Whonix User Firewall Settings
 Comment=Open /etc/whonix_firewall.d/50_user in kwrite
 Categories=System
 Icon=/usr/share/icons/anon-icon-pack/nerolinux.ico
+Keywords=system;Whonix;firewall
