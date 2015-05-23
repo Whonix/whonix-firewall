@@ -1,3 +1,15 @@
+commit 5332e66f7670903bc4e4c50f1b435ca016734762
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat May 23 13:48:28 2015 +0000
+
+    Made package more standalone. Requiring 'pre-up /usr/bin/whonix_firewall' in /etc/network/interfaces is no longer necessary. Added etc/network/if-pre-up.d/30_whonix_firewall to load the firewall, because of a Debian upstream bug 'interface comes up even if a script in /etc/network/if-pre-up.d/ fails' http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=700811 was fixed. - https://phabricator.whonix.org/T68
+
+commit fdac25f60a460d475685bad76de9438c78c497ba
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 30 17:57:07 2015 +0000
+
+    bumped changelog version
+
 commit add5020b53063579448b4f1007f4530247150570
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Apr 28 15:28:09 2015 +0000

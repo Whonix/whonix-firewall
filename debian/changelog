@@ -1,3 +1,9 @@
+whonix-gw-firewall (3:1.1-1) unstable; urgency=low
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@riseup.net>  Sat, 23 May 2015 13:50:27 +0000
+
 whonix-gw-firewall (3:1.0-1) unstable; urgency=low
 
   * New upstream version (local package).
