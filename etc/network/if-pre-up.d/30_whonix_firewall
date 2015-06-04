@@ -6,4 +6,9 @@
 
 set -e
 
+if [ -e "/usr/lib/qubes" ]; then
+   true "$0: /usr/lib/qubes exits, exiting. See https://phabricator.whonix.org/T339 for details."
+   exit 0
+fi
+
 /usr/bin/whonix_firewall
