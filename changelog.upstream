@@ -1,3 +1,15 @@
+commit 6aec420d362ed56f062dd653167e48365648278f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jun 4 10:36:09 2015 +0000
+
+    Qubes fix - https://phabricator.whonix.org/T339
+
+commit 87ee865fdc4d9c6c8216e909e95882aeff60fc32
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jun 3 15:00:35 2015 +0000
+
+    bumped changelog version
+
 commit 487f3e31c23c8dbe54138fa14dd88225443dc218
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat May 23 13:50:33 2015 +0000
