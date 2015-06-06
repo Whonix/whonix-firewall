@@ -1,3 +1,15 @@
+commit 6ba2bb28ee5d65d4c6786329b31a81a6b7122d65
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 6 14:17:54 2015 +0000
+
+    use iptables --wait - https://phabricator.whonix.org/T344
+
+commit b797bee5f0486d5c388c61c72752683af186ff4e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jun 4 10:38:17 2015 +0000
+
+    bumped changelog version
+
 commit 6aec420d362ed56f062dd653167e48365648278f
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Jun 4 10:36:09 2015 +0000
