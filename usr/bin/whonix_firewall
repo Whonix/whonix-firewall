@@ -70,6 +70,9 @@ done
 
 echo "OK: Loading Whonix firewall..."
 
+[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
+[ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
+
 ###########################
 ## USERS
 ###########################
@@ -196,47 +199,47 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ###########################
 
 ## Set secure defaults.
-iptables -P INPUT DROP
+$iptables_cmd -P INPUT DROP
 
 ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
-iptables -P FORWARD DROP
+$iptables_cmd -P FORWARD DROP
 
 ## Only the Tor process is allowed to establish outgoing connections.
-iptables -P OUTPUT DROP
+$iptables_cmd -P OUTPUT DROP
 
 ###########################
 ## IPv4 PREPARATIONS
 ###########################
 
 ## Flush old rules.
-iptables -F
-iptables -X
-iptables -t nat -F
-iptables -t nat -X
-iptables -t mangle -F
-iptables -t mangle -X
+$iptables_cmd -F
+$iptables_cmd -X
+$iptables_cmd -t nat -F
+$iptables_cmd -t nat -X
+$iptables_cmd -t mangle -F
+$iptables_cmd -t mangle -X
 
 ######################################
 ## IPv4 DROP INVALID INCOMING PACKAGES
 ######################################
 
 ## DROP INVALID
-iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
-iptables -A INPUT -m state --state INVALID -j DROP
+$iptables_cmd -A INPUT -m conntrack --ctstate INVALID -j DROP
+$iptables_cmd -A INPUT -m state --state INVALID -j DROP
 
 ## DROP INVALID SYN PACKETS
-iptables -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP
-iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
-iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+$iptables_cmd -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP
+$iptables_cmd -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+$iptables_cmd -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
 
 ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-iptables -A INPUT -f -j DROP
+$iptables_cmd -A INPUT -f -j DROP
 
 ## DROP INCOMING MALFORMED XMAS PACKETS
-iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+$iptables_cmd -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
 
 ## DROP INCOMING MALFORMED NULL PACKETS
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+$iptables_cmd -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 
 ######################################
 ## IPv4 DROP INVALID INCOMING PACKAGES POST HOOK
@@ -251,69 +254,69 @@ fi
 ###########################
 
 ## Traffic on the loopback interface is accepted.
-iptables -A INPUT -i lo -j ACCEPT
+$iptables_cmd -A INPUT -i lo -j ACCEPT
 
 ## Established incoming connections are accepted.
-iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT
+$iptables_cmd -A INPUT -m state --state ESTABLISHED -j ACCEPT
 
 ## Drop all incoming ICMP traffic by default.
 ## All incoming connections are dropped by default anyway, but should a user
 ## allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should
 ## still be dropped to filter for example ICMP time stamp requests.
 if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
-   iptables -A INPUT -p icmp -j DROP
+   $iptables_cmd -A INPUT -p icmp -j DROP
 fi
 
 ## Allow all incoming connections on the virtual VPN network interface,
 ## when VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
-   iptables -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
+   $iptables_cmd -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
 fi
 
 for ext_if_item in $EXT_IF; do
    ## Allow incoming SSH connections on the external interface.
    ## DISABLED BY DEFAULT. For testing/debugging only.
    if [ "$GATEWAY_ALLOW_INCOMING_SSH" = "1" ]; then
-      iptables -A INPUT -i "$ext_if_item" -p tcp --dport 22 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport 22 -j ACCEPT
    fi
 
    ## Allow incoming Flash Proxy connections on the external interface.
    ## This has NOTHING to do with Adobe Flash.
    ## DISABLED BY DEFAULT.
    if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
-      iptables -A INPUT -i "$ext_if_item" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
    fi
 
    ## Allow incoming DIRPORT connections for an optional Tor relay.
    ## DISABLED BY DEFAULT.
    if [ "$GATEWAY_ALLOW_INCOMING_DIR_PORT" = "1" ]; then
-      iptables -A INPUT -i "$ext_if_item" -p tcp --dport "$DIR_PORT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$DIR_PORT" -j ACCEPT
    fi
 
    ## Allow incoming ORPORT connections for an optional Tor relay.
    ## DISABLED BY DEFAULT.
    if [ "$GATEWAY_ALLOW_INCOMING_OR_PORT" = "1" ]; then
-      iptables -A INPUT -i "$ext_if_item" -p tcp --dport "$OR_PORT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$OR_PORT" -j ACCEPT
    fi
 
    ## Custom Open Ports on external interface
    ## - untested, should work
    ## - Replace 22,9050,9051,9150,9151 with any ports you like to be open, example: 9050,9051
    ##   or just 9050
-   ## - iptables v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
-   #iptables -A INPUT -i "$ext_if_item" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-   #iptables -A INPUT -i "$ext_if_item" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
+   ## - $iptables_cmd v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
+   #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
+   #$iptables_cmd -A INPUT -i "$ext_if_item" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
 
    ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
-   #iptables -A INPUT -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
+   #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
 done
 
 for int_tif_item in $INT_TIF; do
    ## Allow DNS traffic to DnsPort.
    ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
-      iptables -A INPUT -i "$int_tif_item" -p udp --dport 53 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p udp --dport 53 -j ACCEPT
    fi
 done
 
@@ -321,178 +324,178 @@ for int_if_item in $INT_IF; do
    ## Allow TCP traffic TransPort.
    ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
-      iptables -A INPUT -i "$int_if_item" -p tcp --dport "$TRANS_PORT_WORKSTATION" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_if_item" -p tcp --dport "$TRANS_PORT_WORKSTATION" -j ACCEPT
    fi
 done
 
 for int_tif_item in $INT_TIF; do
    ## Allow TCP traffic to Control Port Filter Proxy.
    if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j ACCEPT
    fi
 
    ## Allow socksified applications.
    if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TB" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IRC" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IM" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GPG" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SSH" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GIT" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WGET" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_CURL" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_RSS" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_KDE" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j ACCEPT
-      iptables -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TB" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IRC" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IM" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GPG" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SSH" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GIT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WGET" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_CURL" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_RSS" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_KDE" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j ACCEPT
 
       ##+# #OptionalFeatureNr.4# Allow more Socks Ports.
       ## See /etc/tor/torrc for more comments.
       ## Custom Ports #1:
-      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9159 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9159 -j ACCEPT
       ## Custom Ports #2:
-      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9160:9169 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9160:9169 -j ACCEPT
       ## Custom Ports #3:
-      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9170:9179 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9170:9179 -j ACCEPT
       ## Custom Ports #4:
-      iptables -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9180:9189 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9180:9189 -j ACCEPT
    fi
 done
 
 for int_if_item in $INT_IF; do
    ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
    if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
-      iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
    fi
 done
 
 for int_if_item in $INT_IF; do
    ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TOR_DEFAULT"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TB" -j REDIRECT --to-ports "$SOCKS_PORT_TB"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_IRC" -j REDIRECT --to-ports "$SOCKS_PORT_IRC"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j REDIRECT --to-ports "$SOCKS_PORT_TORBIRDY"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_IM" -j REDIRECT --to-ports "$SOCKS_PORT_IM"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j REDIRECT --to-ports "$SOCKS_PORT_APT_GET"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GPG" -j REDIRECT --to-ports "$SOCKS_PORT_GPG"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_SSH" -j REDIRECT --to-ports "$SOCKS_PORT_SSH"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GIT" -j REDIRECT --to-ports "$SOCKS_PORT_GIT"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j REDIRECT --to-ports "$SOCKS_PORT_SDWDATE"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WGET" -j REDIRECT --to-ports "$SOCKS_PORT_WGET"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j REDIRECT --to-ports "$SOCKS_PORT_WHONIXCHECK"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j REDIRECT --to-ports "$SOCKS_PORT_BITCOIN"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j REDIRECT --to-ports "$SOCKS_PORT_PRIVOXY"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j REDIRECT --to-ports "$SOCKS_PORT_POLIPO"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j REDIRECT --to-ports "$SOCKS_PORT_WHONIX_NEWS"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DOWNLOAD"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_GPG"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_CURL" -j REDIRECT --to-ports "$SOCKS_PORT_CURL"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_RSS" -j REDIRECT --to-ports "$SOCKS_PORT_RSS"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j REDIRECT --to-ports "$SOCKS_PORT_TORCHAT"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j REDIRECT --to-ports "$SOCKS_PORT_MIXMASTERUPDATE"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j REDIRECT --to-ports "$SOCKS_PORT_MIXMASTER"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_KDE" -j REDIRECT --to-ports "$SOCKS_PORT_KDE"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j REDIRECT --to-ports "$SOCKS_PORT_GNOME"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j REDIRECT --to-ports "$SOCKS_PORT_APTITUDE"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DEFAULT"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TOR_DEFAULT"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TB" -j REDIRECT --to-ports "$SOCKS_PORT_TB"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_IRC" -j REDIRECT --to-ports "$SOCKS_PORT_IRC"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j REDIRECT --to-ports "$SOCKS_PORT_TORBIRDY"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_IM" -j REDIRECT --to-ports "$SOCKS_PORT_IM"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j REDIRECT --to-ports "$SOCKS_PORT_APT_GET"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GPG" -j REDIRECT --to-ports "$SOCKS_PORT_GPG"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_SSH" -j REDIRECT --to-ports "$SOCKS_PORT_SSH"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GIT" -j REDIRECT --to-ports "$SOCKS_PORT_GIT"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j REDIRECT --to-ports "$SOCKS_PORT_SDWDATE"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WGET" -j REDIRECT --to-ports "$SOCKS_PORT_WGET"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j REDIRECT --to-ports "$SOCKS_PORT_WHONIXCHECK"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j REDIRECT --to-ports "$SOCKS_PORT_BITCOIN"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j REDIRECT --to-ports "$SOCKS_PORT_PRIVOXY"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j REDIRECT --to-ports "$SOCKS_PORT_POLIPO"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j REDIRECT --to-ports "$SOCKS_PORT_WHONIX_NEWS"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DOWNLOAD"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_GPG"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_CURL" -j REDIRECT --to-ports "$SOCKS_PORT_CURL"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_RSS" -j REDIRECT --to-ports "$SOCKS_PORT_RSS"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j REDIRECT --to-ports "$SOCKS_PORT_TORCHAT"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j REDIRECT --to-ports "$SOCKS_PORT_MIXMASTERUPDATE"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j REDIRECT --to-ports "$SOCKS_PORT_MIXMASTER"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_KDE" -j REDIRECT --to-ports "$SOCKS_PORT_KDE"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j REDIRECT --to-ports "$SOCKS_PORT_GNOME"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j REDIRECT --to-ports "$SOCKS_PORT_APTITUDE"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DEFAULT"
 
    ##+# OptionalFeatureNr.4# More Socks Ports.
    ##+# Redirection rules for additional SocksPorts.
    ## See /etc/tor/torrc for more comments.
    ## Custom Ports #1:
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9152" -j REDIRECT --to-ports "9152"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9153" -j REDIRECT --to-ports "9153"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9154" -j REDIRECT --to-ports "9154"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9155" -j REDIRECT --to-ports "9155"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9156" -j REDIRECT --to-ports "9156"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9157" -j REDIRECT --to-ports "9157"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9158" -j REDIRECT --to-ports "9158"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9159" -j REDIRECT --to-ports "9159"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9152" -j REDIRECT --to-ports "9152"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9153" -j REDIRECT --to-ports "9153"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9154" -j REDIRECT --to-ports "9154"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9155" -j REDIRECT --to-ports "9155"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9156" -j REDIRECT --to-ports "9156"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9157" -j REDIRECT --to-ports "9157"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9158" -j REDIRECT --to-ports "9158"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9159" -j REDIRECT --to-ports "9159"
    ## Custom Ports #2:
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9160" -j REDIRECT --to-ports "9160"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9161" -j REDIRECT --to-ports "9161"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9162" -j REDIRECT --to-ports "9162"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9163" -j REDIRECT --to-ports "9163"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9164" -j REDIRECT --to-ports "9164"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9165" -j REDIRECT --to-ports "9165"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9166" -j REDIRECT --to-ports "9166"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9167" -j REDIRECT --to-ports "9167"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9168" -j REDIRECT --to-ports "9168"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9169" -j REDIRECT --to-ports "9169"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9160" -j REDIRECT --to-ports "9160"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9161" -j REDIRECT --to-ports "9161"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9162" -j REDIRECT --to-ports "9162"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9163" -j REDIRECT --to-ports "9163"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9164" -j REDIRECT --to-ports "9164"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9165" -j REDIRECT --to-ports "9165"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9166" -j REDIRECT --to-ports "9166"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9167" -j REDIRECT --to-ports "9167"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9168" -j REDIRECT --to-ports "9168"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9169" -j REDIRECT --to-ports "9169"
    ## Custom Ports #3:
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9170" -j REDIRECT --to-ports "9170"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9171" -j REDIRECT --to-ports "9171"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9172" -j REDIRECT --to-ports "9172"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9173" -j REDIRECT --to-ports "9173"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9174" -j REDIRECT --to-ports "9174"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9175" -j REDIRECT --to-ports "9175"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9176" -j REDIRECT --to-ports "9176"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9177" -j REDIRECT --to-ports "9177"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9178" -j REDIRECT --to-ports "9178"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9179" -j REDIRECT --to-ports "9179"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9170" -j REDIRECT --to-ports "9170"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9171" -j REDIRECT --to-ports "9171"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9172" -j REDIRECT --to-ports "9172"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9173" -j REDIRECT --to-ports "9173"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9174" -j REDIRECT --to-ports "9174"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9175" -j REDIRECT --to-ports "9175"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9176" -j REDIRECT --to-ports "9176"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9177" -j REDIRECT --to-ports "9177"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9178" -j REDIRECT --to-ports "9178"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9179" -j REDIRECT --to-ports "9179"
    ## Custom Ports #4:
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9180" -j REDIRECT --to-ports "9180"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9181" -j REDIRECT --to-ports "9181"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9182" -j REDIRECT --to-ports "9182"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9183" -j REDIRECT --to-ports "9183"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9184" -j REDIRECT --to-ports "9184"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9185" -j REDIRECT --to-ports "9185"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9186" -j REDIRECT --to-ports "9186"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9187" -j REDIRECT --to-ports "9187"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9188" -j REDIRECT --to-ports "9188"
-   iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9189" -j REDIRECT --to-ports "9189"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9180" -j REDIRECT --to-ports "9180"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9181" -j REDIRECT --to-ports "9181"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9182" -j REDIRECT --to-ports "9182"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9183" -j REDIRECT --to-ports "9183"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9184" -j REDIRECT --to-ports "9184"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9185" -j REDIRECT --to-ports "9185"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9186" -j REDIRECT --to-ports "9186"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9187" -j REDIRECT --to-ports "9187"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9188" -j REDIRECT --to-ports "9188"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9189" -j REDIRECT --to-ports "9189"
 
    ## Redirect remaining DNS traffic to DNS_PORT_WORKSTATION.
    ## Only user installed applications not configured to use a SocksPort are affected.
    ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
-      iptables -t nat -A PREROUTING -i "$int_if_item" -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_WORKSTATION"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_WORKSTATION"
    fi
 
    ## Catch all remaining TCP and redirect to TransPort.
    ## Only user installed applications not configured to use a SocksPort are affected.
    ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
-      iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
    fi
 
    ##+# #OptionalFeatureNr.3# Restrict TransPort.
    ##+# Replace above rule with a more restrictive one, e.g.:
-   #iptables -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
+   #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
 done
 
 ## Log.
-#iptables -A INPUT -j LOG --log-prefix "Whonix blocked input4: "
+#$iptables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input4: "
 
 ## Reject anything not explicitly allowed above.
 ## Drop is better than reject here, because we do not want to reveal it's a Whonix-Gateway.
 ## (In case someone running Whonix-Gateway on bare metal.)
-iptables -A INPUT -j DROP
+$iptables_cmd -A INPUT -j DROP
 
 ###########################
 ## IPv4 FORWARD
 ###########################
 
 ## Log.
-#iptables -A FORWARD -j LOG --log-prefix "Whonix blocked forward4: "
+#$iptables_cmd -A FORWARD -j LOG --log-prefix "Whonix blocked forward4: "
 
 ## Reject everything.
-iptables -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
+$iptables_cmd -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
 
 ########################################
 ## IPv4 REJECT INVALID OUTGOING PACKAGES
@@ -502,24 +505,24 @@ iptables -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
 ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
 if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
    ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
-   iptables -A OUTPUT -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
-   iptables -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
-   #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
-   #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
+   #$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
+   #$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
 
    ## DROP INVALID SYN PACKETS
-   iptables -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-   iptables -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-   iptables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
 
    ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-   iptables -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
 
    ## DROP INCOMING MALFORMED XMAS PACKETS
-   iptables -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
 
    ## DROP INCOMING MALFORMED NULL PACKETS
-   iptables -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
+   $iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
 fi
 
 ###########################
@@ -530,35 +533,35 @@ fi
 ## if VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
-   iptables -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
+   $iptables_cmd -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
 fi
 
 ## No NAT for Tor itself,
 ## unless VPN_FIREWALL mode is enabled.
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
-   iptables -t nat -A OUTPUT -m owner --uid-owner "$TOR_USER" -j RETURN
+   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$TOR_USER" -j RETURN
 fi
 
 ## No NAT for clearnet user.
-iptables -t nat -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j RETURN
+$iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j RETURN
 
 ## No NAT for user user.
 ## DISABLED BY DEFAULT. For testing/debugging only.
 if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
-   iptables -t nat -A OUTPUT -m owner --uid-owner "$USER_USER" -j RETURN
+   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$USER_USER" -j RETURN
 fi
 
 ## No NAT for root user.
 ## DISABLED BY DEFAULT. For testing/debugging only.
 if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
-   iptables -t nat -A OUTPUT -m owner --uid-owner "$ROOT_USER" -j RETURN
+   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$ROOT_USER" -j RETURN
 fi
 
 ## Redirect of Gateway DNS traffic to DNS_PORT_GATEWAY.
 ## DISABLED BY DEFAULT. default. Using SocksPort instead.
 if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
-   iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_GATEWAY"
+   $iptables_cmd -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_GATEWAY"
 fi
 
 ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor,
@@ -566,25 +569,25 @@ fi
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
    for NET in $NON_TOR_GATEWAY; do
-      iptables -t nat -A OUTPUT -d "$NET" -j RETURN
+      $iptables_cmd -t nat -A OUTPUT -d "$NET" -j RETURN
    done
 fi
 
 ## Redirect all Gateway TCP traffic to TRANS_PORT_GATEWAY.
 ## DISABLED BY DEFAULT. Using SocksPort instead.
 if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
-   iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
+   $iptables_cmd -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
 fi
 
 ## Existing connections are accepted.
-iptables -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
+$iptables_cmd -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
 
 ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
 ## unless VPN_FIREWALL mode is enabled.
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
    for NET in $NON_TOR_GATEWAY; do
-      iptables -A OUTPUT -d "$NET" -j ACCEPT
+      $iptables_cmd -A OUTPUT -d "$NET" -j ACCEPT
    done
 fi
 
@@ -593,7 +596,7 @@ fi
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
    for NET in $LOCAL_NET; do
-      iptables -A OUTPUT -d "$NET" -j ACCEPT
+      $iptables_cmd -A OUTPUT -d "$NET" -j ACCEPT
    done
 fi
 
@@ -601,7 +604,7 @@ fi
 ## unless VPN_FIREWALL mode is enabled.
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
-   iptables -A OUTPUT -m owner --uid-owner "$TOR_USER" -j ACCEPT
+   $iptables_cmd -A OUTPUT -m owner --uid-owner "$TOR_USER" -j ACCEPT
 fi
 
 ## Connections to VPN servers are allowed,
@@ -609,62 +612,62 @@ fi
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
    for SERVER in $VPN_SERVERS; do
-      iptables -A OUTPUT -d "$SERVER" -j ACCEPT
+      $iptables_cmd -A OUTPUT -d "$SERVER" -j ACCEPT
    done
 fi
 
 ## clearnet user is allowed to connect any outside target.
-iptables -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j ACCEPT
+$iptables_cmd -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j ACCEPT
 
 ## user user is allowed to connect any outside target.
 ## DISABLED BY DEFAULT. For testing/debugging only.
 if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
-   iptables -A OUTPUT -m owner --uid-owner "$USER_USER" -j ACCEPT
+   $iptables_cmd -A OUTPUT -m owner --uid-owner "$USER_USER" -j ACCEPT
 fi
 
 ## root user is allowed to connect any outside target.
 ## DISABLED BY DEFAULT. For testing/debugging only.
 if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
-   iptables -A OUTPUT -m owner --uid-owner "$ROOT_USER" -j ACCEPT
+   $iptables_cmd -A OUTPUT -m owner --uid-owner "$ROOT_USER" -j ACCEPT
 fi
 
 ## Log.
-#iptables -A OUTPUT -j LOG --log-prefix "Whonix blocked output4: "
+#$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output4: "
 
 ## Reject all other outgoing traffic.
-iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
+$iptables_cmd -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 
 ###########################
 ## IPv6
 ###########################
 
 ## Policy DROP for all traffic as fallback.
-ip6tables -P INPUT DROP
-ip6tables -P OUTPUT DROP
-ip6tables -P FORWARD DROP
+$ip6tables_cmd -P INPUT DROP
+$ip6tables_cmd -P OUTPUT DROP
+$ip6tables_cmd -P FORWARD DROP
 
 ## Flush old rules.
-ip6tables -F
-ip6tables -X
-ip6tables -t mangle -F
-ip6tables -t mangle -X
+$ip6tables_cmd -F
+$ip6tables_cmd -X
+$ip6tables_cmd -t mangle -F
+$ip6tables_cmd -t mangle -X
 
 ## Allow unlimited access on loopback.
 ## Not activated, since we do not need it.
-#ip6tables -A INPUT -i lo -j ACCEPT
-#ip6tables -A OUTPUT -o lo -j ACCEPT
+#ip6tables_cmd -A INPUT -i lo -j ACCEPT
+#ip6tables_cmd -A OUTPUT -o lo -j ACCEPT
 
 ## Log.
-#ip6tables -A INPUT -j LOG --log-prefix "Whonix blocked input6: "
-#ip6tables -A OUTPUT -j LOG --log-prefix "Whonix blocked output6: "
-#ip6tables -A FORWARD -j LOG --log-prefix "Whonix blocked forward6: "
+#ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input6: "
+#ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output6: "
+#ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix blocked forward6: "
 
 ## Drop/reject all other traffic.
-ip6tables -A INPUT -j DROP
+$ip6tables_cmd -A INPUT -j DROP
 ## --reject-with icmp-admin-prohibited not supported by ip6tables
-ip6tables -A OUTPUT -j REJECT
+$ip6tables_cmd -A OUTPUT -j REJECT
 ## --reject-with icmp-admin-prohibited not supported by ip6tables
-ip6tables -A FORWARD -j REJECT
+$ip6tables_cmd -A FORWARD -j REJECT
 
 ###########################
 ## End
