@@ -104,6 +104,11 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ## between workstations and gateway
 [ -n "$INT_TIF" ] || INT_TIF="eth1"
 
+if [ -e /var/run/qubes-service/whonix-gateway ]; then
+   INT_IF="vif+"
+   INT_TIF="vif+"
+fi
+
 ###########################
 ## NON_TOR_GATEWAY
 ###########################
@@ -250,9 +255,6 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
    source /usr/lib/qubes-whonix/utility_functions.sh
 
    ip=$(${QUBESDB}-read ${PREFIX}qubes-netvm-gateway 2> /dev/null)
-
-   INT_IF="vif+"
-   INT_TIF="vif+"
 
    ## Allow connections from port 8082 of internal vif interface for tinyproxy
    ## tinyproxy is responsible to handle TemplateVMs updates.
