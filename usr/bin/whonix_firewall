@@ -251,8 +251,8 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
 
    ip=$(${QUBESDB}-read ${PREFIX}qubes-netvm-gateway 2> /dev/null)
 
-   export INT_IF="vif+"
-   export INT_TIF="vif+"
+   INT_IF="vif+"
+   INT_TIF="vif+"
 
    ## Allow connections from port 8082 of internal vif interface for tinyproxy
    ## tinyproxy is responsible to handle TemplateVMs updates.
