@@ -143,11 +143,11 @@ fi
 
 ## Transparent Proxy Ports for Whonix-Workstation
 [ -n "$TRANS_PORT_WORKSTATION" ] || TRANS_PORT_WORKSTATION="9040"
-[ -n "$DNS_PORT_WORKSTATION" ] || DNS_PORT_WORKSTATION="53"
+[ -n "$DNS_PORT_WORKSTATION" ] || DNS_PORT_WORKSTATION="5300"
 
 ## Transparent Proxy Ports for Whonix-Gateway
 [ -n "$TRANS_PORT_GATEWAY" ] || TRANS_PORT_GATEWAY="9041"
-[ -n "$DNS_PORT_GATEWAY" ] || DNS_PORT_GATEWAY="54"
+[ -n "$DNS_PORT_GATEWAY" ] || DNS_PORT_GATEWAY="5400"
 
 ## Control Port Filter Proxy Port
 [ -n "$CONTROL_PORT_FILTER_PROXY_PORT" ] || CONTROL_PORT_FILTER_PROXY_PORT="9052"
@@ -269,10 +269,10 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
    ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
    $iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i vif+ -p tcp -m tcp --dport 8082 -j REDIRECT
 
-   ## Forward tinyproxy output to port 53/9040 on internal (Tor) interface (eth1) to be
+   ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
    ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
-   $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to ${ip}:53
-   $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to ${ip}:9040
+   $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to ${ip}:${DNS_PORT_WORKSTATION}
+   $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to ${ip}:${TRANS_PORT_WORKSTATION}
 fi
 
 if [ -e /var/run/qubes-service/whonix-template ]; then
@@ -349,7 +349,7 @@ for int_tif_item in $INT_TIF; do
    ## Allow DNS traffic to DnsPort.
    ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p udp --dport 53 -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p udp --dport "$DNS_PORT_WORKSTATION" -j ACCEPT
    fi
 done
 
