@@ -1,3 +1,33 @@
+commit b478e440b71159961db58650307deeb587545c68
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 20 00:39:36 2015 +0000
+
+    Migrated from port Tor's DnsPort 53 to 5300. No longer listening on port 53 but rather on a port higher than 1024 to avoid issues with reloading Tor. (Tor drops privileges and is then unable to create listeners below 1024.)
+
+commit 907f999c9ddc6d9b7bec9eb04c8a5f503cd87c2f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 12 15:28:12 2015 +0200
+
+    refactoring, set INT_IF and INT_TIF for Qubes earlier (below the regular setting of these variables)
+
+commit a88586071ba4026fdb3b025c393ff9a8d7dba355
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 12 15:19:10 2015 +0200
+
+    refactoring Qubes firewall rules, 'export' for variables INT_IF and INT_TIF not required, therefore removed
+
+commit e0b5d9e2e9d60c634b48584961c7493adc517ead
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 12 15:14:00 2015 +0200
+
+    integrated Qubes-Whonix firewall rules (only load when run in Qubes) so those can be removed from the qubes-whonix package, deprecated GATEWAY_IPv4_DROP_INVALID_INCOMING_PACKAGES_POST_HOOK - https://phabricator.whonix.org/T395
+
+commit db4ad049881f347734faff6682d5d036ae50da78
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 6 15:22:53 2015 +0000
+
+    bumped changelog version
+
 commit 6ba2bb28ee5d65d4c6786329b31a81a6b7122d65
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jun 6 14:17:54 2015 +0000
