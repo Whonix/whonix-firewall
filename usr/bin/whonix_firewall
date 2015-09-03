@@ -182,6 +182,7 @@ fi
 [ -n "$SOCKS_PORT_KDE" ] || SOCKS_PORT_KDE="9122"
 [ -n "$SOCKS_PORT_GNOME" ] || SOCKS_PORT_GNOME="9123"
 [ -n "$SOCKS_PORT_APTITUDE" ] || SOCKS_PORT_APTITUDE="9124"
+[ -n "$SOCKS_PORT_YUM" ] || SOCKS_PORT_YUM="9125"
 [ -n "$SOCKS_PORT_TBB_DEFAULT" ] || SOCKS_PORT_TBB_DEFAULT="9150"
 
 ##+# #OptionalFeatureNr.4# More Socks Ports.
@@ -395,6 +396,7 @@ for int_tif_item in $INT_TIF; do
       $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_KDE" -j ACCEPT
       $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j ACCEPT
       $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j ACCEPT
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_YUM" -j ACCEPT
       $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j ACCEPT
 
       ##+# #OptionalFeatureNr.4# Allow more Socks Ports.
@@ -445,6 +447,7 @@ for int_if_item in $INT_IF; do
    $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_KDE" -j REDIRECT --to-ports "$SOCKS_PORT_KDE"
    $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j REDIRECT --to-ports "$SOCKS_PORT_GNOME"
    $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j REDIRECT --to-ports "$SOCKS_PORT_APTITUDE"
+   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_YUM" -j REDIRECT --to-ports "$SOCKS_PORT_YUM"
    $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DEFAULT"
 
    ##+# OptionalFeatureNr.4# More Socks Ports.
