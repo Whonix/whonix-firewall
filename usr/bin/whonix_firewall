@@ -95,6 +95,11 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ## interfaces
 ###########################
 
+if [ -e /var/run/qubes-service/whonix-gateway ]; then
+   [ -n "$INT_IF" ] || INT_IF="vif+"
+   [ -n "$INT_TIF" ] || INT_TIF="vif+"
+fi
+
 ## External interface
 [ -n "$EXT_IF" ] || EXT_IF="eth0"
 ## Internal interface
@@ -103,11 +108,6 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ## the Internal interface unless using vpn tunnels
 ## between workstations and gateway
 [ -n "$INT_TIF" ] || INT_TIF="eth1"
-
-if [ -e /var/run/qubes-service/whonix-gateway ]; then
-   INT_IF="vif+"
-   INT_TIF="vif+"
-fi
 
 ###########################
 ## NON_TOR_GATEWAY
