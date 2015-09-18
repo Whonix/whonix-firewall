@@ -283,7 +283,7 @@ $iptables_cmd -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 ######################################
 
 if [ -e /var/run/qubes-service/whonix-gateway ]; then
-   qubes_netvm_gateway_ip=$(qubesdb-read /qubes-netvm-gateway 2> /dev/null)
+   qubes_netvm_gateway_ip="$(qubesdb-read /qubes-netvm-gateway 2> /dev/null)"
 
    ## Allow connections from port 8082 of internal vif interface for tinyproxy
    ## tinyproxy is responsible to handle TemplateVMs updates.
@@ -300,8 +300,8 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
 
    ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
    ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
-   $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to ${qubes_netvm_gateway_ip}:${DNS_PORT_WORKSTATION}
-   $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to ${qubes_netvm_gateway_ip}:${TRANS_PORT_WORKSTATION}
+   $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "${qubes_netvm_gateway_ip}:${DNS_PORT_WORKSTATION}"
+   $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "${qubes_netvm_gateway_ip}:${TRANS_PORT_WORKSTATION}"
 fi
 
 if [ -e /var/run/qubes-service/whonix-template ]; then
