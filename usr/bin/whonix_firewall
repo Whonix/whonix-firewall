@@ -283,8 +283,6 @@ $iptables_cmd -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 ######################################
 
 if [ -e /var/run/qubes-service/whonix-gateway ]; then
-   source /usr/lib/qubes-whonix/utility_functions.sh
-
    qubes_netvm_gateway_ip=$(qubesdb-read /qubes-netvm-gateway 2> /dev/null)
 
    ## Allow connections from port 8082 of internal vif interface for tinyproxy
@@ -307,8 +305,6 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
 fi
 
 if [ -e /var/run/qubes-service/whonix-template ]; then
-   source /usr/lib/qubes-whonix/utility_functions.sh
-
    ## Allow access to Qubes update proxy.
    $iptables_cmd -A OUTPUT -o eth0 -p tcp -m tcp --dport 8082 -j ACCEPT
 fi
