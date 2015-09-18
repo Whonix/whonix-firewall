@@ -173,8 +173,14 @@ GATEWAY_TRANSPARENT_DNS=0
 #VPN_INTERFACE=tun0
 
 ## Destinations you don not want routed through the VPN.
-## 10.0.2.2/24: VirtualBox DHCP
-#LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+## 10.0.2.2-10.0.2.24: VirtualBox DHCP
+##      LOCAL_NET="\
+##         127.0.0.0-127.0.0.24 \
+##         192.168.0.0-192.168.0.24 \
+##         192.168.1.0-192.168.1.24 \
+##         10.152.152.0-10.152.152.24 \
+##         10.0.2.2-10.0.2.24 \
+##      "
 
 ################################################################
 ## Torify Gateway / Hide the fact, that you are a Whonix user ##
@@ -221,8 +227,14 @@ GATEWAY_ALLOW_INCOMING_SSH=0
 NO_REJECT_INVALID_OUTGOING_PACKAGES=0
 
 ## Destinations you don not want routed through Tor, only for Whonix-Gateway!
-## 10.0.2.2/24: VirtualBox DHCP
-#NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+## 10.0.2.2-10.0.2.24: VirtualBox DHCP
+##      NON_TOR_GATEWAY="\
+##         127.0.0.0-127.0.0.24 \
+##         192.168.0.0-192.168.0.24 \
+##         192.168.1.0-192.168.1.24 \
+##         10.152.152.0-10.152.152.24 \
+##         10.0.2.2-10.0.2.24 \
+##      "
 
 ## Drop all incoming ICMP traffic.
 ## Enable: 1

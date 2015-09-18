@@ -113,8 +113,23 @@ fi
 ## NON_TOR_GATEWAY
 ###########################
 
-## 10.0.2.2/24: VirtualBox DHCP
-[ -n "$NON_TOR_GATEWAY" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+if [ "$NON_TOR_GATEWAY" = "" ]; then
+   if [ -d "/usr/lib/qubes" ]; then
+      NON_TOR_GATEWAY="\
+         127.0.0.0-127.0.0.24 \
+         10.137.0.0-10.137.255.255 \
+      "
+   else
+      ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
+      NON_TOR_GATEWAY="\
+         127.0.0.0-127.0.0.24 \
+         192.168.0.0-192.168.0.24 \
+         192.168.1.0-192.168.1.24 \
+         10.152.152.0-10.152.152.24 \
+         10.0.2.2-10.0.2.24 \
+      "
+   fi
+fi
 
 ################
 ## VPN related #
@@ -127,8 +142,23 @@ fi
 [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
 
 ## Destinations you do not routed through VPN, only for Whonix-Gateway.
-## 10.0.2.2/24: VirtualBox DHCP
-[ -n "$LOCAL_NET" ] || LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+if [ "$LOCAL_NET" = "" ]; then
+   if [ -d "/usr/lib/qubes" ]; then
+      LOCAL_NET="\
+         127.0.0.0-127.0.0.24 \
+         10.137.0.0-10.137.255.255 \
+      "
+   else
+      ## 10.0.2.2/24: VirtualBox DHCP
+      LOCAL_NET="\
+         127.0.0.0-127.0.0.24 \
+         192.168.0.0-192.168.0.24 \
+         192.168.1.0-192.168.1.24 \
+         10.152.152.0-10.152.152.24 \
+         10.0.2.2-10.0.2.24 \
+      "
+   fi
+fi
 
 ###########################
 ## ports
@@ -605,7 +635,7 @@ fi
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
    for NET in $NON_TOR_GATEWAY; do
-      $iptables_cmd -t nat -A OUTPUT -d "$NET" -j RETURN
+      $iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$NET" -j RETURN
    done
 fi
 
@@ -623,7 +653,7 @@ $iptables_cmd -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
    for NET in $NON_TOR_GATEWAY; do
-      $iptables_cmd -A OUTPUT -d "$NET" -j ACCEPT
+      $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
    done
 fi
 
@@ -632,7 +662,7 @@ fi
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
    for NET in $LOCAL_NET; do
-      $iptables_cmd -A OUTPUT -d "$NET" -j ACCEPT
+      $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
    done
 fi
 
