@@ -1,3 +1,57 @@
+commit 38c7719a93158ac19647216dc19729301aed6f48
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Oct 12 11:45:06 2015 +0000
+
+    empty password in Qubes for user clearnet
+
+commit c30ad852911856051f43205f822446cc2a032fec
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 18 23:39:06 2015 +0000
+
+    quotes
+
+commit f59c6e902ec9464900785b259c82bbbfb04ff31b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 18 23:30:26 2015 +0000
+
+    cleanup, 'source /usr/lib/qubes-whonix/utility_functions.sh' no longer required, removed
+
+commit 95b784f39938504ba747a622813e51bbf37974b0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 18 23:28:13 2015 +0000
+
+    renamed variable ip to qubes_netvm_gateway_ip
+
+commit 78e3595042cc821148670337012d754216f1b512
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 18 23:27:05 2015 +0000
+
+    deprecated Qubes R2 support, code simplification
+
+commit 7e701d557d55e68c3429a73227f994e752949011
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 18 23:25:02 2015 +0000
+
+    allow variables INT_IF and INT_TIF being overwritten also in Qubes
+
+commit 1ffbf1ed224b9857ef4060538b8b2e861ca03e14
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 18 23:23:18 2015 +0000
+
+    added native Qubes support (ip replace script no longer required); use iptables range notation for variables NON_TOR_GATEWAY and LOCAL_NET
+
+commit d6401bb5e310504a454ee2d65b8b3d46b4dbfdb3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Sep 3 13:00:04 2015 +0000
+
+    added Tor SocksPort 9125 for yum
+
+commit c64f20dfc8ecc65b616d504720c96436173b8e1c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 25 14:08:32 2015 +0000
+
+    bumped changelog version
+
 commit 455d485be99a713f70670ca2bd403000beefd2a3
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Aug 24 17:47:32 2015 +0000
