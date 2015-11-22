@@ -287,8 +287,8 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
 
    ## Allow connections from port 8082 of internal vif interface for tinyproxy
    ## tinyproxy is responsible to handle TemplateVMs updates.
-   $iptables_cmd -A INPUT -i vif+ -p tcp -m tcp --dport 8082 -j ACCEPT
-   $iptables_cmd -A OUTPUT -o vif+ -p tcp -m tcp --sport 8082 -j ACCEPT
+   $iptables_cmd -A INPUT -i "$INT_IF" -p tcp -m tcp --dport 8082 -j ACCEPT
+   $iptables_cmd -A OUTPUT -o "$INT_IF" -p tcp -m tcp --sport 8082 -j ACCEPT
 
    ## Qubes pre-routing. Will be able to intercept traffic destined for
    ## 10.137.255.254 to be re-routed to tinyproxy.
@@ -296,7 +296,7 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
    $iptables_cmd -t nat -A PREROUTING -j PR-QBS-SERVICES
 
    ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
-   $iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i vif+ -p tcp -m tcp --dport 8082 -j REDIRECT
+   $iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i "$INT_IF" -p tcp -m tcp --dport 8082 -j REDIRECT
 
    ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
    ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
