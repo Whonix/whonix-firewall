@@ -95,7 +95,8 @@ echo "OK: ROOT_USER: $ROOT_USER"
 ## interfaces
 ###########################
 
-if [ -e /var/run/qubes-service/whonix-gateway ]; then
+if [ -d "/usr/lib/qubes" ]; then
+   [ -n "$qubes_vm_type" ] || qubes_vm_type="$(qubesdb-read /qubes-vm-type)"
    [ -n "$INT_IF" ] || INT_IF="vif+"
    [ -n "$INT_TIF" ] || INT_TIF="vif+"
 fi
@@ -282,7 +283,7 @@ $iptables_cmd -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 ## QUBES
 ######################################
 
-if [ -e /var/run/qubes-service/whonix-gateway ]; then
+if [ "$qubes_vm_type" = "NetVM" ] || [ "$qubes_vm_type" = "ProxyVM" ]; then
    qubes_netvm_gateway_ip="$(qubesdb-read /qubes-netvm-gateway 2> /dev/null)"
 
    ## Allow connections from port 8082 of internal vif interface for tinyproxy
@@ -304,7 +305,7 @@ if [ -e /var/run/qubes-service/whonix-gateway ]; then
    $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "${qubes_netvm_gateway_ip}:${TRANS_PORT_WORKSTATION}"
 fi
 
-if [ -e /var/run/qubes-service/whonix-template ]; then
+if [ "$qubes_vm_type" = "TemplateVM" ]; then
    ## Allow access to Qubes update proxy.
    $iptables_cmd -A OUTPUT -o eth0 -p tcp -m tcp --dport 8082 -j ACCEPT
 fi
