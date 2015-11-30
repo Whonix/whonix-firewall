@@ -1,0 +1,1 @@
+rm_conffile /etc/whonix_firewall.d/30_default
