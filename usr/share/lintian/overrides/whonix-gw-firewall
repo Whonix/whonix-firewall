@@ -1,0 +1,2 @@
+## konsole is a dependency of this package.
+whonix-gw-firewall: desktop-command-not-in-package usr/share/applications/gateway-reloadfirewall.desktop konsole
