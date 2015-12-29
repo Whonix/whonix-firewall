@@ -20,27 +20,32 @@ case "$1" in
    configure)
       true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
-      ret="0"
-      id "clearnet" || { ret="$?" ; true; };
+      user_account_list="clearnet tunnel"
 
-      if [ "$ret" = "0" ]; then
-         echo 'INFO: Not creating user "clearnet", because it already exists.'
-      else
-         echo 'INFO: Creating user "clearnet"...'
-         if command -v qubesdb-read >/dev/null 2>&1 ; then
-            password=""
+      for user_account in $user_account_list ; do
+         ret="0"
+         id "$user_account" || { ret="$?" ; true; };
+
+         if [ "$ret" = "0" ]; then
+            echo "INFO: Not creating user '$user_account', because it already exists."
          else
-            ## setting password of user clearnet to changeme
-            ##
-            ## How this password was created:
-            ## sudo apt-get install whois
-            ## mkpasswd
-            ## changeme
-            ## Resulted in: aTayYxVyw5kDo
-            password="aTayYxVyw5kDo"
+            echo "INFO: Creating user '$user_account'..."
+            if command -v qubesdb-read >/dev/null 2>&1 ; then
+               password=""
+            else
+               ## setting password of user $user_account to changeme
+               ##
+               ## How this password was created:
+               ## sudo apt-get install whois
+               ## mkpasswd
+               ## changeme
+               ## Resulted in: aTayYxVyw5kDo
+               password="aTayYxVyw5kDo"
+            fi
+         useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account"
          fi
-         useradd --create-home --password "$password" --user-group --shell /bin/bash clearnet
-      fi
+      done
+
       true "INFO: End configuring $DPKG_MAINTSCRIPT_PACKAGE."
 
       ;;
