@@ -74,11 +74,13 @@ echo "OK: Loading Whonix firewall..."
 [ -n "$CLEARNET_USER" ] || CLEARNET_USER="$(id -u clearnet)"
 [ -n "$USER_USER" ] || USER_USER="$(id -u user)"
 [ -n "$ROOT_USER" ] || ROOT_USER="$(id -u root)"
+[ -n "$TUNNEL_USER" ] || TUNNEL_USER="$(id -u tunnel)"
 
 echo "OK: TOR_USER: $TOR_USER"
 echo "OK: CLEARNET_USER: $CLEARNET_USER"
 echo "OK: USER_USER: $USER_USER"
 echo "OK: ROOT_USER: $ROOT_USER"
+echo "OK: ROOT_USER: $TUNNEL_USER"
 
 ###########################
 ## interfaces
@@ -124,10 +126,6 @@ fi
 ################
 ## VPN related #
 ################
-
-## Space separated list of VPN servers,
-## which Whonix-Gateway is allowed to connect to.
-[ -n "$VPN_SERVERS" ] || VPN_SERVERS="198.252.153.26"
 
 [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
 
@@ -661,9 +659,7 @@ fi
 ## when VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
-   for SERVER in $VPN_SERVERS; do
-      $iptables_cmd -A OUTPUT -d "$SERVER" -j ACCEPT
-   done
+   $iptables_cmd -A OUTPUT -m owner --uid-owner "$TUNNEL_USER" -j ACCEPT
 fi
 
 ## clearnet user is allowed to connect any outside target.
