@@ -109,7 +109,7 @@ if [ "$NON_TOR_GATEWAY" = "" ]; then
    if [ -d "/usr/lib/qubes" ]; then
       NON_TOR_GATEWAY="\
          127.0.0.0-127.0.0.24 \
-         10.137.0.0-10.137.255.255 \
+         10.137.0.0-10.138.255.255 \
       "
    else
       ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
@@ -134,7 +134,7 @@ if [ "$LOCAL_NET" = "" ]; then
    if [ -d "/usr/lib/qubes" ]; then
       LOCAL_NET="\
          127.0.0.0-127.0.0.24 \
-         10.137.0.0-10.137.255.255 \
+         10.137.0.0-10.138.255.255 \
       "
    else
       ## 10.0.2.2/24: VirtualBox DHCP
