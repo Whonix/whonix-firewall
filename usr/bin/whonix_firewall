@@ -203,21 +203,18 @@ fi
 [ -n "$SOCKS_PORT_YUM" ] || SOCKS_PORT_YUM="9125"
 [ -n "$SOCKS_PORT_TBB_DEFAULT" ] || SOCKS_PORT_TBB_DEFAULT="9150"
 
-##+# #OptionalFeatureNr.4# More Socks Ports.
-##
 ## Adding more Socks Ports here should no longer be necessary.
 ## There are already lots of custom ports prepared. If you need more
 ## anyway, read below.
 ## Please read:
 ## https://www.whonix.org/wiki/Stream_Isolation
 ##
-##+# Additional Socks Ports for per application circuits.
-##+# You can add more here but,
-##+# you will have to edit:
-##+# - /etc/tor/torrc
-##+#   - And "sudo service tor reload" afterwards.
-##+# - /usr/bin/whonix_firewall
-##+#   - And issue "sudo /usr/bin/whonix_firewall" afterwards.
+## Additional Socks Ports for per application circuits could be
+## added here, but you would have to edit:
+## - /etc/tor/torrc
+## - And "sudo service tor reload" afterwards.
+## - /usr/bin/whonix_firewall
+## - And issue "sudo /usr/bin/whonix_firewall" afterwards.
 
 socks_ports_list="$(compgen -v | grep SOCKS\_PORT\_)"
 
@@ -361,17 +358,15 @@ for ext_if_item in $EXT_IF; do
 done
 
 for int_tif_item in $INT_TIF; do
-   ## Allow DNS traffic to DnsPort.
-   ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
+      ## Allow DNS traffic to DnsPort.
       $iptables_cmd -A INPUT -i "$int_tif_item" -p udp --dport "$DNS_PORT_WORKSTATION" -j ACCEPT
    fi
 done
 
 for int_if_item in $INT_IF; do
-   ## Allow TCP traffic TransPort.
-   ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
+      ## Allow TCP traffic TransPort.
       $iptables_cmd -A INPUT -i "$int_if_item" -p tcp --dport "$TRANS_PORT_WORKSTATION" -j ACCEPT
    fi
 done
@@ -389,7 +384,6 @@ for int_tif_item in $INT_TIF; do
          $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "${!socks_port}" -j ACCEPT
       done
 
-      ##+# #OptionalFeatureNr.4# Allow more Socks Ports.
       ## See /etc/tor/torrc for more comments.
       ## Custom Ports #1:
       $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9159 -j ACCEPT
@@ -417,9 +411,6 @@ for int_if_item in $INT_IF; do
          $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
       done
 
-      ##+# OptionalFeatureNr.4# More Socks Ports.
-      ##+# Redirection rules for additional SocksPorts.
-      ## See /etc/tor/torrc for more comments.
       ## Custom Ports #1:
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9152" -j REDIRECT --to-ports "9152"
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9153" -j REDIRECT --to-ports "9153"
@@ -464,22 +455,20 @@ for int_if_item in $INT_IF; do
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9189" -j REDIRECT --to-ports "9189"
    fi
 
-   ## Redirect remaining DNS traffic to DNS_PORT_WORKSTATION.
-   ## Only user installed applications not configured to use a SocksPort are affected.
-   ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
+      ## Redirect remaining DNS traffic to DNS_PORT_WORKSTATION.
+      ## Only user installed applications not configured to use a SocksPort are affected.
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_WORKSTATION"
    fi
 
-   ## Catch all remaining TCP and redirect to TransPort.
-   ## Only user installed applications not configured to use a SocksPort are affected.
-   ##+# SEE #OptionalFeatureNr.5#
    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
+      ## Catch all remaining TCP and redirect to TransPort.
+      ## Only user installed applications not configured to use a SocksPort are affected
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
    fi
 
-   ##+# #OptionalFeatureNr.3# Restrict TransPort.
-   ##+# Replace above rule with a more restrictive one, e.g.:
+   ## Optionally restrict TransPort.
+   ## Replace above rule with a more restrictive one, e.g.:
    #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
 done
 
