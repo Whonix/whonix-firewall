@@ -219,6 +219,8 @@ fi
 ##+# - /usr/bin/whonix_firewall
 ##+#   - And issue "sudo /usr/bin/whonix_firewall" afterwards.
 
+socks_ports_list="$(compgen -v | grep SOCKS\_PORT\_)"
+
 ###########################
 ## IPv4 DEFAULTS
 ###########################
@@ -382,34 +384,10 @@ for int_tif_item in $INT_TIF; do
 
    ## Allow socksified applications.
    if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TB" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IRC" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_IM" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GPG" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SSH" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GIT" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WGET" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_CURL" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_RSS" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_KDE" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_YUM" -j ACCEPT
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j ACCEPT
+      for socks_port in $socks_ports_list; do
+         true "$socks_port: ${!socks_port}"
+         $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "${!socks_port}" -j ACCEPT
+      done
 
       ##+# #OptionalFeatureNr.4# Allow more Socks Ports.
       ## See /etc/tor/torrc for more comments.
@@ -432,81 +410,59 @@ for int_if_item in $INT_IF; do
 done
 
 for int_if_item in $INT_IF; do
-   ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TOR_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TOR_DEFAULT"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TB" -j REDIRECT --to-ports "$SOCKS_PORT_TB"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_IRC" -j REDIRECT --to-ports "$SOCKS_PORT_IRC"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TORBIRDY" -j REDIRECT --to-ports "$SOCKS_PORT_TORBIRDY"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_IM" -j REDIRECT --to-ports "$SOCKS_PORT_IM"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APT_GET" -j REDIRECT --to-ports "$SOCKS_PORT_APT_GET"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GPG" -j REDIRECT --to-ports "$SOCKS_PORT_GPG"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_SSH" -j REDIRECT --to-ports "$SOCKS_PORT_SSH"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GIT" -j REDIRECT --to-ports "$SOCKS_PORT_GIT"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_SDWDATE" -j REDIRECT --to-ports "$SOCKS_PORT_SDWDATE"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WGET" -j REDIRECT --to-ports "$SOCKS_PORT_WGET"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WHONIXCHECK" -j REDIRECT --to-ports "$SOCKS_PORT_WHONIXCHECK"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_BITCOIN" -j REDIRECT --to-ports "$SOCKS_PORT_BITCOIN"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_PRIVOXY" -j REDIRECT --to-ports "$SOCKS_PORT_PRIVOXY"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_POLIPO" -j REDIRECT --to-ports "$SOCKS_PORT_POLIPO"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_WHONIX_NEWS" -j REDIRECT --to-ports "$SOCKS_PORT_WHONIX_NEWS"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DOWNLOAD" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DOWNLOAD"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_GPG" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_GPG"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_CURL" -j REDIRECT --to-ports "$SOCKS_PORT_CURL"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_RSS" -j REDIRECT --to-ports "$SOCKS_PORT_RSS"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TORCHAT" -j REDIRECT --to-ports "$SOCKS_PORT_TORCHAT"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_MIXMASTERUPDATE" -j REDIRECT --to-ports "$SOCKS_PORT_MIXMASTERUPDATE"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_MIXMASTER" -j REDIRECT --to-ports "$SOCKS_PORT_MIXMASTER"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_KDE" -j REDIRECT --to-ports "$SOCKS_PORT_KDE"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_GNOME" -j REDIRECT --to-ports "$SOCKS_PORT_GNOME"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_APTITUDE" -j REDIRECT --to-ports "$SOCKS_PORT_APTITUDE"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_YUM" -j REDIRECT --to-ports "$SOCKS_PORT_YUM"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$SOCKS_PORT_TBB_DEFAULT" -j REDIRECT --to-ports "$SOCKS_PORT_TBB_DEFAULT"
+   if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+      for socks_port in $socks_ports_list; do
+         true "$socks_port: ${!socks_port}"
+         ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
+         $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
+      done
 
-   ##+# OptionalFeatureNr.4# More Socks Ports.
-   ##+# Redirection rules for additional SocksPorts.
-   ## See /etc/tor/torrc for more comments.
-   ## Custom Ports #1:
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9152" -j REDIRECT --to-ports "9152"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9153" -j REDIRECT --to-ports "9153"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9154" -j REDIRECT --to-ports "9154"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9155" -j REDIRECT --to-ports "9155"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9156" -j REDIRECT --to-ports "9156"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9157" -j REDIRECT --to-ports "9157"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9158" -j REDIRECT --to-ports "9158"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9159" -j REDIRECT --to-ports "9159"
-   ## Custom Ports #2:
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9160" -j REDIRECT --to-ports "9160"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9161" -j REDIRECT --to-ports "9161"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9162" -j REDIRECT --to-ports "9162"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9163" -j REDIRECT --to-ports "9163"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9164" -j REDIRECT --to-ports "9164"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9165" -j REDIRECT --to-ports "9165"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9166" -j REDIRECT --to-ports "9166"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9167" -j REDIRECT --to-ports "9167"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9168" -j REDIRECT --to-ports "9168"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9169" -j REDIRECT --to-ports "9169"
-   ## Custom Ports #3:
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9170" -j REDIRECT --to-ports "9170"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9171" -j REDIRECT --to-ports "9171"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9172" -j REDIRECT --to-ports "9172"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9173" -j REDIRECT --to-ports "9173"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9174" -j REDIRECT --to-ports "9174"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9175" -j REDIRECT --to-ports "9175"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9176" -j REDIRECT --to-ports "9176"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9177" -j REDIRECT --to-ports "9177"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9178" -j REDIRECT --to-ports "9178"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9179" -j REDIRECT --to-ports "9179"
-   ## Custom Ports #4:
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9180" -j REDIRECT --to-ports "9180"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9181" -j REDIRECT --to-ports "9181"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9182" -j REDIRECT --to-ports "9182"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9183" -j REDIRECT --to-ports "9183"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9184" -j REDIRECT --to-ports "9184"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9185" -j REDIRECT --to-ports "9185"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9186" -j REDIRECT --to-ports "9186"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9187" -j REDIRECT --to-ports "9187"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9188" -j REDIRECT --to-ports "9188"
-   $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9189" -j REDIRECT --to-ports "9189"
+      ##+# OptionalFeatureNr.4# More Socks Ports.
+      ##+# Redirection rules for additional SocksPorts.
+      ## See /etc/tor/torrc for more comments.
+      ## Custom Ports #1:
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9152" -j REDIRECT --to-ports "9152"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9153" -j REDIRECT --to-ports "9153"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9154" -j REDIRECT --to-ports "9154"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9155" -j REDIRECT --to-ports "9155"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9156" -j REDIRECT --to-ports "9156"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9157" -j REDIRECT --to-ports "9157"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9158" -j REDIRECT --to-ports "9158"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9159" -j REDIRECT --to-ports "9159"
+      ## Custom Ports #2:
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9160" -j REDIRECT --to-ports "9160"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9161" -j REDIRECT --to-ports "9161"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9162" -j REDIRECT --to-ports "9162"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9163" -j REDIRECT --to-ports "9163"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9164" -j REDIRECT --to-ports "9164"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9165" -j REDIRECT --to-ports "9165"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9166" -j REDIRECT --to-ports "9166"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9167" -j REDIRECT --to-ports "9167"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9168" -j REDIRECT --to-ports "9168"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9169" -j REDIRECT --to-ports "9169"
+      ## Custom Ports #3:
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9170" -j REDIRECT --to-ports "9170"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9171" -j REDIRECT --to-ports "9171"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9172" -j REDIRECT --to-ports "9172"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9173" -j REDIRECT --to-ports "9173"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9174" -j REDIRECT --to-ports "9174"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9175" -j REDIRECT --to-ports "9175"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9176" -j REDIRECT --to-ports "9176"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9177" -j REDIRECT --to-ports "9177"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9178" -j REDIRECT --to-ports "9178"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9179" -j REDIRECT --to-ports "9179"
+      ## Custom Ports #4:
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9180" -j REDIRECT --to-ports "9180"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9181" -j REDIRECT --to-ports "9181"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9182" -j REDIRECT --to-ports "9182"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9183" -j REDIRECT --to-ports "9183"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9184" -j REDIRECT --to-ports "9184"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9185" -j REDIRECT --to-ports "9185"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9186" -j REDIRECT --to-ports "9186"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9187" -j REDIRECT --to-ports "9187"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9188" -j REDIRECT --to-ports "9188"
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9189" -j REDIRECT --to-ports "9189"
+   fi
 
    ## Redirect remaining DNS traffic to DNS_PORT_WORKSTATION.
    ## Only user installed applications not configured to use a SocksPort are affected.
