@@ -404,14 +404,9 @@ for int_if_item in $INT_IF; do
          $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
       done
 
-      port_number_temp="9152"
-      while true; do
+      for port_number_temp in $(seq 9152 9189); do
          ## Redirect ports 9152-9189 prepared for user custom applications.
          $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$port_number_temp" -j REDIRECT --to-ports "$port_number_temp"
-         if [ "$port_number_temp" = "9189" ]; then
-            break
-         fi
-         port_number_temp="$(( port_number_temp + 1 ))"
       done
    fi
 
