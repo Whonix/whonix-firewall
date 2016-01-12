@@ -384,15 +384,8 @@ for int_tif_item in $INT_TIF; do
          $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "${!socks_port}" -j ACCEPT
       done
 
-      ## See /etc/tor/torrc for more comments.
-      ## Custom Ports #1:
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9159 -j ACCEPT
-      ## Custom Ports #2:
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9160:9169 -j ACCEPT
-      ## Custom Ports #3:
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9170:9179 -j ACCEPT
-      ## Custom Ports #4:
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9180:9189 -j ACCEPT
+      ## Accept ports 9152-9189 prepared for user custom applications. See /etc/tor/torrc for more comments.
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
    fi
 done
 
@@ -411,48 +404,15 @@ for int_if_item in $INT_IF; do
          $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
       done
 
-      ## Custom Ports #1:
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9152" -j REDIRECT --to-ports "9152"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9153" -j REDIRECT --to-ports "9153"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9154" -j REDIRECT --to-ports "9154"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9155" -j REDIRECT --to-ports "9155"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9156" -j REDIRECT --to-ports "9156"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9157" -j REDIRECT --to-ports "9157"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9158" -j REDIRECT --to-ports "9158"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9159" -j REDIRECT --to-ports "9159"
-      ## Custom Ports #2:
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9160" -j REDIRECT --to-ports "9160"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9161" -j REDIRECT --to-ports "9161"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9162" -j REDIRECT --to-ports "9162"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9163" -j REDIRECT --to-ports "9163"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9164" -j REDIRECT --to-ports "9164"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9165" -j REDIRECT --to-ports "9165"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9166" -j REDIRECT --to-ports "9166"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9167" -j REDIRECT --to-ports "9167"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9168" -j REDIRECT --to-ports "9168"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9169" -j REDIRECT --to-ports "9169"
-      ## Custom Ports #3:
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9170" -j REDIRECT --to-ports "9170"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9171" -j REDIRECT --to-ports "9171"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9172" -j REDIRECT --to-ports "9172"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9173" -j REDIRECT --to-ports "9173"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9174" -j REDIRECT --to-ports "9174"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9175" -j REDIRECT --to-ports "9175"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9176" -j REDIRECT --to-ports "9176"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9177" -j REDIRECT --to-ports "9177"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9178" -j REDIRECT --to-ports "9178"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9179" -j REDIRECT --to-ports "9179"
-      ## Custom Ports #4:
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9180" -j REDIRECT --to-ports "9180"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9181" -j REDIRECT --to-ports "9181"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9182" -j REDIRECT --to-ports "9182"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9183" -j REDIRECT --to-ports "9183"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9184" -j REDIRECT --to-ports "9184"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9185" -j REDIRECT --to-ports "9185"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9186" -j REDIRECT --to-ports "9186"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9187" -j REDIRECT --to-ports "9187"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9188" -j REDIRECT --to-ports "9188"
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "9189" -j REDIRECT --to-ports "9189"
+      port_number_temp="9152"
+      while true; do
+         ## Redirect ports 9152-9189 prepared for user custom applications.
+         $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$port_number_temp" -j REDIRECT --to-ports "$port_number_temp"
+         if [ "$port_number_temp" = "9189" ]; then
+            break
+         fi
+         port_number_temp="$(( port_number_temp + 1 ))"
+      done
    fi
 
    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
