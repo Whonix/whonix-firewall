@@ -418,7 +418,7 @@ for int_if_item in $INT_IF; do
 
    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
       ## Catch all remaining TCP and redirect to TransPort.
-      ## Only user installed applications not configured to use a SocksPort are affected
+      ## Only user installed applications not configured to use a SocksPort are affected.
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
    fi
 
