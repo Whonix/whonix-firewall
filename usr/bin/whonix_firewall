@@ -420,11 +420,11 @@ for int_if_item in $INT_IF; do
       ## Catch all remaining TCP and redirect to TransPort.
       ## Only user installed applications not configured to use a SocksPort are affected.
       $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
-   fi
 
-   ## Optionally restrict TransPort.
-   ## Replace above rule with a more restrictive one, e.g.:
-   #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
+      ## Optionally restrict TransPort.
+      ## Replace above rule with a more restrictive one, e.g.:
+      #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
+   fi
 done
 
 ## Log.
