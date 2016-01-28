@@ -212,7 +212,7 @@ fi
 ## Additional Socks Ports for per application circuits could be
 ## added here, but you would have to edit:
 ## - /etc/tor/torrc
-## - And "sudo service tor reload" afterwards.
+## - And "sudo service tor@default reload" afterwards.
 ## - /usr/bin/whonix_firewall
 ## - And issue "sudo /usr/bin/whonix_firewall" afterwards.
 
