@@ -30,7 +30,7 @@ trap "error_handler" ERR
 ###########################
 
 shopt -s nullglob
-for i in /etc/whonix_firewall.d/*.conf; do
+for i in /etc/whonix_firewall.d/*.conf /rw/config/whonix_firewall.d/*.conf; do
    bash_n_exit_code="0"
    bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
    if [ ! "$bash_n_exit_code" = "0" ]; then
