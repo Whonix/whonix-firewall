@@ -42,7 +42,7 @@ case "$1" in
                ## Resulted in: aTayYxVyw5kDo
                password="aTayYxVyw5kDo"
             fi
-         useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account"
+            useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account"
          fi
       done
 
