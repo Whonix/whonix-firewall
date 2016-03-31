@@ -83,6 +83,35 @@ echo "OK: ROOT_USER: $ROOT_USER"
 echo "OK: ROOT_USER: $TUNNEL_USER"
 
 ###########################
+## NO_NAT_USERS
+###########################
+
+## No NAT for clearnet user.
+NO_NAT_USERS+=" $CLEARNET_USER"
+
+## No NAT for user user.
+## DISABLED BY DEFAULT. For testing/debugging only.
+if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
+   NO_NAT_USERS+=" $USER_USER"
+fi
+
+## No NAT for root user.
+## DISABLED BY DEFAULT. For testing/debugging only.
+if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
+   NO_NAT_USERS+=" $ROOT_USER"
+fi
+
+## No NAT for Tor itself,
+## unless VPN_FIREWALL mode is enabled.
+if [ "$VPN_FIREWALL" = "1" ]; then
+   true
+else
+   NO_NAT_USERS+=" $TOR_USER"
+fi
+
+echo "OK: NO_NAT_USERS: $NO_NAT_USERS"
+
+###########################
 ## interfaces
 ###########################
 
@@ -484,27 +513,9 @@ if [ "$VPN_FIREWALL" = "1" ]; then
    $iptables_cmd -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
 fi
 
-## No NAT for Tor itself,
-## unless VPN_FIREWALL mode is enabled.
-## ENABLED BY DEFAULT.
-if [ ! "$VPN_FIREWALL" = "1" ]; then
-   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$TOR_USER" -j RETURN
-fi
-
-## No NAT for clearnet user.
-$iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j RETURN
-
-## No NAT for user user.
-## DISABLED BY DEFAULT. For testing/debugging only.
-if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
-   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$USER_USER" -j RETURN
-fi
-
-## No NAT for root user.
-## DISABLED BY DEFAULT. For testing/debugging only.
-if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
-   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$ROOT_USER" -j RETURN
-fi
+for no_nat_user in $NO_NAT_USERS ; do
+   $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$no_nat_user" -j RETURN
+done
 
 ## Redirect of Gateway DNS traffic to DNS_PORT_GATEWAY.
 ## DISABLED BY DEFAULT. default. Using SocksPort instead.
@@ -548,34 +559,9 @@ if [ "$VPN_FIREWALL" = "1" ]; then
    done
 fi
 
-## Tor is allowed to connect any outside target,
-## unless VPN_FIREWALL mode is enabled.
-## ENABLED BY DEFAULT.
-if [ ! "$VPN_FIREWALL" = "1" ]; then
-   $iptables_cmd -A OUTPUT -m owner --uid-owner "$TOR_USER" -j ACCEPT
-fi
-
-## Connections to VPN servers are allowed,
-## when VPN_FIREWALL mode is enabled.
-## DISABLED BY DEFAULT.
-if [ "$VPN_FIREWALL" = "1" ]; then
-   $iptables_cmd -A OUTPUT -m owner --uid-owner "$TUNNEL_USER" -j ACCEPT
-fi
-
-## clearnet user is allowed to connect any outside target.
-$iptables_cmd -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j ACCEPT
-
-## user user is allowed to connect any outside target.
-## DISABLED BY DEFAULT. For testing/debugging only.
-if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
-   $iptables_cmd -A OUTPUT -m owner --uid-owner "$USER_USER" -j ACCEPT
-fi
-
-## root user is allowed to connect any outside target.
-## DISABLED BY DEFAULT. For testing/debugging only.
-if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
-   $iptables_cmd -A OUTPUT -m owner --uid-owner "$ROOT_USER" -j ACCEPT
-fi
+for no_nat_user in $NO_NAT_USERS ; do
+   $iptables_cmd -A OUTPUT -m owner --uid-owner "$no_nat_user" -j ACCEPT
+done
 
 ## Log.
 #$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output4: "
