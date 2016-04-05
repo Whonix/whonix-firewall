@@ -413,7 +413,8 @@ for int_tif_item in $INT_TIF; do
          $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "${!socks_port}" -j ACCEPT
       done
 
-      ## Accept ports 9152-9189 prepared for user custom applications. See /etc/tor/torrc for more comments.
+      ## Accept ports 9152-9189 prepared for user custom applications.
+      ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
       $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
    fi
 done
