@@ -233,16 +233,18 @@ fi
 [ -n "$SOCKS_PORT_TBB_DEFAULT" ] || SOCKS_PORT_TBB_DEFAULT="9150"
 
 ## Adding more Socks Ports here should no longer be necessary.
-## There are already lots of custom ports prepared. If you need more
-## anyway, read below.
-## Please read:
+## There are already lots of custom ports prepared that you can use.
+## See documentation:
 ## https://www.whonix.org/wiki/Stream_Isolation
 ##
 ## Additional Socks Ports for per application circuits could be
 ## added here, but you would have to:
-## - edit /etc/tor/torrc
-## - And "sudo service tor@default reload" afterwards.
-## - edit /usr/bin/whonix_firewall
+## - Edit '/etc/tor/torrc' to add more 'SocksPort's.
+## - And 'sudo service tor@default reload' afterwards.
+## - Add more socks port variables to Whonix firewall configuration.
+##   (For example to '/etc/whonix_firewall.d/50_user.conf'.)
+##   Follow the 'SOCKS_PORT_...' naming scheme.
+##   (For example 'SOCKS_PORT_CUSTOM_ONE', 'SOCKS_PORT_CUSTOM_TWO', etc.)
 ## - And issue "sudo /usr/bin/whonix_firewall" afterwards.
 
 ###########################
