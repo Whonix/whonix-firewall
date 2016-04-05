@@ -239,10 +239,10 @@ fi
 ## https://www.whonix.org/wiki/Stream_Isolation
 ##
 ## Additional Socks Ports for per application circuits could be
-## added here, but you would have to edit:
-## - /etc/tor/torrc
+## added here, but you would have to:
+## - edit /etc/tor/torrc
 ## - And "sudo service tor@default reload" afterwards.
-## - /usr/bin/whonix_firewall
+## - edit /usr/bin/whonix_firewall
 ## - And issue "sudo /usr/bin/whonix_firewall" afterwards.
 
 socks_ports_list="$(compgen -v | grep SOCKS\_PORT\_)"
