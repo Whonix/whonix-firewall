@@ -245,6 +245,10 @@ fi
 ## - edit /usr/bin/whonix_firewall
 ## - And issue "sudo /usr/bin/whonix_firewall" afterwards.
 
+###########################
+## PREPARATION
+###########################
+
 socks_ports_list="$(compgen -v | grep SOCKS\_PORT\_)"
 
 ###########################
