@@ -1,3 +1,200 @@
+commit 5a80422a4330a2f38803198b9a1895e2f1778cd1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 5 16:34:01 2016 +0000
+
+    comments
+
+commit 0eb009b44abd1922575e4fa0d2a44c08d4afc425
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 5 16:28:52 2016 +0000
+
+    comment
+
+commit b5c6ec2d680eb8331dff8aae51a556d04aa52b2a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 5 16:27:12 2016 +0000
+
+    comment
+
+commit 769ba0797a4c600dca8bb90e6e6d28002e0433de
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Apr 5 16:25:46 2016 +0000
+
+    comment
+
+commit 39768229e24d42655e18f9db671806f867735695
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Mar 31 20:46:34 2016 +0000
+
+    made NO_NAT_USERS generic and configurable to aid I2PBOX development
+    
+    https://forums.whonix.org/t/i2p-running-on-whonix-gateway/2163/9
+
+commit 1a2ad0cf4f12a0c6b296d50642b9b5e64b779ff6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 11 00:59:31 2016 +0000
+
+    intent
+
+commit d6c1e0bc95257c81d8c2bcd3d0959b37e53211dd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 19 18:23:02 2016 +0100
+
+    also source /rw/config/whonix_firewall.d/
+    
+    https://forums.whonix.org/t/customizing-whonix-firewall-torified-dom0-upgrades/1356/14
+
+commit f0d7020b6d3511d781cb072b88d5a28b6657c5b9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 28 11:16:13 2016 +0100
+
+    comment
+
+commit a79484d1178b1e4d10043b1e0007079d06ebf2a9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 13 14:57:31 2016 +0100
+
+    comment
+
+commit 6f80dcbfc8c840b9982ee0c1141ba184d8db2c5a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 13 14:56:46 2016 +0100
+
+    minor
+
+commit 7ef15d52e4d61a80f82df0e02b0b3f3ba21c942d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 12 20:31:31 2016 +0100
+
+    refactoring
+    
+    Thanks to @marmarek for the suggestion!
+
+commit 14c6e5ad3c37022be1acaa19cc327969d46aef27
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 12 11:35:32 2016 +0100
+
+    further refactored / shrinked socks redirection rules
+    
+    https://phabricator.whonix.org/T465
+
+commit 34922d3831b6d0894ca22d16857bf3f5692aa754
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 16:39:05 2016 +0000
+
+    comments
+
+commit e6ed118ede2bd012f5b869cd4b864262472aa9a9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 10 15:53:18 2016 +0000
+
+    refactored / shrinked socks redirection rules
+    
+    https://phabricator.whonix.org/T465
+
+commit 7f5f65f6bf682a7f7df1df37976b8733f933f239
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 5 13:44:59 2016 +0000
+
+    included DispVM IP range
+    
+    Thanks to @marmarek for the suggestion!
+    
+    https://phabricator.whonix.org/T462
+
+commit c26d7395e1d0a6d03ffca320109869bdb5b383a7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 29 21:29:19 2015 +0100
+
+    when VPN_FIREWALL=1, allow user 'tunnel'; abolished VPN_SERVERS variable
+    
+    https://phabricator.whonix.org/T460
+
+commit 00724fd517e66fed0fb52051635aecb9f8e8dca3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 29 18:28:01 2015 +0100
+
+    create user 'tunnel'
+    
+    https://phabricator.whonix.org/T158
+
+commit 35c77c871c3ad449e82f53e2be5c789de8a8f1c7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 25 12:54:30 2015 +0100
+
+    comments
+
+commit 475ff8ae4e2c208146ff10b9de0ff954406bcac7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 9 19:04:05 2015 +0000
+
+    open reload Tor starter maximized by default in Konsole
+    
+    https://phabricator.whonix.org/T451
+
+commit 5e6e36a23cb8f273d5d7cbfce13fd7061d45377c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 1 21:40:27 2015 +0000
+
+    fixed config file parser if config folder does not exist
+
+commit bf855328b38194e2e09fcd51650bd487bb7a49c7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Nov 30 21:27:58 2015 +0000
+
+    Only source configuration files that end with the '.conf' extension.
+    
+    Thanks to @nrgaway for the suggestion!
+    
+    https://phabricator.whonix.org/T286
+
+commit eafa4a9f7ec30b706597c88fccd22506691dfb69
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Nov 30 19:44:47 2015 +0000
+
+    Only source configuration files that end with the '.conf' extension.
+    
+    Thanks to @nrgaway for the suggestion!
+    
+    https://phabricator.whonix.org/T286
+
+commit a6f430d7bc8f8bf47c2eb3e2979fce3d3890d86e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Nov 22 23:41:35 2015 +0000
+
+    redirect tinyproxy traffic to 127.0.0.1 instead to qubes-netvm-gateway
+    
+    This saves one call 'qubesdb-read /qubes-netvm-gateway' and is more robust
+    in case of IP changes, hypothetical failure or strange output of that command.
+    
+    https://phabricator.whonix.org/T434
+
+commit 83779cac13877bc6f41bd8affba06bc7c6d1aa91
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Nov 22 22:24:05 2015 +0000
+
+    no longer hardcode eth0
+
+commit 11e30d99b5f866e3be73253fa5f1c11eb1165925
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Nov 22 22:22:47 2015 +0000
+
+    no longer depend on /var/run/qubes-service status files
+    
+    https://phabricator.whonix.org/T432
+
+commit dac74921a45d5cda93fecc0d59a1d6a6fa572c83
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Nov 22 22:14:46 2015 +0000
+
+    no longer hardcode vif+
+
+commit c8db3917b15c1f5bf57b36ad3623fc1b06257df3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 22 23:12:42 2015 +0000
+
+    bumped changelog version
+
 commit 38c7719a93158ac19647216dc19729301aed6f48
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Oct 12 11:45:06 2015 +0000
