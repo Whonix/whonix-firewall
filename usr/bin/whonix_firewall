@@ -89,6 +89,9 @@ echo "OK: ROOT_USER: $TUNNEL_USER"
 ## No NAT for clearnet user.
 NO_NAT_USERS+=" $CLEARNET_USER"
 
+## No NAT for tunnel user.
+NO_NAT_USERS+=" $TUNNEL_USER"
+
 ## No NAT for user user.
 ## DISABLED BY DEFAULT. For testing/debugging only.
 if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
