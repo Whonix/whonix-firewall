@@ -80,7 +80,7 @@ echo "OK: TOR_USER: $TOR_USER"
 echo "OK: CLEARNET_USER: $CLEARNET_USER"
 echo "OK: USER_USER: $USER_USER"
 echo "OK: ROOT_USER: $ROOT_USER"
-echo "OK: ROOT_USER: $TUNNEL_USER"
+echo "OK: TUNNEL_USER: $TUNNEL_USER"
 
 ###########################
 ## NO_NAT_USERS
