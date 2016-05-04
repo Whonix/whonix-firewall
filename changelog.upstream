@@ -1,3 +1,21 @@
+commit 724a0fc0546c83555a008cd1b7b03c048519121a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 30 18:35:49 2016 +0200
+
+    output
+
+commit 83e4f43bf29d594366926f9abb665a011815f4f3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 30 18:34:56 2016 +0200
+
+    No NAT for tunnel user.
+
+commit f5a57b6fd08e9cbd59747e06835a0a6f7831bf7e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 7 22:54:54 2016 +0000
+
+    bumped changelog version
+
 commit 5a80422a4330a2f38803198b9a1895e2f1778cd1
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Apr 5 16:34:01 2016 +0000
