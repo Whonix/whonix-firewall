@@ -325,6 +325,12 @@ if [ "$qubes_vm_type" = "NetVM" ] || [ "$qubes_vm_type" = "ProxyVM" ]; then
    ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
    $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
    $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
+
+   ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
+   if getent passwd vm-updates >/dev/null; then
+      $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
+      $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
+   fi
 fi
 
 if [ "$qubes_vm_type" = "TemplateVM" ]; then
