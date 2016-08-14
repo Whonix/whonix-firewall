@@ -1,0 +1,48 @@
+# This file is part of Qubes+Whonix.
+# Copyright (C) 2015 Jason Mehring <nrgaway@gmail.com>
+# Copyright (C) 2015 - 2016 Patrick Schleizer <adrelanos@riseup.net>
+# License: GPL-2+
+
+## On Whonix-Gateway or Whonix-Workstation (if /usr/share/anon-gw-base-files/gateway or
+## /usr/share/anon-ws-base-files/workstation exists), loads Whonix Firewall.
+##
+## (Does nothing inside Qubes TemplateVMs.)
+##
+## If loading Whonix Firewall fails, creates /var/run/anon-firewall/failed.status.
+
+[Unit]
+Description=Qubes-Whonix firewall loader
+
+DefaultDependencies=no
+
+Before=network-pre.target
+Wants=network-pre.target
+
+## Preventing race condition with
+## /etc/xdg/autostart/qubes-whonixsetup.desktop.
+## TODO:
+## Not the most efficient / clean solution.
+## https://phabricator.whonix.org/T424
+Before=qubes-gui-agent.service
+
+## For /etc/whonix_firewall.d and Qubes /rw/whonix_firewall.d.
+After=local-fs.target
+
+## Why is this needed?
+After=qubes-mount-dirs.service
+
+## Legacy.
+After=qubes-mount-home.service
+
+After=sysinit.target
+
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/anon-shared-helper-scripts/enable-firewall
+StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target
