@@ -14,7 +14,8 @@ Standards-Version: 3.9.6
 
 Package: whonix-gw-firewall
 Architecture: all
-Depends: iptables, sudo, konsole, anon-shared-helper-scripts, ${misc:Depends}
+Depends: systemd, iptables, sudo, konsole, anon-shared-helper-scripts,
+ ${misc:Depends}
 Conflicts: ufw
 Description: Whonix-Gateway's Firewall
  iptables rules script and firewall configuration file for Whonix-Gateway.
