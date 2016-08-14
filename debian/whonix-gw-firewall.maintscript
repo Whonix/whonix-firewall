@@ -1,1 +1,2 @@
 rm_conffile /etc/whonix_firewall.d/30_default
+rm_conffile /etc/network/if-pre-up.d/30_whonix_firewall
