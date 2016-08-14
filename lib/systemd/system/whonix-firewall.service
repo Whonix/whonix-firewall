@@ -11,7 +11,7 @@
 ## If loading Whonix Firewall fails, creates /var/run/anon-firewall/failed.status.
 
 [Unit]
-Description=Qubes-Whonix firewall loader
+Description=Whonix firewall loader
 
 DefaultDependencies=no
 
