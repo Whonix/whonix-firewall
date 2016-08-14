@@ -46,3 +46,6 @@ StandardOutput=syslog
 
 [Install]
 WantedBy=multi-user.target
+
+## Legacy.
+Alias=qubes-whonix-firewall.service
