@@ -14,10 +14,7 @@ Standards-Version: 3.9.6
 
 Package: whonix-gw-firewall
 Architecture: all
-## ifupdown, netbase are dependencies of whonix-gw-network-conf, that cannot
-## be added to whonix-gw-network-conf due to conflicts with chroot.
-Depends: iptables, sudo, whonix-gw-network-conf, ifupdown, netbase, konsole,
- anon-shared-helper-scripts, ${misc:Depends}
+Depends: iptables, sudo, konsole, anon-shared-helper-scripts, ${misc:Depends}
 Conflicts: ufw
 Description: Whonix-Gateway's Firewall
  iptables rules script and firewall configuration file for Whonix-Gateway.
