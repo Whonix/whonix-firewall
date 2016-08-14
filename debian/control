@@ -6,7 +6,7 @@ Source: whonix-gw-firewall
 Section: misc
 Priority: optional
 Maintainer: Patrick Schleizer <adrelanos@riseup.net>
-Build-Depends: debhelper (>= 9), faketime, genmkfile, ruby-ronn (>= 0.7.3)
+Build-Depends: debhelper (>= 9), faketime, genmkfile, ruby-ronn (>= 0.7.3), dh-systemd
 Homepage: https://github.com/Whonix/whonix-gw-firewall
 Vcs-Browser: https://github.com/Whonix/whonix-gw-firewall
 Vcs-Git: https://github.com/Whonix/whonix-gw-firewall.git
