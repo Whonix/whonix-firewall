@@ -45,6 +45,14 @@ source_config_folder() {
    done
 }
 
+restricted_mode_info() {
+   if [ "$firewall_mode" = "restricted" ]; then
+      echo "OK: First run during current boot, therefore running in restricted mode."
+   else
+      echo "OK: Consecutive run during current boot, therefore running in full mode."
+   fi
+}
+
 variables_defaults() {
    [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
    [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
@@ -57,6 +65,8 @@ variables_defaults() {
    [ -n "$USER_USER" ] || USER_USER="$(id -u user)"
    [ -n "$ROOT_USER" ] || ROOT_USER="$(id -u root)"
    [ -n "$TUNNEL_USER" ] || TUNNEL_USER="$(id -u tunnel)"
+   [ -n "$SDWDATE_USER" ] || SDWDATE_USER="$(id -u sdwdate)"
+   [ -n "$WHONIXCHECK_USER" ] || WHONIXCHECK_USER="$(id -u whonixcheck)"
 
    echo "OK: TOR_USER: $TOR_USER"
    echo "OK: CLEARNET_USER: $CLEARNET_USER"
@@ -257,6 +267,11 @@ ipv4_drop_invalid_incoming_packages() {
 }
 
 qubes() {
+   if [ "$firewall_mode" = "restricted" ]; then
+      true "restricted_mode, skipping rest of function $FUNCNAME"
+      return 0
+   fi
+
    if [ "$qubes_vm_type" = "NetVM" ] || [ "$qubes_vm_type" = "ProxyVM" ]; then
       ## Allow connections from port 8082 of internal vif interface for tinyproxy
       ## tinyproxy is responsible to handle TemplateVMs updates.
@@ -289,7 +304,7 @@ qubes() {
    fi
 }
 
-ipv4_input() {
+ipv4_input_rules() {
    ## Traffic on the loopback interface is accepted.
    $iptables_cmd -A INPUT -i lo -j ACCEPT
 
@@ -324,7 +339,14 @@ ipv4_input() {
       if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
          $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
       fi
+   done
 
+   if [ "$firewall_mode" = "restricted" ]; then
+      true "restricted_mode, skipping rest of function $FUNCNAME"
+      return 0
+   fi
+
+   for ext_if_item in $EXT_IF; do
       ## Allow incoming DIRPORT connections for an optional Tor relay.
       ## DISABLED BY DEFAULT.
       if [ "$GATEWAY_ALLOW_INCOMING_DIR_PORT" = "1" ]; then
@@ -419,7 +441,9 @@ ipv4_input() {
          #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
       fi
    done
+}
 
+ipv4_input_defaults() {
    ## Log.
    #$iptables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input4: "
 
@@ -475,51 +499,70 @@ ipv4_output() {
       $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$no_nat_user" -j RETURN
    done
 
-   ## Redirect of Gateway DNS traffic to DNS_PORT_GATEWAY.
-   ## DISABLED BY DEFAULT. default. Using SocksPort instead.
-   if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
-      $iptables_cmd -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_GATEWAY"
+   if [ "$firewall_mode" = "full" ]; then
+      ## Redirect of Gateway DNS traffic to DNS_PORT_GATEWAY.
+      ## DISABLED BY DEFAULT. default. Using SocksPort instead.
+      if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
+         $iptables_cmd -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_GATEWAY"
+      fi
    fi
 
-   ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor,
-   ## unless VPN_FIREWALL mode is enabled.
-   ## ENABLED BY DEFAULT.
-   if [ ! "$VPN_FIREWALL" = "1" ]; then
-      for NET in $NON_TOR_GATEWAY; do
-         $iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$NET" -j RETURN
-      done
+   if [ "$firewall_mode" = "full" ]; then
+      ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor,
+      ## unless VPN_FIREWALL mode is enabled.
+      ## ENABLED BY DEFAULT.
+      if [ ! "$VPN_FIREWALL" = "1" ]; then
+         for NET in $NON_TOR_GATEWAY; do
+            $iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$NET" -j RETURN
+         done
+      fi
    fi
 
-   ## Redirect all Gateway TCP traffic to TRANS_PORT_GATEWAY.
-   ## DISABLED BY DEFAULT. Using SocksPort instead.
-   if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
-      $iptables_cmd -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
+   if [ "$firewall_mode" = "full" ]; then
+      ## Redirect all Gateway TCP traffic to TRANS_PORT_GATEWAY.
+      ## DISABLED BY DEFAULT. Using SocksPort instead.
+      if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
+         $iptables_cmd -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
+      fi
    fi
 
    ## Existing connections are accepted.
    $iptables_cmd -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
 
-   ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
-   ## unless VPN_FIREWALL mode is enabled.
-   ## ENABLED BY DEFAULT.
-   if [ ! "$VPN_FIREWALL" = "1" ]; then
-      for NET in $NON_TOR_GATEWAY; do
-         $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
-      done
+   if [ "$firewall_mode" = "full" ]; then
+      ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
+      ## unless VPN_FIREWALL mode is enabled.
+      ## ENABLED BY DEFAULT.
+      if [ ! "$VPN_FIREWALL" = "1" ]; then
+         for NET in $NON_TOR_GATEWAY; do
+            $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
+         done
+      fi
    fi
 
-   ## Accept outgoing connections to local network,
-   ## when VPN_FIREWALL mode is enabled.
-   ## DISABLED BY DEFAULT.
-   if [ "$VPN_FIREWALL" = "1" ]; then
-      for NET in $LOCAL_NET; do
-         $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
-      done
+   if [ "$firewall_mode" = "full" ]; then
+      ## Accept outgoing connections to local network,
+      ## when VPN_FIREWALL mode is enabled.
+      ## DISABLED BY DEFAULT.
+      if [ "$VPN_FIREWALL" = "1" ]; then
+         for NET in $LOCAL_NET; do
+            $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
+         done
+      fi
    fi
 
    for no_nat_user in $NO_NAT_USERS ; do
       $iptables_cmd -A OUTPUT -m owner --uid-owner "$no_nat_user" -j ACCEPT
    done
+
+   if [ "$firewall_mode" = "restricted" ]; then
+      ## Allow sdwdate talking to localhost and Tor in Whonix firewall restricted mode.
+      ## Otherwise in Whonix firewall full mode this rule is redundant.
+      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+      $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+
+      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j ACCEPT
+   fi
 
    ## Log.
    #$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output4: "
@@ -567,6 +610,30 @@ status_files() {
    touch /var/run/whonix_firewall/first_run_current_boot.status
 }
 
+restricted_mode_detection() {
+   if [ ! "$firewall_mode" = "" ]; then
+      return 0
+   fi
+   ## Run Whonix firewall in full mode if sdwdate already succeeded.
+   if [ -e /var/run/sdwdate/first_success ]; then
+      firewall_mode=full
+      return 0
+   fi
+   if [ -e /var/run/sdwdate/success ]; then
+      firewall_mode=full
+      return 0
+   fi
+   ## /var/run/whonix_firewall/first_run_current_boot.status already exists,
+   ## therefore have Whonxi firewall run in full mode.
+   if [ -e /var/run/whonix_firewall/first_run_current_boot.status ]; then
+      firewall_mode=full
+      return 0
+   fi
+   ## /var/run/whonix_firewall/first_run_current_boot.status does not yet exist,
+   ## therefore return 'yes, restricted'.
+   firewall_mode=restricted
+}
+
 end() {
    echo "OK: The firewall should not show any messages,"
    echo "OK: besides output beginning with prefix OK:..."
@@ -577,12 +644,15 @@ end() {
 
 main() {
    init
+   restricted_mode_detection
+   restricted_mode_info
    variables_defaults
    ipv4_defaults
    ipv4_preparation
    ipv4_drop_invalid_incoming_packages
    qubes
-   ipv4_input
+   ipv4_input_rules
+   ipv4_input_defaults
    ipv4_forward
    ipv4_reject_invalid_outgoing_packages
    ipv4_output
