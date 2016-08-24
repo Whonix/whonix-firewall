@@ -9,6 +9,8 @@
 [Unit]
 Description=Whonix firewall sdwdate watcher
 
+ConditionPathExists=!/var/run/qubes/this-is-templatevm
+
 After=whonix-firewall.service
 After=sdwdate.service
 
