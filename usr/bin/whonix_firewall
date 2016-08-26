@@ -65,6 +65,8 @@ variables_defaults() {
    echo "OK: USER_USER: $USER_USER"
    echo "OK: ROOT_USER: $ROOT_USER"
    echo "OK: TUNNEL_USER: $TUNNEL_USER"
+   echo "OK: SDWDATE_USER: $SDWDATE_USER"
+   echo "OK: WHONIXCHECK_USER: $WHONIXCHECK_USER"
 
    ## No NAT for clearnet user.
    NO_NAT_USERS+=" $CLEARNET_USER"
