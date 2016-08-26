@@ -45,14 +45,6 @@ source_config_folder() {
    done
 }
 
-restricted_mode_info() {
-   if [ "$firewall_mode" = "restricted" ]; then
-      echo "OK: First run during current boot, therefore running in restricted mode."
-   else
-      echo "OK: Consecutive run during current boot, therefore running in full mode."
-   fi
-}
-
 variables_defaults() {
    [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
    [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
@@ -610,28 +602,47 @@ status_files() {
    touch /var/run/whonix_firewall/first_run_current_boot.status
 }
 
-restricted_mode_detection() {
+firewall_mode_detection() {
    if [ ! "$firewall_mode" = "" ]; then
-      return 0
+      echo "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
+      if [ "$firewall_mode" = "restricted" ]; then
+         echo "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
+         return 0
+      elif [ "$firewall_mode" = "full" ]; then
+         echo "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
+         echo "OK: (Full torified network access allowed.)"
+         return 0
+      else
+         echo "ERROR: firewall_mode must be set to either 'full' or 'restricted'."
+         error_handler
+      fi
    fi
+
    ## Run Whonix firewall in full mode if sdwdate already succeeded.
    if [ -e /var/run/sdwdate/first_success ]; then
       firewall_mode=full
-      return 0
-   fi
-   if [ -e /var/run/sdwdate/success ]; then
+      echo "OK: (/var/run/sdwdate/first_success exists.)"
+   elif [ -e /var/run/sdwdate/success ]; then
       firewall_mode=full
-      return 0
-   fi
+      echo "OK: (/var/run/sdwdate/success exists.)"
    ## /var/run/whonix_firewall/first_run_current_boot.status already exists,
    ## therefore have Whonxi firewall run in full mode.
-   if [ -e /var/run/whonix_firewall/first_run_current_boot.status ]; then
+   elif [ -e /var/run/whonix_firewall/first_run_current_boot.status ]; then
       firewall_mode=full
-      return 0
+      echo "OK: (/var/run/whonix_firewall/first_run_current_boot.status exists.)"
+   else
+      ## /var/run/whonix_firewall/first_run_current_boot.status does not yet exist,
+      ## therefore return 'yes, restricted'.
+      firewall_mode=restricted
    fi
-   ## /var/run/whonix_firewall/first_run_current_boot.status does not yet exist,
-   ## therefore return 'yes, restricted'.
-   firewall_mode=restricted
+
+   if [ "$firewall_mode" = "restricted" ]; then
+      echo "OK: First run during current boot, therefore running in restricted mode."
+      echo "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
+   else
+      echo "OK: Consecutive run during current boot, therefore running in full mode."
+      echo "OK: (Full torified network access allowed.)"
+   fi
 }
 
 end() {
@@ -644,8 +655,7 @@ end() {
 
 main() {
    init
-   restricted_mode_detection
-   restricted_mode_info
+   firewall_mode_detection
    variables_defaults
    ipv4_defaults
    ipv4_preparation
