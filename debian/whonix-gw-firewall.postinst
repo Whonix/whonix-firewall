@@ -20,7 +20,7 @@ case "$1" in
    configure)
       true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
-      user_account_list="clearnet tunnel"
+      user_account_list="clearnet tunnel user"
 
       for user_account in $user_account_list ; do
          ret="0"
