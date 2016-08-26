@@ -36,6 +36,7 @@ After=qubes-mount-home.service
 
 After=sysinit.target
 
+Before=shutdown.target
 Conflicts=shutdown.target
 
 [Service]
