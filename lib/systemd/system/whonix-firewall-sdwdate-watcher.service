@@ -4,7 +4,7 @@
 
 ## Restarts whonix-firewall when /var/run/sdwdate/first_success status file was
 ## created, i.e. when sdwdate succeeded so Whonix firewall will move from
-## restricted mode to full mode.
+## timesync-fail-closed mode to full mode.
 
 [Unit]
 Description=Whonix firewall sdwdate watcher
