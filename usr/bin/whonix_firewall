@@ -555,7 +555,7 @@ ipv4_output() {
       $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
       $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
 
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j ACCEPT
+      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
    fi
 
    ## Log.
