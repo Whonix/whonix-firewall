@@ -333,6 +333,11 @@ ipv4_input_rules() {
       if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
          $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
       fi
+
+      local local_port_to_open
+      for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
+         $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$local_port_to_open" -j ACCEPT
+      done
    done
 
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
