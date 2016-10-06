@@ -277,18 +277,22 @@ qubes() {
    fi
 
    if [ "$qubes_vm_type" = "NetVM" ] || [ "$qubes_vm_type" = "ProxyVM" ]; then
-      ## Allow connections from port 8082 of internal vif interface for tinyproxy
-      ## tinyproxy is responsible to handle TemplateVMs updates.
-      $iptables_cmd -A INPUT -i "$INT_IF" -p tcp -m tcp --dport 8082 -j ACCEPT
-      $iptables_cmd -A OUTPUT -o "$INT_IF" -p tcp -m tcp --sport 8082 -j ACCEPT
+      for int_if_item in $INT_IF; do
+          ## Allow connections from port 8082 of internal vif interface for tinyproxy
+          ## tinyproxy is responsible to handle TemplateVMs updates.
+          $iptables_cmd -A INPUT -i "$int_if_item" -p tcp -m tcp --dport 8082 -j ACCEPT
+          $iptables_cmd -A OUTPUT -o "$int_if_item" -p tcp -m tcp --sport 8082 -j ACCEPT
+      done
 
       ## Qubes pre-routing. Will be able to intercept traffic destined for
       ## 10.137.255.254 to be re-routed to tinyproxy.
       $iptables_cmd -t nat -N PR-QBS-SERVICES
       $iptables_cmd -t nat -A PREROUTING -j PR-QBS-SERVICES
 
-      ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
-      $iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i "$INT_IF" -p tcp -m tcp --dport 8082 -j REDIRECT
+      for int_if_item in $INT_IF; do
+          ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
+          $iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i "$int_if_item" -p tcp -m tcp --dport 8082 -j REDIRECT
+      done
 
       ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
       ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
