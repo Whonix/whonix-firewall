@@ -301,11 +301,6 @@ qubes() {
          $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
       fi
    fi
-
-   if [ "$qubes_vm_type" = "TemplateVM" ]; then
-      ## Allow access to Qubes update proxy.
-      $iptables_cmd -A OUTPUT -o "$EXT_IF" -p tcp -m tcp --dport 8082 -j ACCEPT
-   fi
 }
 
 ipv4_input_rules() {
