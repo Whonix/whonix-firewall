@@ -449,11 +449,9 @@ ipv4_input_rules() {
    for int_if_item in $INT_IF; do
       ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
       if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
-         $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
+         $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
       fi
-   done
 
-   for int_if_item in $INT_IF; do
       if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
          for socks_port in $socks_ports_list; do
             true "$socks_port: ${!socks_port}"
