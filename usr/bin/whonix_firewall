@@ -160,6 +160,18 @@ variables_defaults() {
       fi
    fi
 
+   if [ "$WORKSTATION_DEST_SOCKSIFIED" = "" ]; then
+      ## 192.168.0.10  - Non-Qubes-Whonix-Gateway old IP
+      ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
+      ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
+      ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
+      WORKSTATION_DEST_SOCKSIFIED="\
+192.168.0.10,\
+10.152.152.10,\
+10.137.0.0/8,\
+10.138.0.0/8"
+   fi
+
    ## The following ports are used
    ## - here in /usr/bin/whonix_firewall (package: whonix-gw-firewall)
    ## - by Tor in /usr/share/tor/tor-service-defaults-torrc (package: anon-gw-anonymizer-config)
@@ -210,6 +222,12 @@ variables_defaults() {
    [ -n "$SOCKS_PORT_APTITUDE" ] || SOCKS_PORT_APTITUDE="9124"
    [ -n "$SOCKS_PORT_YUM" ] || SOCKS_PORT_YUM="9125"
    [ -n "$SOCKS_PORT_TBB_DEFAULT" ] || SOCKS_PORT_TBB_DEFAULT="9150"
+
+   ## For testing purposes only.
+   ## To test if prerouting redirection rules for socksified interfere with transparent torification.
+   ## https://phabricator.whonix.org/T462
+   #[ -n "$SOCKS_PORT_HTTP" ] || SOCKS_PORT_HTTP="80"
+   #[ -n "$SOCKS_PORT_SSL" ] || SOCKS_PORT_SSL="443"
 
    ## Adding more Socks Ports here should no longer be necessary.
    ## There are already lots of custom ports prepared that you can use.
@@ -424,12 +442,12 @@ ipv4_input_rules() {
          for socks_port in $socks_ports_list; do
             true "$socks_port: ${!socks_port}"
             ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
-            $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
+            $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
          done
 
          for port_number_temp in $(seq 9152 9189); do
             ## Redirect ports 9152-9189 prepared for user custom applications.
-            $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --dport "$port_number_temp" -j REDIRECT --to-ports "$port_number_temp"
+            $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$port_number_temp" -j REDIRECT --to-ports "$port_number_temp"
          done
       fi
 
