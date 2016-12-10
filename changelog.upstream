@@ -1,3 +1,294 @@
+commit 610474204b41fddfc6da4e42e3f9e134e15b4e56
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 7 23:02:21 2016 +0000
+
+    adjust for tor-controlport-filter
+    
+    https://phabricator.whonix.org/T573
+
+commit f7ee29c866d376d853140b0feea7e9e6b4446ce7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 7 19:28:48 2016 +0100
+
+    CONTROL_PORT_FILTER_PROXY_PORT="9051"
+    
+    https://phabricator.whonix.org/T573
+
+commit 44769385848f287dd663c1bdd05d6a7b5d2472b7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Nov 21 17:43:54 2016 +0000
+
+    readme
+
+commit 0b43f74331fec0b93b15bc4c463c745215fa824f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Oct 12 22:41:31 2016 +0000
+
+    refactoring; fix
+    
+    https://phabricator.whonix.org/T462
+
+commit f2dfc5c43cfe28a2b84b4543ee2f8eed07e7b4bd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Oct 12 22:32:39 2016 +0000
+
+    add sane built-in defaults even if config files are non-existing
+    
+    https://phabricator.whonix.org/T503
+
+commit e4e8d73af263364870ec7ee6853d689e707991a0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Oct 12 19:57:52 2016 +0200
+
+    limit prerouting rules for socks redirectionto gateway IPs
+    
+    to prevent interfering with transparent torification
+    
+    Thanks to bubblewap for the bug report and fix suggestions!
+    
+    https://phabricator.whonix.org/T462
+
+commit a5bc4b389083f7f7d78bc981209042ca59ba11cd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 6 17:45:56 2016 +0200
+
+    add multiple internal network interfaces for Qubes also
+
+commit 84c7523c3468fb1827e2c7f359db607e725d8b55
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 6 17:38:37 2016 +0200
+
+    remove partial Qubes TemplateVM support
+    
+    since we do not run Whonix firewall in Qubes TemplateVM
+    
+    and because Qubes TemplateVMs will be made non-networked in future
+
+commit 54a32ab11b2e9bc88b55f2cdc559cf402d470ee2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Sep 15 22:32:02 2016 +0000
+
+    add firewall mode to sdwdate log
+    
+    https://phabricator.whonix.org/T551
+
+commit c0ac966e2419e402b9daf6ce9e531b1a97197868
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Sep 11 17:57:48 2016 +0200
+
+    comments
+
+commit eca0acfa0cbc412d9794a1e9288e27f00fc130c5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Sep 11 17:45:53 2016 +0200
+
+    add configuration option to open external ports
+    
+    EXTERNAL_OPEN_PORTS+=" 22 "
+    EXTERNAL_OPEN_PORTS+=" 9050 "
+    
+    https://phabricator.whonix.org/T533
+
+commit e55b6213a4d284368a4d3736590f516b712a109e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Sep 9 14:26:18 2016 +0000
+
+    limit control-port-filter-python access in timesync-fail-closed mode to localhost
+    
+    https://phabricator.whonix.org/T533
+
+commit 4bf032818748398fdc830fb584346f1f820b51fb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Sep 5 16:52:43 2016 +0200
+
+    improved terminology restricted mode to timesync-fail-closed mode
+    
+    as suggested by @HulaHoopWhonix
+    
+    https://phabricator.whonix.org/T533
+
+commit 1f6c55e840a898741751614f166baf6bb1f5d0e7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 20:09:01 2016 +0000
+
+    whonix-firewall.service: Before=shutdown.target
+
+commit 057a01519c361561dad20e4c44f076cf1d18e702
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 20:03:24 2016 +0000
+
+    Create user sdwdate and whonxicheck so we do not have to depend on these packages.
+    
+    https://phabricator.whonix.org/T533
+
+commit 29e282fdb7c7ba1d8a9795c18793b0c198685979
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 20:00:55 2016 +0000
+
+    create user 'user' if not existing
+
+commit 6efdd73fe45f4cba98ca150d375409bc0a2adad2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 02:41:44 2016 +0000
+
+    output
+
+commit b9e7794931be0186825da7ea94717bfec88b6bc4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Aug 26 02:40:47 2016 +0000
+
+    improved firewall mode detection output; refactoring
+
+commit 52d91011594ee3842292cee3c2dc8202277e53af
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 24 21:36:10 2016 +0000
+
+    do not run whonix-firewall-sdwdate-watcher.service in Qubes TemplateVM
+
+commit 7ada53980cc74d260ecfb980714fcf93bc46cd70
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 24 21:24:44 2016 +0000
+
+    add whonix-firewall-sdwdate-watcher.service
+    
+    https://phabricator.whonix.org/T533
+
+commit 2fc16d8ac336f77df65e9eb9e5a26730f687c349
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 24 19:43:22 2016 +0000
+
+    iptables block network access until sdwdate succeeded
+    
+    for everything but sdwdate and whonixcheck
+    
+    https://phabricator.whonix.org/T533
+
+commit e9eaeb71bc85115ebba2121d550f0ddf4c8b4201
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 23 17:00:40 2016 +0000
+
+    create status files for first / consecutive runs
+    
+    https://phabricator.whonix.org/T533
+
+commit d88073538fa9e5dd14ac46cb7335151ccd3d3a7c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 23 16:40:53 2016 +0000
+
+    refactoring for 'iptables block network access until sdwdate succeeded'
+    
+    https://phabricator.whonix.org/T533
+
+commit 149525c6e4e76eff16984ba065e16544fd861b00
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 21:14:52 2016 +0000
+
+    depend on systemd
+
+commit 7024c181db5ffd09043a04fdd33a8723e35b2c06
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 20:48:51 2016 +0000
+
+    add networking.service system drop-in to refuse to bring up network on whonix-firewall.service failure
+
+commit 75ab4e3262c6e9ed1ad2ab2b7030b2e1691bcc64
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 20:15:56 2016 +0000
+
+    control-port-filter-python.service.d systemd drop-in file
+    
+    Workaround:
+    control-port-filter-python fails if it cannot bind on the network interface.
+    This is the case when networking did not come up, which is the case when
+    whonix-firewall.service failed. To make control-port-filter-python
+    automatically start after lets says Whonix firewall config was fixed and the
+    whonix-firewall.service was restarted.
+    
+    After=whonix-firewall.service
+    Requires=whonix-firewall.service
+
+commit 1d714f89ad6a5f9cebc9c6ed13554f6a5ce76d2b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 16:41:28 2016 +0000
+
+    systemd packaging
+
+commit f872fdb193e48337f13b4303988acf9d52c06e47
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 18:28:44 2016 +0200
+
+    removed /etc/network/if-pre-up.d/30_whonix_firewall
+    
+    because ported to systemd
+
+commit 9a048cf886774b413b598663bb40961f365b9c83
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 18:26:43 2016 +0200
+
+    comment
+
+commit 0f01fd38fa94c7e4b165ffc9dc072bef65666bcb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 18:25:34 2016 +0200
+
+    systemd legacy Alias=qubes-whonix-firewall.service
+
+commit c42f8b98106bfb1b902cda6c7224bbc57b0073c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 18:23:03 2016 +0200
+
+    import whonix-firewall.service from qubes-whonix package
+
+commit aedec3a6bc347e100e2071f06899202ce3c0caf3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 18:17:10 2016 +0200
+
+    fix dependencies
+    
+    Since issue "ifupdown, netbase are dependencies of whonix-gw-network-conf, that cannot
+    be added to whonix-gw-network-conf due to conflicts with chroot." was solved.
+    
+    Also no longer need to depend on whonix-(gw|ws)-network-conf since in future firewall
+    will be load using systemd service rather than /etc/network/pre-up.d.
+
+commit af4f22756d25df3af7335583cd89d92328c04655
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 14 16:23:52 2016 +0200
+
+    depend on anon-shared-helper-scripts for enable-firewall
+
+commit 0a859bbd33a0fbc92c86bf18c7d803421b83d9c1
+Merge: 46cc7d5 508780d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 20 14:16:58 2016 +0200
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 508780d252112b5e266c5494ee42f7bed76b18f9
+Merge: 46cc7d5 1422df2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jun 20 14:16:20 2016 +0200
+
+    Merge pull request #1 from rustybird/qubes-updates-cache
+    
+    qubes-updates-cache: Transparently torify squid traffic
+
+commit 1422df28b79acc37c7cba8001b6786772c9c71f1
+Author: Rusty Bird <rustybird@openmailbox.org>
+Date:   Sun Jun 19 10:48:40 2016 +0000
+
+    qubes-updates-cache: Transparently torify squid traffic
+    
+    qubes-updates-cache runs squid as user/group vm-updates. Eventually,
+    qubes-updates-proxy could be modified to run tinyproxy with the same
+    credentials so that only one ruleset is needed.
+
+commit 46cc7d5e81a138222f1eb3dc9aa3ca61785d3a7b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed May 4 22:07:38 2016 +0000
+
+    bumped changelog version
+
 commit 724a0fc0546c83555a008cd1b7b03c048519121a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Apr 30 18:35:49 2016 +0200
