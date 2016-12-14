@@ -34,7 +34,8 @@ After=qubes-mount-dirs.service
 ## Legacy.
 After=qubes-mount-home.service
 
-After=sysinit.target
+## For /var/run/qubes/this-is-* files.
+After=qubes-sysinit.target
 
 Before=shutdown.target
 Conflicts=shutdown.target
