@@ -1,3 +1,17 @@
+commit 536831da2aba2c7e31728f7624a7982762782de2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 14 21:06:11 2016 +0000
+
+    After=sysinit.target -> After=qubes-sysinit.target
+    
+    to prevent conflict with networking.service, which runs after before sysinit.target
+
+commit 6f3d4e2888fac90947d9899bd7004bcf9ae63c17
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Dec 10 02:38:26 2016 +0000
+
+    bumped changelog version
+
 commit 610474204b41fddfc6da4e42e3f9e134e15b4e56
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 23:02:21 2016 +0000
