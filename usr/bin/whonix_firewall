@@ -591,6 +591,9 @@ ipv4_output() {
       fi
    fi
 
+   ## TODO: temporary - https://phabricator.whonix.org/T533#10288
+   $iptables_cmd -A OUTPUT -m iprange --dst-range "127.0.0.1" -j ACCEPT
+
    for no_nat_user in $NO_NAT_USERS ; do
       $iptables_cmd -A OUTPUT -m owner --uid-owner "$no_nat_user" -j ACCEPT
    done
