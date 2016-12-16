@@ -1,3 +1,19 @@
+commit 829761e27c8fe058a4389e3af08f6675be22e2db
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 16 16:44:05 2016 +0000
+
+    temporary workaround for 127.0.0.1 connections issues
+    
+    to unbreak developers repository
+    
+    https://phabricator.whonix.org/T533#10288
+
+commit 67aaf37fdacaa83172b82802756dcc108be3119f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 16 16:19:09 2016 +0000
+
+    bumped changelog version
+
 commit 536831da2aba2c7e31728f7624a7982762782de2
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 14 21:06:11 2016 +0000
