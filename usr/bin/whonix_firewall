@@ -591,8 +591,21 @@ ipv4_output() {
       fi
    fi
 
-   ## TODO: temporary - https://phabricator.whonix.org/T533#10288
-   $iptables_cmd -A OUTPUT -m iprange --dst-range "127.0.0.1" -j ACCEPT
+   ## Prevent connections to Tor SocksPorts.
+   ## https://phabricator.whonix.org/T533#11025
+   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+      for socks_port in $socks_ports_list; do
+         true "$socks_port: ${!socks_port}"
+         if [ "$SOCKS_PORT_SDWDATE" = "${!socks_port}" ]; then
+            continue
+         fi
+         $iptables_cmd -A OUTPUT -p tcp --dport "${!socks_port}" --dst "127.0.0.1" -j REJECT
+      done
+   fi
+
+   ## Access to localhost is required even in timesync-fail-closed mode,
+   ## otherwise breaks applications such as konsole and kwrite.
+   $iptables_cmd -A OUTPUT -o lo -j ACCEPT
 
    for no_nat_user in $NO_NAT_USERS ; do
       $iptables_cmd -A OUTPUT -m owner --uid-owner "$no_nat_user" -j ACCEPT
