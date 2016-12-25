@@ -41,6 +41,7 @@ init() {
 
 source_config_folder() {
    shopt -s nullglob
+   local i
    for i in /etc/whonix_firewall.d/*.conf /rw/config/whonix_firewall.d/*.conf; do
       bash_n_exit_code="0"
       bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
@@ -311,6 +312,8 @@ qubes() {
    fi
 
    if [ "$qubes_vm_type" = "NetVM" ] || [ "$qubes_vm_type" = "ProxyVM" ]; then
+      local int_if_item
+
       for int_if_item in $INT_IF; do
           ## Allow connections from port 8082 of internal vif interface for tinyproxy
           ## tinyproxy is responsible to handle TemplateVMs updates.
@@ -363,6 +366,8 @@ ipv4_input_rules() {
       $iptables_cmd -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
    fi
 
+   local ext_if_item
+
    for ext_if_item in $EXT_IF; do
       ## Allow incoming SSH connections on the external interface.
       ## DISABLED BY DEFAULT. For testing/debugging only.
@@ -412,6 +417,9 @@ ipv4_input_rules() {
       ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
       #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
    done
+
+   local int_tif_item
+   local int_if_item
 
    for int_tif_item in $INT_TIF; do
       if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
@@ -535,6 +543,7 @@ ipv4_output() {
       $iptables_cmd -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
    fi
 
+   local no_nat_user
    for no_nat_user in $NO_NAT_USERS ; do
       $iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$no_nat_user" -j RETURN
    done
@@ -552,8 +561,9 @@ ipv4_output() {
       ## unless VPN_FIREWALL mode is enabled.
       ## ENABLED BY DEFAULT.
       if [ ! "$VPN_FIREWALL" = "1" ]; then
-         for NET in $NON_TOR_GATEWAY; do
-            $iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$NET" -j RETURN
+         local non_tor_gateway_item
+         for non_tor_gateway_item in $NON_TOR_GATEWAY; do
+            $iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j RETURN
          done
       fi
    fi
@@ -574,8 +584,8 @@ ipv4_output() {
       ## unless VPN_FIREWALL mode is enabled.
       ## ENABLED BY DEFAULT.
       if [ ! "$VPN_FIREWALL" = "1" ]; then
-         for NET in $NON_TOR_GATEWAY; do
-            $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
+         for non_tor_gateway_item in $NON_TOR_GATEWAY; do
+            $iptables_cmd -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j ACCEPT
          done
       fi
    fi
@@ -585,8 +595,9 @@ ipv4_output() {
       ## when VPN_FIREWALL mode is enabled.
       ## DISABLED BY DEFAULT.
       if [ "$VPN_FIREWALL" = "1" ]; then
-         for NET in $LOCAL_NET; do
-            $iptables_cmd -A OUTPUT -m iprange --dst-range "$NET" -j ACCEPT
+         local local_net_item
+         for local_net_item in $LOCAL_NET; do
+            $iptables_cmd -A OUTPUT -m iprange --dst-range "$local_net_item" -j ACCEPT
          done
       fi
    fi
@@ -594,12 +605,13 @@ ipv4_output() {
    ## Prevent connections to Tor SocksPorts.
    ## https://phabricator.whonix.org/T533#11025
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      for socks_port in $socks_ports_list; do
-         true "$socks_port: ${!socks_port}"
-         if [ "$SOCKS_PORT_SDWDATE" = "${!socks_port}" ]; then
+      local socks_port_item
+      for socks_port_item in $socks_ports_list; do
+         true "$socks_port_item: ${!socks_port_item}"
+         if [ "$SOCKS_PORT_SDWDATE" = "${!socks_port_item}" ]; then
             continue
          fi
-         $iptables_cmd -A OUTPUT -p tcp --dport "${!socks_port}" --dst "127.0.0.1" -j REJECT
+         $iptables_cmd -A OUTPUT -p tcp --dport "${!socks_port_item}" --dst "127.0.0.1" -j REJECT
       done
    fi
 
