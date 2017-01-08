@@ -44,7 +44,6 @@ Conflicts=shutdown.target
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/lib/anon-shared-helper-scripts/enable-firewall
-StandardOutput=syslog
 
 [Install]
 WantedBy=multi-user.target

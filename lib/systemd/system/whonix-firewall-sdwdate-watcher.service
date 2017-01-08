@@ -21,7 +21,6 @@ SuccessExitStatus=143
 KillMode=control-group
 
 ExecStart=/usr/lib/anon-shared-helper-scripts/firewall-restarter
-StandardOutput=syslog
 
 [Install]
 WantedBy=multi-user.target
