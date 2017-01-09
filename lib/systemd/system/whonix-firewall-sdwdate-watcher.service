@@ -8,6 +8,7 @@
 
 [Unit]
 Description=Whonix firewall sdwdate watcher
+Documentation=https://www.whonix.org/wiki/sdwdate
 
 ConditionPathExists=!/var/run/qubes/this-is-templatevm
 
