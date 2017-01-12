@@ -1,3 +1,49 @@
+commit 42177bc2b9a3b85d1515ab1d4b2328d193a21730
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 9 03:53:04 2017 +0000
+
+    add Documentation=
+    
+    to fix stretch lintian warning
+
+commit ab7e84dfa67808c3fbcf76d235c75347a0ca0fcc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 8 05:42:17 2017 +0000
+
+    StandardOutput=syslog
+
+commit 0dffa4f4b3b8850326fd963c621ba9ff9437083d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 25 02:49:36 2016 +0000
+
+    'local'ize more variables; improve variable names
+
+commit 00823a325d104e04d065fda8ae96992d1f90e184
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Dec 24 00:25:09 2016 +0100
+
+    Prevent connections to Tor SocksPorts in timesync-fail-closed mode.
+    
+    Access to localhost is required even in timesync-fail-closed mode, otherwise breaks applications such as konsole and kwrite.
+    
+    https://phabricator.whonix.org/T533#11025
+
+commit 19c9382868cc390a39d40da7e5c4465c2fcd6307
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Dec 18 16:28:27 2016 +0100
+
+    fix file location of tor-controlport-filter.d systemd dropin
+    
+    lib/systemd/system/tor-controlport-filter.d/30_whonix_cpfpy.conf
+    ->
+    lib/systemd/system/tor-controlport-filter.service.d/30_whonix_cpfpy.conf
+
+commit 3d53bb048fbc29cb0e51d6c3a97caeddad2db14c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 16 16:44:30 2016 +0000
+
+    bumped changelog version
+
 commit 829761e27c8fe058a4389e3af08f6675be22e2db
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Dec 16 16:44:05 2016 +0000
