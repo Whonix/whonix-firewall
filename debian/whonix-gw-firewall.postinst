@@ -21,8 +21,8 @@ case "$1" in
       true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
       ## Create user sdwdate and whonxicheck so we do not have to depend on these packages.
-      adduser --no-create-home --quiet --system --group whonixcheck || true
-      adduser --quiet --system --group sdwdate || true
+      adduser --home /nonexistent --quiet --system --group whonixcheck || true
+      adduser --home /nonexistent --quiet --system --group sdwdate || true
 
       user_account_list="clearnet tunnel user"
 
