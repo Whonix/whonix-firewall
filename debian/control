@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 9), faketime, genmkfile, ruby-ronn (>= 0.7.3), dh-s
 Homepage: https://github.com/Whonix/whonix-gw-firewall
 Vcs-Browser: https://github.com/Whonix/whonix-gw-firewall
 Vcs-Git: https://github.com/Whonix/whonix-gw-firewall.git
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 
 Package: whonix-gw-firewall
 Architecture: all
