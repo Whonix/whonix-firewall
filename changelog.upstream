@@ -1,3 +1,21 @@
+commit b353829add2cd22bd41ec0c3168bba145bbf2ecb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 07:52:29 2017 +0000
+
+    use --home /nonexistent to fix lintian warning
+
+commit d09fb2f99b64ef065c590e612038691176046aae
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 08:35:51 2017 +0100
+
+    packaging, bumped Standards-Version from 3.9.6 to 3.9.8 for jessie support
+
+commit 6b46b5409ef488276407fbfced672711423eea4f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Jan 12 02:58:33 2017 +0000
+
+    bumped changelog version
+
 commit 42177bc2b9a3b85d1515ab1d4b2328d193a21730
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jan 9 03:53:04 2017 +0000
