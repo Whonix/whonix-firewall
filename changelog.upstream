@@ -1,3 +1,15 @@
+commit 9bfb38caf2979678bcef7d7e5fb4b260be02bc7e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Feb 6 01:36:01 2017 +0000
+
+    add timestamp to sdwdate log
+
+commit a072920b2290e6d4e8e5fb01d8a72afa58c4f498
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jan 15 15:38:12 2017 +0000
+
+    bumped changelog version
+
 commit b353829add2cd22bd41ec0c3168bba145bbf2ecb
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 15 07:52:29 2017 +0000
