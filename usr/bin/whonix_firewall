@@ -678,9 +678,13 @@ status_files() {
    touch /var/run/whonix_firewall/first_run_current_boot.status
 }
 
+date_cmd(){
+   date -u +"%Y-%m-%d %T"
+}
+
 echo_and_sdwdate_log() {
    echo "$@"
-   echo "$0 $@" >> /var/log/sdwdate.log || true
+   echo "$(date_cmd) - $0 - $@" >> /var/log/sdwdate.log || true
 }
 
 firewall_mode_detection() {
