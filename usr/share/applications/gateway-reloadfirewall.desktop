@@ -4,7 +4,7 @@
 
 [Desktop Entry]
 Type=Application
-Exec=konsole --fullscreen -e /usr/lib/gateway-shortcuts/reloadfirewall
+Exec=/usr/lib/gateway-shortcuts/wrapper /usr/lib/gateway-shortcuts/reloadfirewall
 Name=Reload Firewall
 GenericName=Reload Whonix Firewall
 Comment=Reload Whonix Firewall using "sudo /usr/bin/whonix_firewall"
