@@ -6,8 +6,8 @@
 Type=Application
 Exec=/usr/lib/gateway-shortcuts/wrapper /usr/lib/gateway-shortcuts/reloadfirewall
 Name=Reload Firewall
-GenericName=Reload Whonix Firewall
-Comment=Reload Whonix Firewall using "sudo /usr/bin/whonix_firewall"
+GenericName=Reload Whonix-Gateway Firewall
+Comment=Reload Whonix-Gateway Firewall using "sudo /usr/bin/whonix_firewall"
 Categories=System
 Icon=/usr/share/icons/anon-icon-pack/quick_restart.ico
 Keywords=system;Whonix;firewall
