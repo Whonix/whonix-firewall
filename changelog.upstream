@@ -1,3 +1,41 @@
+commit c265cf24a91199c498786043c70354b57192c2c9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Feb 15 21:33:04 2017 +0000
+
+    output
+
+commit 01e4276204ba0c0cc51b33e44b2e35f07523109e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Feb 15 21:24:21 2017 +0000
+
+    fix starting gateway shortcuts in konsole whole screen in Qubes
+
+commit c191630e3886e78d09e4be3fbc0d9d27ad19b28c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 10 15:47:55 2017 +0000
+
+    remove faketime from Build-Depends:
+    
+    since no longer used for reproducible builds
+
+commit 0c341e90b128e76d6425f3478421ffb5a2abd226
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 10 15:35:33 2017 +0000
+
+    remove debian/gain-root-command workaround
+
+commit bb00a5acb05b3a480f02230c2746f3eb7220ca1a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Feb 10 15:26:55 2017 +0000
+
+    packaging simplification ruby-ronn (>= 0.7.3) -> ruby-ronn
+
+commit 28d1632d322d87ada083e6615cfa3bb6242f16dd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Feb 6 02:10:46 2017 +0000
+
+    bumped changelog version
+
 commit 9bfb38caf2979678bcef7d7e5fb4b260be02bc7e
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Feb 6 01:36:01 2017 +0000
