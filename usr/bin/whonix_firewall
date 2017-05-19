@@ -113,6 +113,15 @@ variables_defaults() {
       NO_NAT_USERS+=" $ROOT_USER"
    fi
 
+   ## Whonix-Gateway firewall does not support TUNNEL_FIREWALL_ENABLE=true yet.
+   ## It only supports VPN_FIREWALL="1".
+   ## In case someone confused this setting, i.e. using TUNNEL_FIREWALL_ENABLE=true
+   ## since this is how it is done on Whonix-Workstation, then gracefully enable
+   ## VPN_FIREWALL="1" to prevent users shooting their own feet.
+   if [ "$TUNNEL_FIREWALL_ENABLE" = "true" ]; then
+      VPN_FIREWALL="1"
+   fi
+
    ## No NAT for Tor itself,
    ## unless VPN_FIREWALL mode is enabled.
    if [ "$VPN_FIREWALL" = "1" ]; then
