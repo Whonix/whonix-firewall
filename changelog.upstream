@@ -1,3 +1,48 @@
+commit 3bb8493df9d98e47782b5a14584f36e2d79238c6
+Merge: dc7e553 99a0e1e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jul 21 13:56:10 2017 +0200
+
+    Merge remote-tracking branch 'origin/master'
+
+commit dc7e553f637ebfc4e0735438b830fea22663075b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri May 19 13:58:32 2017 +0200
+
+    Whonix-Gateway firewall does not support TUNNEL_FIREWALL_ENABLE=true yet.
+    It only supports VPN_FIREWALL="1".
+    In case someone confused this setting, i.e. using TUNNEL_FIREWALL_ENABLE=true
+    since this is how it is done on Whonix-Workstation, then gracefully enable
+    VPN_FIREWALL="1" to prevent users shooting their own feet.
+    
+    if [ "$TUNNEL_FIREWALL_ENABLE" = "true" ]; then
+       VPN_FIREWALL="1"
+    fi
+
+commit 99a0e1eb3ce3bd1728f12f673522d239b0a3d9f6
+Author: Jason J. Ayala P <jason@jasonayala.com>
+Date:   Tue Apr 25 22:03:26 2017 -0500
+
+    typo in comments
+
+commit 39778f60978a341eca5e771955da88e718f40ff9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Mar 30 03:19:09 2017 +0200
+
+    control-port-filter-python -> onion-grater
+
+commit 20710a42ecec89662e59873913612362cc400af6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Mar 30 03:13:45 2017 +0200
+
+    control-port-filter-python -> onion-grater
+
+commit 6511d52f68cfc762af70c5c82468f3ece0a7b003
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Mar 6 16:19:44 2017 +0000
+
+    bumped changelog version
+
 commit d22d9e0434cc171cc1668c6931186357ec41b414
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Mar 6 14:53:28 2017 +0000
