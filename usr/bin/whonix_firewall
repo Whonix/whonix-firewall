@@ -149,7 +149,7 @@ variables_defaults() {
 
    if [ "$NON_TOR_GATEWAY" = "" ]; then
       if [ -d "/usr/lib/qubes" ]; then
-         NON_TOR_GATEWAY="127.0.0.0-127.0.0.8"
+         NON_TOR_GATEWAY=""
       else
          ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
          NON_TOR_GATEWAY="\
@@ -347,6 +347,10 @@ qubes() {
          $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
          $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
       fi
+
+      ## https://github.com/QubesOS/qubes-issues/issues/3201#issuecomment-338646742
+      $iptables_cmd -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -d 127.0.0.1 --dport "${DNS_PORT_GATEWAY}" -j ACCEPT
+      $iptables_cmd -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -d 127.0.0.1 --dport "${TRANS_PORT_GATEWAY}" -j ACCEPT
    fi
 }
 
