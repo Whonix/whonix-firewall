@@ -1,3 +1,28 @@
+commit 7930706d0dd399fc4dc1dc5691f41a563b4ece4f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Oct 23 16:18:42 2017 +0200
+
+    - Qubes: NON_TOR_GATEWAY=""
+    - Qubes: allow user tinyproxy to connect to 127.0.0.1 9040 and 5300 where Tor is listening (required since we are now using NON_TOR_GATEWAY="")
+    
+    https://github.com/QubesOS/qubes-issues/issues/3201
+
+commit df422c5aea2baec365273d1b140f12872cbaf240
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Oct 21 13:08:04 2017 +0000
+
+    NON_TOR_GATEWAY="127.0.0.0-127.0.0.8"
+    
+    prevent sys-whonix from being able to access non-torified Qubes Updates Proxy
+    
+    https://github.com/QubesOS/qubes-issues/issues/3201
+
+commit 4930133bc78535794ad52b97f05277c269cb4052
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Sep 12 03:00:26 2017 +0200
+
+    bumped changelog version
+
 commit c4c82dc7daff4d880209b9073a82dcf2b5e8c015
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Sep 3 12:45:45 2017 +0000
