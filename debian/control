@@ -16,7 +16,7 @@ Package: whonix-firewall
 Architecture: all
 Replaces: whonix-gw-firewall, whonix-ws-firewall
 Depends: systemd, iptables, sudo, konsole, anon-shared-helper-scripts,
- ${misc:Depends}
+ anon-gw-base-files | anon-ws-base-files, ${misc:Depends}
 Conflicts: ufw
 Description: Whonix Firewall
  iptables rules script and firewall configuration file for Whonix-Gateway and
