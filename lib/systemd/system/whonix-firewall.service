@@ -12,7 +12,7 @@
 
 [Unit]
 Description=Whonix firewall loader
-Documentation=https://www.whonix.org/wiki/Whonix-Gateway_Firewall
+Documentation=https://www.whonix.org/wiki/Whonix_Firewall
 
 DefaultDependencies=no
 
