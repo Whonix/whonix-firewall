@@ -22,8 +22,8 @@ case "$1" in
 
       ## Create user sdwdate and whonxicheck so we do not have to depend on these packages.
       ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
-      adduser --home /nonexistent --quiet --system --group whonixcheck || true
-      adduser --home /nonexistent --quiet --system --group sdwdate || true
+      adduser --no-create-home --home /nonexistent --quiet --system --group whonixcheck || true
+      adduser --no-create-home --home /nonexistent --quiet --system --group sdwdate || true
       adduser --no-create-home --home /nonexistent --system --quiet --shell /bin/false updatesproxycheck
 
       if [ ! -f "/usr/share/anon-gw-base-files/gateway" ]; then
