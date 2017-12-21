@@ -18,7 +18,7 @@ Replaces: whonix-gw-firewall, whonix-ws-firewall
 Depends: systemd, iptables, sudo, konsole, anon-shared-helper-scripts, adduser,
  anon-gw-base-files | anon-ws-base-files, ${misc:Depends}
 Conflicts: ufw
-Description: Whonix Firewall
+Description: Firewall for Whonix-Gateway and Whonix-Workstation
  iptables rules script and firewall configuration file for Whonix-Gateway and
  Whonix-Workstation.
  .
