@@ -24,7 +24,7 @@ case "$1" in
       ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
       adduser --no-create-home --home /nonexistent --quiet --system --group whonixcheck || true
       adduser --no-create-home --home /nonexistent --quiet --system --group sdwdate || true
-      adduser --no-create-home --home /nonexistent --system --quiet --shell /bin/false updatesproxycheck
+      adduser --no-create-home --home /nonexistent --quiet --system --shell /bin/false updatesproxycheck
 
       if [ ! -f "/usr/share/anon-gw-base-files/gateway" ]; then
          user_account_list="clearnet tunnel user"
