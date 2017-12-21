@@ -10,9 +10,10 @@
 Description=Whonix firewall watcher
 Documentation=https://www.whonix.org/wiki/Whonix_Firewall
 
+Before=sdwdate.service
+Before=qubes-whonix-torified-updates-proxy-check.service
+
 After=whonix-firewall.service
-After=sdwdate.service
-After=qubes-whonix-torified-updates-proxy-check.service
 
 [Service]
 Type=simple
