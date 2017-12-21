@@ -6,4 +6,8 @@
 
 set -x
 
-kdesudo kwrite /etc/whonix_firewall.d/30_default.conf
+if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
+   kdesudo kwrite /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+else
+   kdesudo kwrite /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+fi
