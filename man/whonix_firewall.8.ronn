@@ -33,6 +33,28 @@ settings in `/etc/whonix_firewall.d/` configuration folder and did not restart.
 
 `sudo whonix_firewall`
 
+## WHONIX-WORKSTATION FIREWALL DESIGN NOTES
+
+* Whonix-Workstation Firewall is only a second, optional, extra firewall.
+* Whonix-Gateways Firewall is responsible for routing all traffic over Tor.
+* Whonix-Workstation Firewall is much less important than the
+  Whonix-Gateway Firewall.
+* Staying anonymous, is by Whonix design, not dependent on Whonix-Workstations
+  Firewall. You could drop this firewall at all and were still anonymous.
+  This was always and will always be that way for all Whonix versions.
+* Whonix-Workstation Firewall script provides only damage limitation.
+* Some additional security.
+* For example, if Tor on Whonix-Gateway were compromised through a
+  zero day exploit, it were harder to attack Whonix-Workstation, which might
+  contain confidential data.
+* When using multiple Whonix-Workstations on Non-Qubes-Whonix, this offers
+  some protection from attacks from compromised other Whonix-Workstations, see
+  Whonix Online Documentation, Advanced Security Guide for details.
+* Whonix-Workstation Firewall might also enhance the connectivity of certain
+  custom installed applications, because it rejects traffic, which is
+  not supported by Tor so or so, such as UDP and ICMP. For example, ping
+  will fail instantly (reject), instant of waiting for a timeout (drop).
+
 ## WWW
 
 https://www.whonix.org
