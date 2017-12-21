@@ -1,3 +1,285 @@
+commit 0bf4aac08642d40d09669ed3ed3b162407940ddb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:22:27 2017 +0000
+
+    readme
+
+commit 24f3d8c490f1e8ca07f6c49ce9781b7337ddabe0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:17:33 2017 +0000
+
+    Restart firewall when file /var/run/qubes-service/whonix-secure-proxy gets created.
+    
+    So blocking access to Qubes updates proxy for everyone but user updatesproxycheck ends.
+    
+    In other words, to allow full access to Qubes updates proxy.
+
+commit 972c62e492608862a93dc7828788babf3e9eb3d2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:16:04 2017 +0000
+
+    comment
+
+commit 2e6cac310f1b90ac5143e04e2855bd9678d2ec69
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:11:45 2017 +0000
+
+    renamed:    lib/systemd/system/whonix-firewall-watcher.service -> lib/systemd/system/whonix-firewall-restarter.service
+
+commit a949683b03ba1a16e25d4141c116dad7374351c9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:11:01 2017 +0000
+
+    adjust path
+
+commit ee032c80c17461a94c6b901684fe3c697db642ac
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:09:15 2017 +0000
+
+    import usr/lib/whonix-firewall/firewall-restarter from anon-shared-helper-scripts
+
+commit ff295cfd1343181783d2aa7533ca28d140af8f75
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 20:07:22 2017 +0000
+
+    renamed:    lib/systemd/system/whonix-firewall-sdwdate-watcher.service -> lib/systemd/system/whonix-firewall-watcher.service
+
+commit 2b667112dc5563f39bf6156f6535ae124767a92f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:45:32 2017 +0000
+
+    add usr/bin/whonix_firewall wrapper which starts appropriate firewall
+
+commit 4aa40a3ec1527d1d22fb937f59525e04983cf0a4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:35:31 2017 +0000
+
+    symlink man pages
+    
+    to fix lintian warning
+
+commit 82ffba5f557bfe587baa733951d2da3b69ba99db
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:34:15 2017 +0000
+
+    package description
+
+commit b53981e54bf59282ac5d3b01be2194907fc4991e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:33:00 2017 +0000
+
+    refactoring
+
+commit 771efcfb5ca05da880960c561a3cf4d600127466
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:25:11 2017 +0000
+
+    --group updatesproxycheck
+
+commit aafe971cd94210584520240ecd52d360bce337b1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:23:19 2017 +0000
+
+    shuffle
+
+commit f1a3c69c44bb0e7533a8b19ad30fb8a4b78397c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:22:42 2017 +0000
+
+    --no-create-home
+
+commit 42d9dce765bf69bfd65cd7451dc761576cfefa22
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:22:03 2017 +0000
+
+    fix lintian warning
+
+commit be761b8147759cfcc91e34036e51cae6e6c2cf05
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:20:17 2017 +0000
+
+    adjust debian/changelog for package rename to whonix-firewall
+
+commit 395b92300932f3d047650e5a09a9bc9fa404d795
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:15:25 2017 +0000
+
+    merge whonix-ws-firewall postinst
+
+commit 46be6f67ab45313ef6151737ca7127bb7907a8cb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:09:56 2017 +0000
+
+    Depends: anon-gw-base-files | anon-ws-base-files
+
+commit 9055a3376f137b3bafb6e014a7f7c6b1612a2d1a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:03:33 2017 +0000
+
+    package description
+
+commit 51198da1922c59b3ddc7ab42b43049c172e2c93c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 19:01:00 2017 +0000
+
+    import usr/share/whonix-ws-firewall/unit_tests/stream_isolation_test
+    
+    from whonix-ws-firewall package
+
+commit 70df752f37d484c0b555435d1780031e973935e0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:58:16 2017 +0000
+
+    adjust file names for merged whonix-gw-firewall / whonix-ws-firewall package
+
+commit 7db9919cc616225bdfd98854b3a938c0a2427868
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:56:51 2017 +0000
+
+    apply Whonix-Workstation config only on Whonix-Workstation firewall
+
+commit d9c5f2ac527d2daa4da615d0123e8c63b1046b6c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:55:20 2017 +0000
+
+    import etc/whonix_firewall.d/30_whonix_workstation_default.conf from whonix-ws-firewall package
+
+commit 102575d46f61e1e8e18d7b761ab6c242d2193323
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:53:48 2017 +0000
+
+    import usr/bin/whonix-workstation-firewall from whonix-ws-firewall package
+
+commit 5ee460a049ebc573937ca44f9f328aa35cc271d5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:52:41 2017 +0000
+
+    merge workstation firewall man page part
+
+commit f4ec5effc212ba025a463279839562a1b26bb4fd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:40:05 2017 +0000
+
+    comment
+
+commit dcf1988461a46de78f90d98d26a927befce4fe04
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:39:46 2017 +0000
+
+    comment
+
+commit f174338e4afc10f0190a925bdcbfa0ef16bfe139
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:37:54 2017 +0000
+
+    renamed:    usr/share/applications/gateway-firewall30default.desktop -> usr/share/applications/whonix-firewall30default.desktop
+    renamed:    usr/share/applications/gateway-firewall50user.desktop -> usr/share/applications/whonix-firewall50user.desktop
+    renamed:    usr/share/applications/gateway-reloadfirewall.desktop -> usr/share/applications/whonix-reloadfirewall.desktop
+
+commit 692dbd148a68a57860bc82a778fb320704598c54
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:36:39 2017 +0000
+
+    whonix-gw-firewall / whonix-ws-firewall merge fixes
+
+commit e95857dc6ba679e5e7415da30c8eb4cfdb5f7e18
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:33:51 2017 +0000
+
+    adjust paths
+
+commit fca2f1c77968ea46d18b7a935edd780c1689623a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:22:27 2017 +0000
+
+    adjust usr/lib/whonix-firewall/firewall30default for gw / ws merged firewall package
+
+commit c231158963c949273845d759b49ba597d6bf466f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:21:23 2017 +0000
+
+    comment
+
+commit b351de6c2041e532f13abbed0bd70b8170fb2e28
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:20:02 2017 +0000
+
+    renamed:    usr/lib/gateway-shortcuts/firewall30default -> usr/lib/whonix-firewall/firewall30default
+    renamed:    usr/lib/gateway-shortcuts/firewall50user -> usr/lib/whonix-firewall/firewall50user
+    renamed:    usr/lib/gateway-shortcuts/reloadfirewall -> usr/lib/whonix-firewall/reloadfirewall
+
+commit ae75056a502a39497057e2143dcd975bf25058c2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:18:26 2017 +0000
+
+    comment
+
+commit f336b45d58c360e24fbac1da20452e88380a1890
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:13:24 2017 +0000
+
+    renamed:    usr/share/lintian/overrides/whonix-gw-firewall -> usr/share/lintian/overrides/whonix-firewall
+
+commit d90a5fb1b4997e14f8457c4ddd02653d8ef78d76
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:12:48 2017 +0000
+
+    update lintian override for package rename to whonix-firewall
+
+commit 4718609b5d3d833e632d4f8ae8728be67e5b116f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:12:28 2017 +0000
+
+    update desktop shortcut comment
+
+commit 8a75166108ee9383a829f56c1f6a3bfd21f21fd6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:10:51 2017 +0000
+
+    adjust debian/watch to new whonix-firewall git url
+
+commit 135c3aaf4a7321006589566e41cad235971779e6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:10:44 2017 +0000
+
+    rm_conffile /etc/whonix_firewall.d/30_default.conf
+
+commit cb06243cb3d243e87bf68875aa8d30cdd48c1f96
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:09:03 2017 +0000
+
+    renamed:    30_default.conf -> 30_whonix_gateway_default.conf
+
+commit 7696e76174e271df2e191cf414adecde561e7ea1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:08:35 2017 +0000
+
+    apply Whonix-Gateway config only to Whonix-Gateway
+
+commit b5a83f1e9d6cec85f379211ade7ce2b2ecfe4b45
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:05:46 2017 +0000
+
+    renamed:    whonix_firewall -> whonix-gateway-firewall
+
+commit 41bc270e4bc2bcc5699fa0b57099799b91074db7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:04:46 2017 +0000
+
+    Replaces: whonix-gw-firewall, whonix-ws-firewall
+
+commit bd7a6014f4ac7155a49a424906d53d4c56bda57d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 18:04:08 2017 +0000
+
+    rename to whonix-firewall
+
+commit 7e20577427b5a5d38ce82993c04c647b12398f1b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 15 18:44:26 2017 +0000
+
+    bumped changelog version
+
 commit 50fc4ac8035b26917d91abdbafe39f690617f2d2
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Dec 2 19:23:56 2017 +0000
