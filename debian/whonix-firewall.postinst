@@ -21,8 +21,10 @@ case "$1" in
       true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
       ## Create user sdwdate and whonxicheck so we do not have to depend on these packages.
+      ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
       adduser --home /nonexistent --quiet --system --group whonixcheck || true
       adduser --home /nonexistent --quiet --system --group sdwdate || true
+      adduser --no-create-home --home /nonexistent --system --quiet --shell /bin/false updatesproxycheck
 
       if [ ! -f "/usr/share/anon-gw-base-files/gateway" ]; then
          user_account_list="clearnet tunnel user"
@@ -59,8 +61,6 @@ case "$1" in
             useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account"
          fi
       done
-
-      adduser --system --quiet --no-create-home --shell /bin/false updatesproxycheck
 
       true "INFO: End configuring $DPKG_MAINTSCRIPT_PACKAGE."
 
