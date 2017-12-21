@@ -1,2 +1,2 @@
 ## shipped by anon-gw-anonymizer-config
-whonix-firewall: desktop-command-not-in-package usr/share/applications/gateway-reloadfirewall.desktop usr/lib/gateway-shortcuts/wrapper
+whonix-firewall: desktop-command-not-in-package usr/share/applications/whonix-reloadfirewall.desktop usr/lib/anon-shared-helper-scripts/terminal-wrapper

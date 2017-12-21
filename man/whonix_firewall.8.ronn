@@ -1,4 +1,4 @@
-whonix_firewall(8) -- Whonix-Gateway Firewall
+whonix_firewall(8) -- Whonix Firewall
 =============================================
 
 <span class="comment">
