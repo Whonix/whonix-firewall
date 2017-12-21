@@ -1,0 +1,61 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2015 Patrick Schleizer <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+## Currently only useful for manual execution from within a
+## Qubes-Whonix-Workstation. (Otherwise out comment test using qubesdb-read.)
+
+set -x
+set -e
+set -o pipefail
+set -o errtrace
+
+error_handler() {
+   true "ERROR!"
+   exit 1
+}
+
+trap error_handler ERR
+
+if UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://127.0.0.1:9117 --tlsv1.2 --proto =https https://check.torproject.org ; then
+   true "FAILED!"
+   exit 1
+else
+   true "Failed as expected, ok."
+fi
+
+## No proxy settings at all, using "real" transparent proxying.
+## NOTE: Would fail if transparent proxying was disabled.
+ip_transparent="$(UWT_DEV_PASSTHROUGH=1 curl --fail --tlsv1.2 --proto =https https://check.torproject.org | grep IP)"
+
+## tests should should fail if transparent proxying is disabled
+#UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://10.152.152.12:9117 --tlsv1.2 --proto =https https://check.torproject.org | grep IP
+
+## Using usual uwt.
+ip_socksified_uwt="$(curl --fail --tlsv1.2 --proto =https https://check.torproject.org | grep IP)"
+
+ip_socksified_two="$(UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://$(qubesdb-read /qubes-gateway):9117 --tlsv1.2 --proto =https https://check.torproject.org | grep IP)"
+
+ip_socksified_three="$(UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://192.168.0.10:9117 --tlsv1.2 --proto =https https://check.torproject.org | grep IP)"
+
+ip_socksified_four="$(UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://10.152.152.10:9117 --tlsv1.2 --proto =https https://check.torproject.org | grep IP)"
+
+if [ "$ip_transparent" = "$ip_socksified_uwt" ]; then
+   true "Perhaps FAILED! (IP change could be due to Tor.) Try again."
+   exit 1
+fi
+if [ "$ip_transparent" = "$ip_socksified_two" ]; then
+   true "Perhaps FAILED! (IP change could be due to Tor.) Try again."
+   exit 1
+fi
+if [ "$ip_transparent" = "$ip_socksified_three" ]; then
+   true "Perhaps FAILED! (IP change could be due to Tor.) Try again."
+   exit 1
+fi
+if [ "$ip_transparent" = "$ip_socksified_four" ]; then
+   true "Perhaps FAILED! (IP change could be due to Tor.) Try again."
+   exit 1
+fi
+
+true done
