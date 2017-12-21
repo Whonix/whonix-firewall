@@ -22,7 +22,7 @@ case "$1" in
 
       user_account_list="clearnet tunnel notunnel whonixcheck sdwdate updatesproxycheck"
       for user_account in $user_account_list ; do
-         ## Create user sdwdate and whonxicheck so we do not have to depend on these packages.
+         ## Create users so we do not have to depend on these packages.
          ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
          adduser --no-create-home --home /nonexistent --quiet --system --user-group --shell /bin/false "$user_account"
       done
