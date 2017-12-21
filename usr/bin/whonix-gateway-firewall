@@ -704,7 +704,6 @@ firewall_mode_detection() {
          echo_and_sdwdate_log "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
          return 0
       elif [ "$firewall_mode" = "full" ]; then
-         echo_and_sdwdate_log "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
          echo_and_sdwdate_log "OK: (Full torified network access allowed.)"
          return 0
       else
