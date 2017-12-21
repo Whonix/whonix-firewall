@@ -8,6 +8,7 @@ set -x
 set -e
 
 ## inotifywait requires the folder to already exist.
+mkdir --parents /var/run/qubes-service
 mkdir --parents /var/run/sdwdate
 chown --recursive sdwdate:sdwdate /var/run/sdwdate
 
