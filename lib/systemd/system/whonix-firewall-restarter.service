@@ -7,10 +7,8 @@
 ## timesync-fail-closed mode to full mode.
 
 [Unit]
-Description=Whonix firewall sdwdate watcher
-Documentation=https://www.whonix.org/wiki/sdwdate
-
-ConditionPathExists=!/var/run/qubes/this-is-templatevm
+Description=Whonix firewall watcher
+Documentation=https://www.whonix.org/wiki/Whonix_Firewall
 
 After=whonix-firewall.service
 After=sdwdate.service
