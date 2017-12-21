@@ -21,7 +21,7 @@ Type=simple
 SuccessExitStatus=143
 KillMode=control-group
 
-ExecStart=/usr/lib/anon-shared-helper-scripts/firewall-restarter
+ExecStart=/usr/lib/whonix-firewall/firewall-restarter
 
 [Install]
 WantedBy=multi-user.target
