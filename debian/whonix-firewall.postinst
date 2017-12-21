@@ -24,7 +24,7 @@ case "$1" in
       for user_account in $user_account_list ; do
          ## Create users so we do not have to depend on these packages.
          ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
-         adduser --no-create-home --home /nonexistent --quiet --system --group --shell /bin/false "$user_account"
+         adduser --no-create-home --home /nonexistent --quiet --system --group --shell /bin/false "$user_account" || true
       done
 
       user_account_list="user"
@@ -51,7 +51,7 @@ case "$1" in
                ## Resulted in: aTayYxVyw5kDo
                password="aTayYxVyw5kDo"
             fi
-            useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account"
+            useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account" || true
          fi
       done
 
