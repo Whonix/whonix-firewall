@@ -1,8 +1,9 @@
-# Whonix-Gateway's Firewall #
+# Firewall for Whonix-Gateway and Whonix-Workstation #
 
-iptables rules script and firewall configuration file for Whonix-Gateway.
+iptables rules script and firewall configuration file for Whonix-Gateway and
+Whonix-Workstation.
 
-Features:
+Whonix-Gateway Firewall Features:
 - transparent proxying
 - stream isolation
 - reject invalid packages
