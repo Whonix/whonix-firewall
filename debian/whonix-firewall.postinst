@@ -24,7 +24,14 @@ case "$1" in
       adduser --home /nonexistent --quiet --system --group whonixcheck || true
       adduser --home /nonexistent --quiet --system --group sdwdate || true
 
-      user_account_list="clearnet tunnel user"
+      if [ ! -f "/usr/share/anon-gw-base-files/gateway" ]; then
+         user_account_list="clearnet tunnel user"
+      elif [ ! -f "/usr/share/anon-ws-base-files/workstation" ]; then
+         user_account_list="tunnel notunnel"
+      else
+         echo "ERROR: Neither file /usr/share/anon-gw-base-files/gateway nor file /usr/share/anon-ws-base-files/workstation exists! If this is a Whonix-Gateway, package anon-gw-base-files needs to be installed. If this is a Whonix-Workstation, package anon-ws-base-files needs to be installed." >&2
+         exit 1
+      fi
 
       for user_account in $user_account_list ; do
          ret="0"
@@ -35,8 +42,11 @@ case "$1" in
          else
             echo "INFO: Creating user '$user_account'..."
             if command -v qubesdb-read >/dev/null 2>&1 ; then
+               ## Qubes-Whonix
+               ## Qubes does by upstream default not use linux user account passwords.
                password=""
             else
+               ## Non-Qubes-Whonix
                ## setting password of user $user_account to changeme
                ##
                ## How this password was created:
@@ -49,6 +59,8 @@ case "$1" in
             useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account"
          fi
       done
+
+      adduser --system --quiet --no-create-home --shell /bin/false updatesproxycheck
 
       true "INFO: End configuring $DPKG_MAINTSCRIPT_PACKAGE."
 
