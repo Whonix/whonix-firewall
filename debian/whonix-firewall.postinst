@@ -20,21 +20,14 @@ case "$1" in
    configure)
       true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
-      ## Create user sdwdate and whonxicheck so we do not have to depend on these packages.
-      ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
-      adduser --no-create-home --home /nonexistent --quiet --system --group whonixcheck || true
-      adduser --no-create-home --home /nonexistent --quiet --system --group sdwdate || true
-      adduser --no-create-home --home /nonexistent --quiet --system --group updatesproxycheck --shell /bin/false updatesproxycheck
+      user_account_list="clearnet tunnel notunnel whonixcheck sdwdate updatesproxycheck"
+      for user_account in $user_account_list ; do
+         ## Create user sdwdate and whonxicheck so we do not have to depend on these packages.
+         ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
+         adduser --no-create-home --home /nonexistent --quiet --system --user-group --shell /bin/false "$user_account"
+      done
 
-      if [ ! -f "/usr/share/anon-gw-base-files/gateway" ]; then
-         user_account_list="clearnet tunnel user"
-      elif [ ! -f "/usr/share/anon-ws-base-files/workstation" ]; then
-         user_account_list="tunnel notunnel"
-      else
-         echo "ERROR: Neither file /usr/share/anon-gw-base-files/gateway nor file /usr/share/anon-ws-base-files/workstation exists! If this is a Whonix-Gateway, package anon-gw-base-files needs to be installed. If this is a Whonix-Workstation, package anon-ws-base-files needs to be installed." >&2
-         exit 1
-      fi
-
+      user_account_list="user"
       for user_account in $user_account_list ; do
          ret="0"
          id "$user_account" || { ret="$?" ; true; };
