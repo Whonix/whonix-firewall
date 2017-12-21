@@ -1,3 +1,39 @@
+commit 821c49b7279d8a2e11154581a48f97d14d5facec
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 23:25:37 2017 +0000
+
+    fix firewall-restarter race condition
+
+commit 287b7e41ee4ec2741e9a6f772ac1fc53ebb6a1d8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 23:24:19 2017 +0000
+
+    fix firewall-restarter race condition
+
+commit c88a7ad31808898897c8fa4d46330193d48df6f0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 23:10:00 2017 +0000
+
+    After=qubes-whonix-torified-updates-proxy-check.service
+
+commit 4516d231699119ba839b84f499d019e11e53b6b4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 22:43:42 2017 +0000
+
+    mkdir --parents /var/run/qubes-service
+
+commit 7b7b84007bebd23ebe529931bb785163a3278f6f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 22:41:51 2017 +0000
+
+    run Whonix Firewall Restarter also in Qubes TemplateVM
+
+commit 6b97204bf047f14376445c4eb333c33120c590d6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 22:20:48 2017 +0000
+
+    bumped changelog version
+
 commit d9216c6860419f0bf507192a1f686f7971ef62e2
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 22:20:40 2017 +0000
