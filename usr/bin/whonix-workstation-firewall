@@ -80,8 +80,9 @@ variables_defaults() {
    [ -n "$INT_IF" ] || INT_IF="eth1"
 
    if [ -d "/usr/lib/qubes" ]; then
-      ## Would fail if netvm is set to 'none'.
-      [ -n "$GATEWAY_IP" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway)"
+      ## Would fail if netvm is set to 'none',
+      ## which is the case in Qubes R4 TemplateVMs.
+      [ -n "$GATEWAY_IP" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2>/dev/null)" || GATEWAY_IP="127.0.0.1"
    else
       [ -n "$GATEWAY_IP" ] || GATEWAY_IP="10.152.152.10"
    fi
@@ -205,12 +206,15 @@ qubes_dns() {
    local counter
    counter=0
 
-   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns)" ; then
+   ## Using '2>/dev/null' because 'qubesdb-read' DNS would fail in Qubes R4
+   ## TemplateVMs, because these are non-networked by default.
+
+   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns GATEWAY_IP 2>/dev/null)" ; then
       $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_primary_dns" -j ACCEPT
       counter=$(( counter + 1 ))
    fi
 
-   if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns)" ; then
+   if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns 2>/dev/null)" ; then
       $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_secondary_dns" -j ACCEPT
       counter=$(( counter + 1 ))
    fi
@@ -218,7 +222,7 @@ qubes_dns() {
    if [ "$counter" -ge "2" ]; then
       echo "OK: Qubes DNS firewall rules ok."
    else
-      echo "INFO: Small(!) issue. Qubes DNS firewall fallback rules active. Please report this."
+      echo "INFO: The following message should be disregarded in TemplateVMs in Qubes R4 or above: Small(!) issue. Qubes DNS firewall fallback rules active. Please report this."
       $iptables_cmd -A OUTPUT -p udp --dport 53 -j ACCEPT
    fi
 }
