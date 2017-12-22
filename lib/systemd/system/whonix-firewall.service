@@ -44,7 +44,7 @@ Conflicts=shutdown.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/lib/anon-shared-helper-scripts/enable-firewall
+ExecStart=/usr/lib/whonix-firewall/enable-firewall
 
 [Install]
 WantedBy=multi-user.target

@@ -1,0 +1,81 @@
+#!/bin/bash -e
+# vim: set ts=4 sw=4 sts=4 et :
+#
+# enable-firewall - Called by systemd to setup a proper firewall for
+#                   Whonix-Gateway or Whonix-Workstation.
+#
+# This file is part of Qubes+Whonix.
+# Copyright (C) 2014 - 2015 Jason Mehring <nrgaway@gmail.com>
+# Copyright (C) 2014 - 2016 Patrick Schleizer <adrelanos@riseup.net>
+# License: GPL-2+
+# Authors: Jason Mehring
+# Authors: Patrick Schleizer
+#
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License
+#   as published by the Free Software Foundation; either version 2
+#   of the License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
+[ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
+
+failed_status_file_create() {
+   mkdir -p /var/run/anon-firewall || true
+   touch /var/run/anon-firewall/failed.status || true
+
+   ## Legacy.
+   ## mkdir should not be required for Qubes-Whonix, just as a defensive action.
+   ## mkdir is required for simpler Non-Qubes-Whonix code.
+   mkdir -p /var/run/qubes-service || true
+   touch /var/run/qubes-service/whonix-firewall-failed || true
+}
+
+firewall_lockdown() {
+   ## Set secure defaults.
+   $iptables_cmd -P INPUT DROP
+   $iptables_cmd -P FORWARD DROP
+   $iptables_cmd -P OUTPUT DROP
+
+   ## Flush old rules.
+   $iptables_cmd -F
+   $iptables_cmd -X
+   $iptables_cmd -t nat -F
+   $iptables_cmd -t nat -X
+   $iptables_cmd -t mangle -F
+   $iptables_cmd -t mangle -X
+   $iptables_cmd -t raw -F
+   $iptables_cmd -t raw -X
+
+   ## Set secure defaults.
+   $ip6tables_cmd -P INPUT DROP
+   $ip6tables_cmd -P OUTPUT DROP
+   $ip6tables_cmd -P FORWARD DROP
+
+   ## Flush old rules.
+   $ip6tables_cmd -F
+   $ip6tables_cmd -X
+   $ip6tables_cmd -t mangle -F
+   $ip6tables_cmd -t mangle -X
+   $ip6tables_cmd -t raw -F
+   $ip6tables_cmd -t raw -X
+}
+
+on_failure() {
+   failed_status_file_create
+   firewall_lockdown || true
+   exit 1
+}
+
+if [ -e /usr/share/anon-gw-base-files/gateway ] || [ -e /usr/share/anon-ws-base-files/workstation ]; then
+    /usr/bin/whonix_firewall || on_failure
+else
+    on_failure
+fi
