@@ -1,3 +1,21 @@
+commit 782e716088bb92c5374f7ec3056a392628ac7777
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 22 00:48:46 2017 +0000
+
+    import enable-firewall script from anon-shared-helper scripts
+
+commit 707be4fb6f03c6a18f17b50460d1bc0040906e3c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 22 00:45:47 2017 +0000
+
+    Qubes R4 TemplateVM compatibility fixes
+
+commit cdbeb9cfadfe1792406242bb0e142ad97ec098c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 21 23:26:28 2017 +0000
+
+    bumped changelog version
+
 commit 821c49b7279d8a2e11154581a48f97d14d5facec
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 23:25:37 2017 +0000
