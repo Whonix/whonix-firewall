@@ -259,7 +259,7 @@ variables_defaults() {
    ##
    ## Additional Socks Ports for per application circuits could be
    ## added here, but you would have to:
-   ## - Edit '/usr/local/etc/torrc.d/50_user.torrc' to add more 'SocksPort's.
+   ## - Edit '/usr/local/etc/torrc.d/50_user.conf' to add more 'SocksPort's.
    ## - And 'sudo service tor@default reload' afterwards.
    ## - Add more socks port variables to Whonix firewall configuration.
    ##   (For example to '/etc/whonix_firewall.d/50_user.conf'.)
