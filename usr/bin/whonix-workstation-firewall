@@ -86,6 +86,9 @@ variables_defaults() {
       [ -n "$GATEWAY_IP" ] || GATEWAY_IP="10.152.152.10"
    fi
 
+   ## Since hardcoded in anon-ws-disable-stacked-tor.
+   [ -n "$GATEWAY_IP_HARDCODED" ] || GATEWAY_IP_HARDCODED="10.152.152.10"
+
    [ -n "$TUNNEL_USER" ] || TUNNEL_USER="$(id -u tunnel)"
    [ -n "$NOTUNNEL_USER" ] || NOTUNNEL_USER="$(id -u notunnel)"
    [ -n "$UPDATESPROXYCHECK_USER" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)"
@@ -361,11 +364,13 @@ ipv4_output() {
       if [ "$TUNNEL_FIREWALL_ALLOW_SDWDATE_USER" = "true" ]; then
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
       fi
 
       if [ "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" = "true" ]; then
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
       fi
 
       ## Accept outgoing connections to local network.
@@ -383,6 +388,7 @@ ipv4_output() {
       if [ "$TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY" = "true" ]; then
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
       fi
 
       if [ "$TUNNEL_FIREWALL_ALLOW_TB_UPDATER" = "true" ]; then
@@ -392,6 +398,7 @@ ipv4_output() {
             local socks_port_tbb
             for socks_port_tbb in $SOCKS_PORT_TBB_DOWNLOAD $SOCKS_PORT_TBB_GPG ; do
                $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_tbb" --dst "$GATEWAY_IP" -j ACCEPT
+               $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_tbb" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
             done
          fi
       fi
@@ -402,6 +409,7 @@ ipv4_output() {
          else
             $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
             $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+            $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
          fi
       fi
    else
@@ -411,6 +419,7 @@ ipv4_output() {
          true "firewall_mode is $firewall_mode, therefore allowing DNS traffic."
          ## Allow Whonix-Workstation to query Whonix-Gateway for DNS.
          $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
          if [ -d "/usr/lib/qubes" ]; then
             qubes_dns
          fi
@@ -442,12 +451,15 @@ ipv4_output() {
          ## Otherwise in Whonix firewall full mode this rule is redundant.
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
 
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
 
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
       else
          true "firewall_mode is $firewall_mode, therefore allowing all outgoing traffic."
          ## Allow full outgoing connection but no incoming stuff.
