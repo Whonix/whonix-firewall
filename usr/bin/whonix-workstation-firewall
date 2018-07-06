@@ -208,7 +208,7 @@ qubes_dns() {
    ## Using '2>/dev/null' because 'qubesdb-read' DNS would fail in Qubes R4
    ## TemplateVMs, because these are non-networked by default.
 
-   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns GATEWAY_IP 2>/dev/null)" ; then
+   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns 2>/dev/null)" ; then
       $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_primary_dns" -j ACCEPT
       counter=$(( counter + 1 ))
    fi
