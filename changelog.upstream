@@ -1,3 +1,27 @@
+commit c82a3493886ee3baeb42c827ed0856552a0824bf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 9 15:03:49 2018 +0000
+
+    fix comment typo
+
+commit de9c66dfad7bd80a3912fd3c037dfb94444b7a6f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 5 07:00:39 2018 +0000
+
+    remove dependency on konsole
+
+commit c13f3c4b575c1c1cac40cb2a3a83fd083ee57995
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Aug 5 14:28:16 2018 +0800
+
+    fix, don't hardcode kwrite, use xdg-open
+
+commit 86f341c6cbb4037c9d9055fd959251cf930d50ee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jul 6 06:59:58 2018 +0000
+
+    bumped changelog version
+
 commit b24bfdc11bce0e34a5a683824f32e05aadebefe3
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jul 6 06:56:06 2018 +0000
