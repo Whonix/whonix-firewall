@@ -35,7 +35,6 @@ settings in `/etc/whonix_firewall.d/` configuration folder and did not restart.
 
 ## WHONIX-WORKSTATION FIREWALL DESIGN NOTES
 
-* Whonix-Workstation Firewall is only a second, optional, extra firewall.
 * Whonix-Gateways Firewall is responsible for routing all traffic over Tor.
 * Whonix-Workstation Firewall is much less important than the
   Whonix-Gateway Firewall.
@@ -49,7 +48,7 @@ settings in `/etc/whonix_firewall.d/` configuration folder and did not restart.
   contain confidential data.
 * When using multiple Whonix-Workstations on Non-Qubes-Whonix, this offers
   some protection from attacks from compromised other Whonix-Workstations, see
-  Whonix Online Documentation, Advanced Security Guide for details.
+  https://www.whonix.org/wiki/Multiple_Whonix-Workstations for details.
 * Whonix-Workstation Firewall might also enhance the connectivity of certain
   custom installed applications, because it rejects traffic, which is
   not supported by Tor so or so, such as UDP and ICMP. For example, ping
