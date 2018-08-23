@@ -132,7 +132,7 @@ variables_defaults() {
 
    echo "OK: NO_NAT_USERS: $NO_NAT_USERS"
 
-   if [ -d "/usr/lib/qubes" ]; then
+   if command -v "qubesdb-read" >/dev/null 2>&1 ; then
       [ -n "$qubes_vm_type" ] || qubes_vm_type="$(qubesdb-read /qubes-vm-type)"
       [ -n "$INT_IF" ] || INT_IF="vif+"
       [ -n "$INT_TIF" ] || INT_TIF="vif+"
@@ -148,7 +148,7 @@ variables_defaults() {
    [ -n "$INT_TIF" ] || INT_TIF="eth1"
 
    if [ "$NON_TOR_GATEWAY" = "" ]; then
-      if [ -d "/usr/lib/qubes" ]; then
+      if command -v "qubesdb-read" >/dev/null 2>&1 ; then
          NON_TOR_GATEWAY=""
       else
          ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
@@ -166,7 +166,7 @@ variables_defaults() {
 
    ## Destinations you do not routed through VPN, only for Whonix-Gateway.
    if [ "$LOCAL_NET" = "" ]; then
-      if [ -d "/usr/lib/qubes" ]; then
+      if command -v "qubesdb-read" >/dev/null 2>&1 ; then
          LOCAL_NET="\
             127.0.0.0-127.0.0.24 \
             10.137.0.0-10.138.255.255 \

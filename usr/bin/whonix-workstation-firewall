@@ -78,7 +78,7 @@ variables_defaults() {
    ## Internal interface
    [ -n "$INT_IF" ] || INT_IF="eth1"
 
-   if [ -d "/usr/lib/qubes" ]; then
+   if command -v "qubesdb-read" >/dev/null 2>&1 ; then
       ## Would fail if netvm is set to 'none',
       ## which is the case in Qubes R4 TemplateVMs.
       [ -n "$GATEWAY_IP" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2>/dev/null)" || GATEWAY_IP="127.0.0.1"
@@ -139,7 +139,7 @@ variables_defaults() {
 
    ## Destinations you do not routed through VPN.
    if [ "$LOCAL_NET" = "" ]; then
-      if [ -d "/usr/lib/qubes" ]; then
+      if command -v "qubesdb-read" >/dev/null 2>&1 ; then
          LOCAL_NET="\
             127.0.0.0-127.0.0.24 \
             10.137.0.0-10.138.255.255 \
@@ -304,7 +304,7 @@ ipv4_reject_invalid_outgoing_packages() {
 
 qubes_updates_proxy() {
    ## Detect Qubes.
-   if [ ! -d "/usr/lib/qubes" ]; then
+   if ! command -v "qubesdb-read" >/dev/null 2>&1 ; then
       return 0
    fi
 
@@ -420,7 +420,7 @@ ipv4_output() {
          ## Allow Whonix-Workstation to query Whonix-Gateway for DNS.
          $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP" -j ACCEPT
          $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
-         if [ -d "/usr/lib/qubes" ]; then
+         if command -v "qubesdb-read" >/dev/null 2>&1 ; then
             qubes_dns
          fi
       fi
