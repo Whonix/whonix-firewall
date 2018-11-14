@@ -1,3 +1,15 @@
+commit 8d9767a72fdbaac863f8e372a10dfa6f2779ce6f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Nov 14 08:01:29 2018 -0500
+
+    fix Whonix custom firewall settings start menu entry in Whonix XFCE
+
+commit f8c389d59e365e17dd1f787aa5fa712c2acbbf64
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 27 16:58:49 2018 +0000
+
+    bumped changelog version
+
 commit 60a6f826d4ff246e50f26e8e874769498f923a8a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Aug 23 06:30:44 2018 -0400
