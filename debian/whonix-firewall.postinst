@@ -54,6 +54,16 @@ case "$1" in
          fi
       done
 
+      ## Whonix start menu entry is using:
+      ## xdg-open /etc/whonix_firewall.d/50_user.conf
+      ## In XFCE this reuslts in:
+      ## exo-open /etc/whonix_firewall.d/50_user.conf
+      ## Which fails if the file is non-existing.
+      if [ ! -f /etc/whonix_firewall.d/50_user.conf ]; then
+         mkdir -p /etc/whonix_firewall.d || true
+         touch /etc/whonix_firewall.d/50_user.conf || true
+      fi
+
       true "INFO: End configuring $DPKG_MAINTSCRIPT_PACKAGE."
 
       ;;
