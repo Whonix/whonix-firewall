@@ -1,3 +1,19 @@
+commit b359bc22428dd74d1bab1bf7405b46c219e7b9be
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Nov 17 00:13:17 2018 -0500
+
+    Disable fail closed mechanism.
+    (i.e. do not start networking if whonix-firewall.service fails to load.)
+    Breaks networking on package upgrades.
+    
+    https://phabricator.whonix.org/T875
+
+commit ec46e9b15c794ebf575dfcbd7539cc2632d0a3e9
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Nov 14 13:14:22 2018 +0000
+
+    bumped changelog version
+
 commit 8d9767a72fdbaac863f8e372a10dfa6f2779ce6f
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Nov 14 08:01:29 2018 -0500
