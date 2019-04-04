@@ -5,11 +5,11 @@ Source: whonix-firewall
 Section: misc
 Priority: optional
 Maintainer: Patrick Schleizer <adrelanos@riseup.net>
-Build-Depends: debhelper (>= 9), genmkfile, ruby-ronn, dh-systemd
+Build-Depends: debhelper (>= 12), genmkfile, ronn
 Homepage: https://github.com/Whonix/whonix-firewall
 Vcs-Browser: https://github.com/Whonix/whonix-firewall
 Vcs-Git: https://github.com/Whonix/whonix-firewall.git
-Standards-Version: 3.9.8
+Standards-Version: 4.3.0
 
 Package: whonix-firewall
 Architecture: all
