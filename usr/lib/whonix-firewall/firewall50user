@@ -5,4 +5,4 @@
 
 set -x
 
-kdesudo xdg-open /etc/whonix_firewall.d/50_user.conf
+gksudo xdg-open /etc/whonix_firewall.d/50_user.conf

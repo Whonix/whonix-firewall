@@ -6,7 +6,7 @@
 set -x
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-   kdesudo xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+   gksudo xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-   kdesudo xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+   gksudo xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi
