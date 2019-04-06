@@ -6,7 +6,7 @@
 set -x
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-   sudo --set-home xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+   pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-   sudo --set-home xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+   pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi
