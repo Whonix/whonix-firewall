@@ -5,4 +5,4 @@
 
 set -x
 
-pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xdg-open /etc/whonix_firewall.d/50_user.conf
+lxsu xdg-open /etc/whonix_firewall.d/50_user.conf

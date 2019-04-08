@@ -6,7 +6,7 @@
 set -x
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-   pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+   lxsu xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-   pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+   lxsu xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi
