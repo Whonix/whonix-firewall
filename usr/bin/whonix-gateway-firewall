@@ -14,13 +14,9 @@
 set -e
 
 error_handler() {
-   echo "##################################################"
-   echo "Whonix firewall script failed!"
-   echo "##################################################"
-
-   echo "$0 ##################################################" >> /var/log/sdwdate.log || true
-   echo "$0 Whonix firewall script failed!" >> /var/log/sdwdate.log || true
-   echo "$0 ##################################################" >> /var/log/sdwdate.log || true
+   echo "$0 ##################################################" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
+   echo "$0 Whonix firewall script failed!" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
+   echo "$0 ##################################################" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
 
    exit 1
 }
@@ -693,8 +689,7 @@ date_cmd(){
 }
 
 echo_and_sdwdate_log() {
-   echo "$@"
-   echo "$(date_cmd) - $0 - $@" >> /var/log/sdwdate.log || true
+   echo "$(date_cmd) - $0 - $@" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
 }
 
 firewall_mode_detection() {
