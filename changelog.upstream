@@ -1,3 +1,21 @@
+commit 3dae160695a5a1bab29620fd72b380fe9159b39f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Apr 8 12:57:31 2019 +0000
+
+    sudo
+
+commit c04adffa0e0cf24ea457ad4e71202573afb7a342
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Apr 8 06:46:51 2019 -0400
+
+    safer sdwdate.log permissions
+
+commit 8e8f0fdc2ac55d7d779602bca609fef062b88fe2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 6 12:22:21 2019 +0000
+
+    bumped changelog version
+
 commit b6d27d94c0da2d10f8fe1a7c59b9308d39e0ef3f
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Apr 6 11:27:54 2019 +0000
