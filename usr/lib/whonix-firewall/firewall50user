@@ -5,4 +5,4 @@
 
 set -x
 
-lxsu xdg-open /etc/whonix_firewall.d/50_user.conf
+lxsu env XDG_CURRENT_DESKTOP=X-Generic xdg-open /etc/whonix_firewall.d/50_user.conf
