@@ -5,8 +5,11 @@
 
 set -x
 
+## https://bugzilla.xfce.org/show_bug.cgi?id=15282
+## https://github.com/lxqt/lxqt-sudo/issues/114
+
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-   lxsu env XDG_CURRENT_DESKTOP=X-Generic xdg-open /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+   lxsu mousepad /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-   lxsu env XDG_CURRENT_DESKTOP=X-Generic xdg-open /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+   lxsu mousepad /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi
