@@ -3,7 +3,7 @@
 
 [Desktop Entry]
 Type=Application
-Exec=/usr/lib/anon-shared-helper-scripts/terminal-wrapper /usr/lib/whonix-firewall/reloadfirewall
+Exec=/usr/lib/helper-scripts/terminal-wrapper /usr/lib/whonix-firewall/reloadfirewall
 Name=Reload Firewall
 GenericName=Reload Whonix Firewall
 Comment=Reload Whonix Firewall using "sudo /usr/bin/whonix_firewall"

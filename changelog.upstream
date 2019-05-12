@@ -428,7 +428,7 @@ commit ee032c80c17461a94c6b901684fe3c697db642ac
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 20:09:15 2017 +0000
 
-    import usr/lib/whonix-firewall/firewall-restarter from anon-shared-helper-scripts
+    import usr/lib/whonix-firewall/firewall-restarter from helper-scripts
 
 commit ff295cfd1343181783d2aa7533ca28d140af8f75
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -1197,7 +1197,7 @@ commit af4f22756d25df3af7335583cd89d92328c04655
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Aug 14 16:23:52 2016 +0200
 
-    depend on anon-shared-helper-scripts for enable-firewall
+    depend on helper-scripts for enable-firewall
 
 commit 0a859bbd33a0fbc92c86bf18c7d803421b83d9c1
 Merge: 46cc7d5 508780d

@@ -14,7 +14,7 @@ Standards-Version: 4.3.0
 Package: whonix-firewall
 Architecture: all
 Replaces: whonix-gw-firewall, whonix-ws-firewall
-Depends: systemd, iptables, sudo, anon-shared-helper-scripts, adduser,
+Depends: systemd, iptables, sudo, helper-scripts, adduser,
  anon-gw-base-files | anon-ws-base-files, ${misc:Depends}
 Conflicts: ufw
 Description: Firewall for Whonix-Gateway and Whonix-Workstation
