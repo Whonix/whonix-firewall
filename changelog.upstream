@@ -1,3 +1,21 @@
+commit 6761760037b0aa4d36c72477593044bafd528bd4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:58:46 2019 -0400
+
+    update path to pre.bsh
+
+commit e3cca93b5cb0ae0f069f1c68f521f9fb2eb6bd00
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun May 12 02:50:16 2019 -0400
+
+    anon-shared-helper-scripts -> helper-scripts
+
+commit a9bdd7692eb04aa7ff6efa4454ac7543482e116c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri May 3 11:43:01 2019 +0000
+
+    bumped changelog version
+
 commit bea97613ddcd0ade8cc394777710faa5550768f1
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri May 3 10:56:58 2019 +0000
@@ -428,7 +446,7 @@ commit ee032c80c17461a94c6b901684fe3c697db642ac
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 20:09:15 2017 +0000
 
-    import usr/lib/whonix-firewall/firewall-restarter from helper-scripts
+    import usr/lib/whonix-firewall/firewall-restarter from anon-shared-helper-scripts
 
 commit ff295cfd1343181783d2aa7533ca28d140af8f75
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -1197,7 +1215,7 @@ commit af4f22756d25df3af7335583cd89d92328c04655
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Aug 14 16:23:52 2016 +0200
 
-    depend on helper-scripts for enable-firewall
+    depend on anon-shared-helper-scripts for enable-firewall
 
 commit 0a859bbd33a0fbc92c86bf18c7d803421b83d9c1
 Merge: 46cc7d5 508780d
