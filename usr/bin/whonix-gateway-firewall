@@ -393,6 +393,11 @@ ipv4_input_rules() {
          $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$local_port_to_open" -j ACCEPT
       done
 
+      local local_udp_port_to_open
+      for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
+         $iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
+      done
+
       if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
          $iptables_cmd -A INPUT -j ACCEPT
       fi
