@@ -1,3 +1,27 @@
+commit 5cf35f4ffe9d2f7ff2d2f8200dd0f2ad82ea5f14
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon May 27 16:01:13 2019 -0400
+
+    implement EXTERNAL_UDP_OPEN_PORTS
+
+commit 6882aa9a449e0b6317f96f35d54ddcfcf56df858
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon May 27 15:42:30 2019 -0400
+
+    comment
+
+commit 5ffcbb5ad30b04a6c5ea57734a8907cdc08c9b9f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon May 27 15:39:54 2019 -0400
+
+    Whonix-Gateway firewall: implement EXTERNAL_OPEN_ALL
+
+commit 6110098e8ede20b8b630478f4ce814655fe61136
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri May 24 21:04:33 2019 +0000
+
+    bumped changelog version
+
 commit e52fb0e57d8f421f818c33a055725e535fd7b21f
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri May 24 12:29:13 2019 -0400
