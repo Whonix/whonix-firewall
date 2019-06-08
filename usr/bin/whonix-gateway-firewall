@@ -180,7 +180,6 @@ variables_defaults() {
    fi
 
    if [ "$WORKSTATION_DEST_SOCKSIFIED" = "" ]; then
-      ## 192.168.0.10  - Non-Qubes-Whonix-Gateway old IP
       ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
       ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
       ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
@@ -189,9 +188,7 @@ variables_defaults() {
 10.137.0.0/8,\
 10.138.0.0/8"
       else
-         WORKSTATION_DEST_SOCKSIFIED="\
-192.168.0.10,\
-10.152.152.10"
+         WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
       fi
    fi
 
