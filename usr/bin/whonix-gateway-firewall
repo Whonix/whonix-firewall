@@ -483,10 +483,8 @@ ipv4_input_rules() {
             $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
          done
 
-         for port_number_temp in $(seq 9152 9189); do
-            ## Redirect ports 9152-9189 prepared for user custom applications.
-            $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$port_number_temp" -j REDIRECT --to-ports "$port_number_temp"
-         done
+         ## Redirect ports 9152-9189 prepared for user custom applications.
+         $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9189 -j REDIRECT
       fi
 
       if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
