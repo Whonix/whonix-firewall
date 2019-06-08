@@ -186,7 +186,8 @@ variables_defaults() {
       ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
       if command -v "qubesdb-read" >/dev/null 2>&1 ; then
          ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
-         WORKSTATION_DEST_SOCKSIFIED="10.137.0.0/16,10.138.0.0/16"
+         ## 10.152.152.10 is hardcoded in some places.
+         WORKSTATION_DEST_SOCKSIFIED="10.137.0.0/16,10.138.0.0/16,10.152.152.10"
       else
          WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
       fi
