@@ -184,9 +184,7 @@ variables_defaults() {
       ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
       ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
       if command -v "qubesdb-read" >/dev/null 2>&1 ; then
-         WORKSTATION_DEST_SOCKSIFIED="\
-10.137.0.0/8,\
-10.138.0.0/8"
+         WORKSTATION_DEST_SOCKSIFIED="10.137.0.0/8"
       else
          WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
       fi
