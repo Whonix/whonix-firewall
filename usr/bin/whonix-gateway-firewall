@@ -184,11 +184,15 @@ variables_defaults() {
       ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
       ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
       ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
-      WORKSTATION_DEST_SOCKSIFIED="\
-192.168.0.10,\
-10.152.152.10,\
+      if command -v "qubesdb-read" >/dev/null 2>&1 ; then
+         WORKSTATION_DEST_SOCKSIFIED="\
 10.137.0.0/8,\
 10.138.0.0/8"
+      else
+         WORKSTATION_DEST_SOCKSIFIED="\
+192.168.0.10,\
+10.152.152.10"
+      fi
    fi
 
    ## The following ports are used
