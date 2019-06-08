@@ -181,9 +181,11 @@ variables_defaults() {
 
    if [ "$WORKSTATION_DEST_SOCKSIFIED" = "" ]; then
       ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
+      ##
       ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
       ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
       if command -v "qubesdb-read" >/dev/null 2>&1 ; then
+         ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
          WORKSTATION_DEST_SOCKSIFIED="10.137.0.0/8"
       else
          WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
