@@ -1,3 +1,65 @@
+commit eb6348c2c5a179b76c76945a77e3ea9eaff3f892
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 8 00:05:38 2019 -0400
+
+    fix debian/watch lintian warning debian-watch-contains-dh_make-template
+
+commit f209a3a1bc22e49d346e6928b900957874f74f91
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 23:30:40 2019 -0400
+
+    fix IP range
+    
+    thanks to @marmarek for the suggestion!
+    
+    https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/18
+
+commit 5fc78ed8d82657fdb3209e51bec638bafb396813
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 23:24:33 2019 -0400
+
+    fix IP range
+    
+    thanks to @marmarek for the suggestion!
+
+commit baafc747a568ecd9d136005655759543689f9bcb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 23:14:35 2019 -0400
+
+    comment
+
+commit f613f79f806803bb0096d5f39414fb8db7a2e1eb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 23:13:21 2019 -0400
+
+    remove 10.138.0.0/8 as 10.138.0.0/8 results in 10.0.0.0/8 anyhow
+    
+    https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
+
+commit e96771637f88aba9f037466d9bb2f112f1a0e3c8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 23:07:40 2019 -0400
+
+    compact PREROUTING rules
+
+commit c55b2652eecd214804afb32d89dc8fdf05e31221
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 22:40:45 2019 -0400
+
+    remove 192.168.0.10  Non-Qubes-Whonix-Gateway old IP
+
+commit fbf4ad487241bcd3cd0acd11b3faec864cdbbb85
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jun 7 22:39:11 2019 -0400
+
+    fix Qubes vs Non-Qubes prerouting IP range
+
+commit a531dedc87a647e7935a60dd45dc77be9e184d3e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jun 1 08:25:02 2019 +0000
+
+    bumped changelog version
+
 commit 5cf35f4ffe9d2f7ff2d2f8200dd0f2ad82ea5f14
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon May 27 16:01:13 2019 -0400
