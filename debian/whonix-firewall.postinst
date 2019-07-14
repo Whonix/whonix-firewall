@@ -26,34 +26,6 @@ case "$1" in
          adduser --no-create-home --home /nonexistent --quiet --system --group --shell /bin/false "$user_account" || true
       done
 
-      user_account_list="user"
-      for user_account in $user_account_list ; do
-         ret="0"
-         id "$user_account" || { ret="$?" ; true; };
-
-         if [ "$ret" = "0" ]; then
-            echo "INFO: Not creating user '$user_account', because it already exists."
-         else
-            echo "INFO: Creating user '$user_account'..."
-            if command -v qubesdb-read >/dev/null 2>&1 ; then
-               ## Qubes-Whonix
-               ## Qubes does by upstream default not use linux user account passwords.
-               password=""
-            else
-               ## Non-Qubes-Whonix
-               ## setting password of user $user_account to changeme
-               ##
-               ## How this password was created:
-               ## sudo apt-get install whois
-               ## mkpasswd
-               ## changeme
-               ## Resulted in: aTayYxVyw5kDo
-               password="aTayYxVyw5kDo"
-            fi
-            useradd --create-home --password "$password" --user-group --shell /bin/bash "$user_account" || true
-         fi
-      done
-
       ## Whonix start menu entry is using:
       ## xdg-open /etc/whonix_firewall.d/50_user.conf
       ## In XFCE this reuslts in:

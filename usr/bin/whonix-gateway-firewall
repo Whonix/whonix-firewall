@@ -77,7 +77,7 @@ variables_defaults() {
 
    ## Get user uids.
    [ -n "$CLEARNET_USER" ] || CLEARNET_USER="$(id -u clearnet)"
-   [ -n "$USER_USER" ] || USER_USER="$(id -u user)"
+   [ -n "$USER_USER" ] || USER_USER="$(id -u user)" || true
    [ -n "$ROOT_USER" ] || ROOT_USER="$(id -u root)"
    [ -n "$TUNNEL_USER" ] || TUNNEL_USER="$(id -u tunnel)"
    [ -n "$SDWDATE_USER" ] || SDWDATE_USER="$(id -u sdwdate)"
@@ -100,7 +100,11 @@ variables_defaults() {
    ## No NAT for user user.
    ## DISABLED BY DEFAULT. For testing/debugging only.
    if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
-      NO_NAT_USERS+=" $USER_USER"
+      if [ "$USER_USER" = "" ]; then
+         echo "INFO: USER_USER is unset. Not adding USER_USER to NO_NAT_USERS."
+      else
+         NO_NAT_USERS+=" $USER_USER"
+      fi
    fi
 
    ## No NAT for root user.
