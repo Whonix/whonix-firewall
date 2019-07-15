@@ -1,3 +1,15 @@
+commit 91a5efaa6c2bccc0bc67050aea07afa0f7311c19
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jul 14 11:30:49 2019 +0000
+
+    code simplification, no longer require user "user" to exist
+
+commit c189334ba86adeb5553dfd3f35faf1434af9cfdf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Jun 30 07:16:40 2019 -0400
+
+    bumped changelog version
+
 commit 4b341bc81a9218637c0b0c53c78f935efcec27c9
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jun 29 13:45:42 2019 +0000
