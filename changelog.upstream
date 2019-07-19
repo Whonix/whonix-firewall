@@ -1,3 +1,17 @@
+commit 0836ec459ebb10720b67eca845ef13b0041e3c44
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jul 19 11:55:38 2019 +0000
+
+    Do not write to /var/log/sdwdate.log in TemplateVM
+    
+    since sdwdate does not run there to avoid polluting the log.
+
+commit 8efd4c2def5bea29772251bb12f73f68acaa3fdd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jul 15 13:27:23 2019 +0000
+
+    bumped changelog version
+
 commit 91a5efaa6c2bccc0bc67050aea07afa0f7311c19
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jul 14 11:30:49 2019 +0000
