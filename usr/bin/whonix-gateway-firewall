@@ -702,7 +702,13 @@ date_cmd(){
 }
 
 echo_and_sdwdate_log() {
-   echo "$(date_cmd) - $0 - $@" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
+   if [ "$qubes_vm_type" = "TemplateVM" ]; then
+      ## Do not write to /var/log/sdwdate.log in TemplateVM since sdwdate does
+      ## not run there to avoid polluting the log.
+      echo "$(date_cmd) - $0 - $@"
+   else
+      echo "$(date_cmd) - $0 - $@" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
+   fi
 }
 
 firewall_mode_detection() {
