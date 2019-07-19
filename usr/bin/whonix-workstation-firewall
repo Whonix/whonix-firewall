@@ -220,7 +220,6 @@ qubes_dns() {
    if [ "$counter" -ge "2" ]; then
       echo "OK: Qubes DNS firewall rules ok."
    else
-      echo "INFO: The following message should be disregarded in TemplateVMs in Qubes R4 or above: Small(!) issue. Qubes DNS firewall fallback rules active. Please report this."
       $iptables_cmd -A OUTPUT -p udp --dport 53 -j ACCEPT
    fi
 }
