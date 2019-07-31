@@ -1,3 +1,15 @@
+commit ffafd34baf9cd7910ca2ad35d106be848ca6a19a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jul 31 03:14:31 2019 -0400
+
+    /var/run -> /run
+
+commit 5f90bbf6f2bf0639fbb4da60b303c7f8dfe86cbc
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Jul 19 12:07:57 2019 +0000
+
+    bumped changelog version
+
 commit aac10f9ebe80bb07f15bac9a54be09a9a528e4ea
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jul 19 12:06:58 2019 +0000
@@ -494,7 +506,7 @@ commit 4516d231699119ba839b84f499d019e11e53b6b4
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 22:43:42 2017 +0000
 
-    mkdir --parents /run/qubes-service
+    mkdir --parents /var/run/qubes-service
 
 commit 7b7b84007bebd23ebe529931bb785163a3278f6f
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -566,7 +578,7 @@ commit 24f3d8c490f1e8ca07f6c49ce9781b7337ddabe0
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 20:17:33 2017 +0000
 
-    Restart firewall when file /run/qubes-service/whonix-secure-proxy gets created.
+    Restart firewall when file /var/run/qubes-service/whonix-secure-proxy gets created.
     
     So blocking access to Qubes updates proxy for everyone but user updatesproxycheck ends.
     
@@ -1596,7 +1608,7 @@ commit 11e30d99b5f866e3be73253fa5f1c11eb1165925
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Nov 22 22:22:47 2015 +0000
 
-    no longer depend on /run/qubes-service status files
+    no longer depend on /var/run/qubes-service status files
     
     https://phabricator.whonix.org/T432
 
