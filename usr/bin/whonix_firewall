@@ -5,7 +5,7 @@
 
 set -e
 
-if [ -f "/var/run/qubes/this-is-templatevm" ]; then
+if [ -f "/run/qubes/this-is-templatevm" ]; then
    /usr/bin/whonix-workstation-firewall
 elif [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
    /usr/bin/whonix-gateway-firewall

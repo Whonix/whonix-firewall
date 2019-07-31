@@ -28,14 +28,14 @@
 [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
 
 failed_status_file_create() {
-   mkdir -p /var/run/anon-firewall || true
-   touch /var/run/anon-firewall/failed.status || true
+   mkdir -p /run/anon-firewall || true
+   touch /run/anon-firewall/failed.status || true
 
    ## Legacy.
    ## mkdir should not be required for Qubes-Whonix, just as a defensive action.
    ## mkdir is required for simpler Non-Qubes-Whonix code.
-   mkdir -p /var/run/qubes-service || true
-   touch /var/run/qubes-service/whonix-firewall-failed || true
+   mkdir -p /run/qubes-service || true
+   touch /run/qubes-service/whonix-firewall-failed || true
 }
 
 firewall_lockdown() {

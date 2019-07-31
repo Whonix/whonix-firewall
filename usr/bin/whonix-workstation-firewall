@@ -33,8 +33,8 @@ init() {
 
    ## In case sdwdate is not installed.
    ## Defensive measure to not mess up file permissions.
-   mkdir --parents /var/run/sdwdate
-   chown --recursive sdwdate:sdwdate /var/run/sdwdate
+   mkdir --parents /run/sdwdate
+   chown --recursive sdwdate:sdwdate /run/sdwdate
 }
 
 source_config_folder() {
@@ -309,12 +309,12 @@ qubes_updates_proxy() {
    fi
 
    ## Detect being run inside TemplateVM.
-   if [ ! -f "/var/run/qubes/this-is-templatevm" ]; then
+   if [ ! -f "/run/qubes/this-is-templatevm" ]; then
       return 0
    fi
 
    ## Detect if torified Qubes updates proxy was detected.
-   if test -f "/var/run/qubes-service/whonix-secure-proxy" ; then
+   if test -f "/run/qubes-service/whonix-secure-proxy" ; then
       echo "OK: Torified Qubes Updates Proxy check ok. Full access to Qubes Updates Proxy."
       return 0
    fi
@@ -502,12 +502,12 @@ ipv6() {
 }
 
 status_files() {
-   mkdir --parents /var/run/whonix_firewall
-   if [ -e /var/run/whonix_firewall/first_run_current_boot.status ]; then
-      touch /var/run/whonix_firewall/consecutive_run.status
+   mkdir --parents /run/whonix_firewall
+   if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
+      touch /run/whonix_firewall/consecutive_run.status
       return 0
    fi
-   touch /var/run/whonix_firewall/first_run_current_boot.status
+   touch /run/whonix_firewall/first_run_current_boot.status
 }
 
 date_cmd(){
@@ -540,19 +540,19 @@ firewall_mode_detection() {
    fi
 
    ## Run Whonix firewall in full mode if sdwdate already succeeded.
-   if [ -e /var/run/sdwdate/first_success ]; then
+   if [ -e /run/sdwdate/first_success ]; then
       firewall_mode=full
-      echo_and_sdwdate_log "OK: (/var/run/sdwdate/first_success exists.)"
-   elif [ -e /var/run/sdwdate/success ]; then
+      echo_and_sdwdate_log "OK: (/run/sdwdate/first_success exists.)"
+   elif [ -e /run/sdwdate/success ]; then
       firewall_mode=full
-      echo_and_sdwdate_log "OK: (/var/run/sdwdate/success exists.)"
-   ## /var/run/whonix_firewall/first_run_current_boot.status already exists,
+      echo_and_sdwdate_log "OK: (/run/sdwdate/success exists.)"
+   ## /run/whonix_firewall/first_run_current_boot.status already exists,
    ## therefore have Whonix firewall run in full mode.
-   elif [ -e /var/run/whonix_firewall/first_run_current_boot.status ]; then
+   elif [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
       firewall_mode=full
-      echo_and_sdwdate_log "OK: (/var/run/whonix_firewall/first_run_current_boot.status exists.)"
+      echo_and_sdwdate_log "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
    else
-      ## /var/run/whonix_firewall/first_run_current_boot.status does not yet exist,
+      ## /run/whonix_firewall/first_run_current_boot.status does not yet exist,
       ## therefore return 'yes, timesync-fail-closed'.
       firewall_mode=timesync-fail-closed
    fi

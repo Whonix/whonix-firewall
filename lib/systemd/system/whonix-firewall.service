@@ -8,7 +8,7 @@
 ##
 ## (Does nothing inside Qubes TemplateVMs.)
 ##
-## If loading Whonix Firewall fails, creates /var/run/anon-firewall/failed.status.
+## If loading Whonix Firewall fails, creates /run/anon-firewall/failed.status.
 
 [Unit]
 Description=Whonix firewall loader
@@ -35,7 +35,7 @@ After=qubes-mount-dirs.service
 ## Legacy.
 After=qubes-mount-home.service
 
-## For /var/run/qubes/this-is-* files.
+## For /run/qubes/this-is-* files.
 After=qubes-sysinit.target
 
 Before=shutdown.target
