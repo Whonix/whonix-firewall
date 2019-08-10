@@ -1,3 +1,15 @@
+commit ae4ac7027394ba2bef5f5ed4e0d1f95c92ca6253
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Aug 10 02:28:38 2019 -0400
+
+    lxsu -> lxsudo
+
+commit 9d658ae76696867f7b94c05d81249cd68f9c6eab
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 1 12:12:11 2019 +0000
+
+    bumped changelog version
+
 commit c0a035bedc58e75b103d8d7c3ac8810b7ed17721
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Aug 1 11:13:47 2019 +0000
