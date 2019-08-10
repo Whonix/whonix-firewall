@@ -5,4 +5,4 @@
 
 set -x
 
-lxsu mousepad /etc/whonix_firewall.d/50_user.conf
+lxsudo mousepad /etc/whonix_firewall.d/50_user.conf

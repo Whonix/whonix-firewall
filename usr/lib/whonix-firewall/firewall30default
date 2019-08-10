@@ -9,7 +9,7 @@ set -x
 ## https://github.com/lxqt/lxqt-sudo/issues/114
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-   lxsu mousepad /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+   lxsudo mousepad /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-   lxsu mousepad /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+   lxsudo mousepad /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi
