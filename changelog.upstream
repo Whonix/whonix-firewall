@@ -1,3 +1,15 @@
+commit 5407aa536a587ef93b0ecb2153417c1098713f64
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Sep 18 07:13:58 2019 -0400
+
+    use sudoedit rather than hardcoding lxsudo mousepad
+
+commit dee08123513f51f881ae5a998337400c81b58192
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Aug 28 12:52:58 2019 +0000
+
+    bumped changelog version
+
 commit 087c12022c9c73f90ce16625c76dc005065ba2fd
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Aug 28 11:35:49 2019 +0000
