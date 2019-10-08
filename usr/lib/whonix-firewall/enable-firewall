@@ -26,7 +26,7 @@
 
 #### meta start
 #### project Whonix
-#### category time and firewall
+#### category networking and firewall
 #### description
 ## Wrapper to start firewall and create failure status files on failure.
 #### meta end

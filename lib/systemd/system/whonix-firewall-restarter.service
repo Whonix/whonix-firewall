@@ -3,7 +3,7 @@
 
 #### meta start
 #### project Whonix
-#### category tor-control and firewall
+#### category time and firewall
 #### description
 ## Restarts whonix-firewall when /run/sdwdate/first_success status file was
 ## created, i.e. when sdwdate succeeded so Whonix firewall will move from

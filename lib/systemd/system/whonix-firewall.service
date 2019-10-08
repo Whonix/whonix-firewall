@@ -4,7 +4,7 @@
 
 #### meta start
 #### project Whonix
-#### category tor-control and firewall
+#### category networking and firewall
 #### description
 ## Runs <code>/usr/lib/whonix-firewall/enable-firewall</code>.
 ##
