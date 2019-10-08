@@ -1,9 +1,16 @@
 ## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+#### meta start
+#### project Whonix
+#### category tor-control and firewall
+#### description
 ## Restarts whonix-firewall when /run/sdwdate/first_success status file was
 ## created, i.e. when sdwdate succeeded so Whonix firewall will move from
 ## timesync-fail-closed mode to full mode.
+##
+## Starts <code>/usr/lib/whonix-firewall/firewall-restarter</code>.
+#### meta end
 
 [Unit]
 Description=Whonix firewall watcher

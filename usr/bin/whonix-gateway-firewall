@@ -4,6 +4,13 @@
 ## Copyright (C) 2014 - 2015 Jason Mehring <nrgaway@gmail.com>
 ## See the file COPYING for copying conditions.
 
+#### meta start
+#### project Whonix
+#### category networking and firewall
+#### description
+## firewall script
+#### meta end
+
 ## --reject-with
 ## http://ubuntuforums.org/showthread.php?p=12011099
 

@@ -3,12 +3,22 @@
 # Copyright (C) 2015 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 # License: GPL-2+
 
-## On Whonix-Gateway or Whonix-Workstation (if /usr/share/anon-gw-base-files/gateway or
-## /usr/share/anon-ws-base-files/workstation exists), loads Whonix Firewall.
+#### meta start
+#### project Whonix
+#### category tor-control and firewall
+#### description
+## Runs <code>/usr/lib/whonix-firewall/enable-firewall</code>.
+##
+## On Whonix-Gateway or Whonix-Workstation (if
+## <code>/usr/share/anon-gw-base-files/gateway</code> or
+## <code>/usr/share/anon-ws-base-files/workstation</code> exists),
+## loads Whonix Firewall.
 ##
 ## (Does nothing inside Qubes TemplateVMs.)
 ##
-## If loading Whonix Firewall fails, creates /run/anon-firewall/failed.status.
+## If loading Whonix Firewall fails, creates
+## <code>/run/anon-firewall/failed.status</code>.
+#### meta end
 
 [Unit]
 Description=Whonix firewall loader

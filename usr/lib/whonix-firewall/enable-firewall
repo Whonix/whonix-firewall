@@ -24,6 +24,13 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#### meta start
+#### project Whonix
+#### category time and firewall
+#### description
+## Wrapper to start firewall and create failure status files on failure.
+#### meta end
+
 [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
 [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
 

@@ -3,6 +3,13 @@
 ## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+#### meta start
+#### project Whonix
+#### category networking and firewall
+#### description
+## firewall script
+#### meta end
+
 set -e
 
 ## NOTE: If you make changes to this firewall, think about, if it would

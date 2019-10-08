@@ -3,6 +3,13 @@
 ## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
+#### meta start
+#### project Whonix
+#### category networking and firewall
+#### description
+## stream isolation developer test script
+#### meta end
+
 ## Currently only useful for manual execution from within a
 ## Qubes-Whonix-Workstation. (Otherwise out comment test using qubesdb-read.)
 
