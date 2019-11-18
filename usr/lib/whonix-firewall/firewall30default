@@ -14,9 +14,10 @@ set -x
 
 ## https://bugzilla.xfce.org/show_bug.cgi?id=15282
 ## https://github.com/lxqt/lxqt-sudo/issues/114
+## https://forums.whonix.org/t/use-sudoedit-in-whonix-documentation-and-whonix-software/7599/30
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-   sudoedit /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+   lxsudo env VISUAL="$VISUAL" sudoedit /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-   sudoedit /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+   lxsudo env VISUAL="$VISUAL" sudoedit /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi
