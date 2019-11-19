@@ -1,3 +1,19 @@
+commit 176f1a190f75ca2a4552f7fd2a43c94aa01cea53
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Nov 19 09:51:05 2019 -0500
+
+    fix use of sudoedit
+    
+    https://forums.whonix.org/t/use-sudoedit-in-whonix-documentation-and-whonix-software/7599/30
+    
+    as suggested by @madaidan
+
+commit ea80c48c1d75cc227b159c54643a762fd50aaa92
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Nov 18 19:44:31 2019 +0000
+
+    bumped changelog version
+
 commit 7cfae135befbb288e8294e3bfcff54099b82ebbd
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Nov 18 19:42:20 2019 +0000
