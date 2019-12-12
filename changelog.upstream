@@ -1,3 +1,15 @@
+commit 2d448ef99eb735e3fee8638c445a986dcb71c9c0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 12 07:50:26 2019 -0500
+
+    no longer depend on qubesdb-read
+
+commit a8ceb10498b48b70110593c41dab95f11cb9c4fb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Nov 19 15:03:05 2019 +0000
+
+    bumped changelog version
+
 commit 176f1a190f75ca2a4552f7fd2a43c94aa01cea53
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Nov 19 09:51:05 2019 -0500
