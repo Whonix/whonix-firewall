@@ -140,7 +140,6 @@ variables_defaults() {
    echo "OK: NO_NAT_USERS: $NO_NAT_USERS"
 
    if command -v "qubesdb-read" >/dev/null 2>&1 ; then
-      [ -n "$qubes_vm_type" ] || qubes_vm_type="$(qubesdb-read /qubes-vm-type)"
       [ -n "$INT_IF" ] || INT_IF="vif+"
       [ -n "$INT_TIF" ] || INT_TIF="vif+"
    fi
@@ -326,7 +325,7 @@ qubes() {
       return 0
    fi
 
-   if [ "$qubes_vm_type" = "NetVM" ] || [ "$qubes_vm_type" = "ProxyVM" ]; then
+   if [ -e /run/qubes/this-is-netvm ] || [ -e /run/qubes/this-is-proxyvm ]; then
       local int_if_item
 
       for int_if_item in $INT_IF; do
@@ -709,7 +708,7 @@ date_cmd(){
 }
 
 echo_and_sdwdate_log() {
-   if [ "$qubes_vm_type" = "TemplateVM" ]; then
+   if [ -e /run/qubes/this-is-templatevm ]; then
       ## Do not write to /var/log/sdwdate.log in TemplateVM since sdwdate does
       ## not run there to avoid polluting the log.
       echo "$(date_cmd) - $0 - $@"
