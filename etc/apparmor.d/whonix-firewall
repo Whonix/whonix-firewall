@@ -4,9 +4,9 @@
 #include <tunables/global>
 
 /usr/bin/whonix_firewall flags=(attach_disconnected) {
-  #include <abstractions/whonix-firewall
+  #include <abstractions/whonix-firewall>
 }
 
 /usr/lib/whonix-firewall/** flags=(attach_disconnected) {
-  #include <abstractions/whonix-firewall
+  #include <abstractions/whonix-firewall>
 }
