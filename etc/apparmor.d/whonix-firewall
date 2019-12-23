@@ -3,7 +3,7 @@
 
 #include <tunables/global>
 
-profile whonix-firewall /usr/lib/whonix-firewall/** flags=(attach_disconnected) {
+profile whonix-firewall /usr/bin/whonix_firewall flags=(attach_disconnected) {
   #include <abstractions/base>
   #include <abstractions/bash>
 
