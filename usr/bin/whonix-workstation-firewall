@@ -593,7 +593,7 @@ main() {
    ipv4_forward
    ipv4_reject_invalid_outgoing_packages
    ipv4_output
-   ipv6
+   ipv6 || true
    status_files
    end
 }
