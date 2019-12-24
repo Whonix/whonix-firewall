@@ -593,7 +593,9 @@ main() {
    ipv4_forward
    ipv4_reject_invalid_outgoing_packages
    ipv4_output
-   ipv6 || true
+   if [ -d /proc/sys/net/ipv6/ ]; then
+     ipv6
+   fi
    status_files
    end
 }
