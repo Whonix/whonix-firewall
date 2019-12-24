@@ -3,10 +3,12 @@
 
 #include <tunables/global>
 
-/usr/bin/whonix_firewall flags=(attach_disconnected) {
+## TODO: disable complain mode
+/usr/bin/whonix_firewall flags=(attach_disconnected,complain) {
   #include <abstractions/whonix-firewall>
 }
 
-/usr/lib/whonix-firewall/** flags=(attach_disconnected) {
+## TODO: disable complain mode
+/usr/lib/whonix-firewall/** flags=(attach_disconnected,complain) {
   #include <abstractions/whonix-firewall>
 }
