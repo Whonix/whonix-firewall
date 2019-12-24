@@ -1,3 +1,49 @@
+commit c7d2b4526678635a2bc1b240af3c3bd9ce22bf27
+Merge: 9c7f08c e311611
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 18:36:52 2019 -0500
+
+    Merge remote-tracking branch 'origin/master'
+
+commit e3116116ba4e619424b8dc0f681384057bf3819d
+Merge: 9c7f08c 5cb824b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 23:27:15 2019 +0000
+
+    Merge pull request #3 from madaidan/ipv6
+    
+    Don't fail if ipv6 isn't available
+
+commit 5cb824b52f8c1aaf327bd87c5d7fb389f966b747
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Tue Dec 24 20:05:05 2019 +0000
+
+    Check for /proc/sys/net/ipv6/ instead
+
+commit 08b303e87cf0967b07c172faa849388102b82e13
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Tue Dec 24 20:04:59 2019 +0000
+
+    Check for /proc/sys/net/ipv6/ instead
+
+commit 9054c21cdca93a226eb384ebee00cb903e4aa7d8
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Tue Dec 24 18:54:14 2019 +0000
+
+     Don't fail if ipv6 isn't available
+
+commit ca17a4ae7824b0217f2a4d0ec2aa0b49b8cb51ff
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Tue Dec 24 18:53:43 2019 +0000
+
+    Don't fail if ipv6 isn't available
+
+commit 9c7f08c24b7d1b5f9e93f6e409367af3632f0aab
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 12 08:08:00 2019 -0500
+
+    bumped changelog version
+
 commit 2d448ef99eb735e3fee8638c445a986dcb71c9c0
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 12 07:50:26 2019 -0500
