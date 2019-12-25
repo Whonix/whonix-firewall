@@ -1,3 +1,37 @@
+commit dfaa42d2d3b4b04eace785efa908a2467b572423
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 18:53:59 2019 -0500
+
+    local apparmor profile
+
+commit 21024861aaaffee89f149934f4aed9f45a54d84d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 18:39:57 2019 -0500
+
+    set to complain mode
+
+commit 63d7d68614a6bf002758a2f77a9e92f3e11161e7
+Merge: 4b24bbd 5ca8c31
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 18:39:20 2019 -0500
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 5ca8c319d340abdbdec42f3796f2fddb6bdca4de
+Merge: 4b24bbd 448726e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 23:38:22 2019 +0000
+
+    Merge pull request #2 from madaidan/apparmor
+    
+    whonix-firewall apparmor profile
+
+commit 4b24bbd5d81d008c4f2f220ef43f2f4a72c1832c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Dec 24 18:37:20 2019 -0500
+
+    bumped changelog version
+
 commit c7d2b4526678635a2bc1b240af3c3bd9ce22bf27
 Merge: 9c7f08c e311611
 Author: Patrick Schleizer <adrelanos@riseup.net>
@@ -37,6 +71,54 @@ Author: madaidan <50278627+madaidan@users.noreply.github.com>
 Date:   Tue Dec 24 18:53:43 2019 +0000
 
     Don't fail if ipv6 isn't available
+
+commit 448726e32664196750202f1420530894eca039eb
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Mon Dec 23 17:37:12 2019 +0000
+
+    Missing >
+
+commit 53e9314d779689bd672d14fc761bc4411452fbc4
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Mon Dec 23 17:36:45 2019 +0000
+
+    Licensing
+
+commit ee4ebad90f31c1e3edc720fea66f1104639a5d50
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Mon Dec 23 17:36:17 2019 +0000
+
+    Confine /usr/lib/whonix-firewall/ too
+
+commit 55480abf9bc1bc63e4ae25ae7b526551919c59a3
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Mon Dec 23 17:34:51 2019 +0000
+
+    whonix-firewall abstraction
+
+commit f2270eb0ea06c8b08e996b8eea1f21062735ab20
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Mon Dec 23 14:35:27 2019 +0000
+
+    Confine whonix_firewall instead
+
+commit b186d13d56edd3f3579498f8cdda1c83db60e5d3
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sat Dec 21 17:36:20 2019 +0000
+
+    Debian apparmor packaging
+
+commit cc3d33f8d6428d7d8d54589be51fb56ef52609d1
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sat Dec 21 17:34:52 2019 +0000
+
+    Depend on dh-apparmor
+
+commit e065ebc9d50c5895697834f6e35a076b87b6e522
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Sat Dec 21 17:33:35 2019 +0000
+
+    AppArmor profile
 
 commit 9c7f08c24b7d1b5f9e93f6e409367af3632f0aab
 Author: Patrick Schleizer <adrelanos@riseup.net>
