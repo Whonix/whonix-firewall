@@ -19,6 +19,7 @@
   /bin/mktemp mrix,
   /bin/rm mrix,
   /bin/touch mrix,
+  /bin/systemctl mrix,
   /usr/bin/id mrix,
   /usr/bin/inotifywait mrix,
   /usr/bin/mkfifo mrix,
@@ -32,7 +33,9 @@
 
   /etc/group r,
   /etc/sudoers r,
+  /etc/sudoers.d/ r,
   /etc/sudoers.d/* r,
+  /etc/gai.conf r,
   owner /etc/host.conf r,
   owner /etc/hosts.anondist r,
   owner /etc/login.defs r,
@@ -46,11 +49,14 @@
   owner /etc/whonix_firewall.d/* r,
   
   /proc/*/fd/ r,
-  owner /proc/*/stat r,
-  owner /proc/filesystems r,
-
+  /proc/filesystems r,
+  /proc/*/{,environ,sched,stat} r,
+  /proc/sys/kernel/random/boot_id r,
+  
+  /run/log/journal/ r,
+  /run/log/journal/** r,
   /run/sdwdate/ rw,
-  /run/sdwdate/{,msg,status} w,
+  /run/sdwdate/* w,
   owner /run/anon-firewall/ w,
   owner /run/anon-firewall/* w,
   owner /run/whonix_firewall/* w,
@@ -58,5 +64,5 @@
   owner /run/qubes-service/* w,
   owner /run/utmp rk,
 
-  owner /tmp/tmp.* rw,
-  owner /var/log/sdwdate.log w,
+  /tmp/tmp.* rw,
+  owner /var/log/sdwdate.log w,  
