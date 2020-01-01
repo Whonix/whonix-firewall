@@ -47,12 +47,12 @@
   owner /etc/shadow r,
   owner /etc/whonix_firewall.d/ r,
   owner /etc/whonix_firewall.d/* r,
-  
+
   /proc/*/fd/ r,
   /proc/filesystems r,
   /proc/*/{,environ,sched,stat} r,
   /proc/sys/kernel/random/boot_id r,
-  
+
   /run/log/journal/ r,
   /run/log/journal/** r,
   /run/sdwdate/ rw,
@@ -65,4 +65,4 @@
   owner /run/utmp rk,
 
   /tmp/tmp.* rw,
-  owner /var/log/sdwdate.log w,  
+  owner /var/log/sdwdate.log w,
