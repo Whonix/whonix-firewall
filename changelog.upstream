@@ -1,3 +1,37 @@
+commit d91bee55eb1c93e52ef98da6b04799750e2264ee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 1 14:42:36 2020 -0500
+
+    remove trailing spaces
+
+commit c353115081e6737b06a053bbc5f05bf16d3fc6ba
+Merge: 602a347 9b7973c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 1 14:42:10 2020 -0500
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 9b7973c5a2a66aeba6b214514b84325c91b51ee3
+Merge: 602a347 e9c6a61
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Jan 1 19:37:25 2020 +0000
+
+    Merge pull request #4 from madaidan/apparmor
+    
+    Apparmor fixes
+
+commit e9c6a61ff1bef4d60b61f0d49e82fcc3aa09c502
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Wed Jan 1 17:50:32 2020 +0000
+
+    Apparmor fixes
+
+commit 602a3474ad26ff0b6e10f21faa07d113cfdac932
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Wed Dec 25 06:04:06 2019 -0500
+
+    bumped changelog version
+
 commit dfaa42d2d3b4b04eace785efa908a2467b572423
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Dec 24 18:53:59 2019 -0500
