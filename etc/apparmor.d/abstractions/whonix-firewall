@@ -11,6 +11,8 @@
   capability setuid,
   capability sys_resource,
 
+  ptrace read,
+
   /dev/pts/[0-9]* rw,
 
   /bin/bash ix,
