@@ -77,7 +77,6 @@ variables_defaults() {
 
    ## External interface
    [ -n "$EXT_IF" ] || EXT_IF="eth0"
-
    ## Internal interface
    [ -n "$INT_IF" ] || INT_IF="eth1"
 
