@@ -10,8 +10,6 @@
 ## firewall script
 #### meta end
 
-set -e
-
 ## NOTE: If you make changes to this firewall, think about, if it would
 ##       make sense to add the changes to Whonix-Gateway script as well.
 ##       Some things like dropping invalid packages, should be shared.
@@ -21,6 +19,8 @@ set -e
 
 ## source for some rules:
 ## http://www.cyberciti.biz/faq/ip6tables-ipv6-firewall-for-linux/
+
+set -e
 
 error_handler() {
    echo "$0 ##################################################" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
