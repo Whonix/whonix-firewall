@@ -590,6 +590,7 @@ main() {
    ipv4_defaults
    ipv4_preparation
    ipv4_drop_invalid_incoming_packages
+   qubes
    ipv4_input_rules
    ipv4_input_defaults
    ipv4_forward
