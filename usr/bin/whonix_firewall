@@ -19,7 +19,7 @@ elif [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
 elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
    /usr/bin/whonix-workstation-firewall
 else
-   if dpkg-query --show whonix-libvirt &>/dev/null ; then
+   if /usr/share/whonix-libvirt/marker ; then
       /usr/bin/whonix-host-firewall
    else
       echo "ERROR: Neither file /usr/share/anon-gw-base-files/gateway nor file /usr/share/anon-ws-base-files/workstation exists! If this is a Whonix-Gateway, package anon-gw-base-files needs to be installed. If this is a Whonix-Workstation, package anon-ws-base-files needs to be installed." >&2
