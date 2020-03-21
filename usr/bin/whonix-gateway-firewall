@@ -678,13 +678,13 @@ ipv6() {
 
    ## Allow unlimited access on loopback.
    ## Not activated, since we do not need it.
-   #ip6tables_cmd -A INPUT -i lo -j ACCEPT
-   #ip6tables_cmd -A OUTPUT -o lo -j ACCEPT
+   #$ip6tables_cmd -A INPUT -i lo -j ACCEPT
+   #$ip6tables_cmd -A OUTPUT -o lo -j ACCEPT
 
    ## Log.
-   #ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input6: "
-   #ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output6: "
-   #ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix blocked forward6: "
+   #$ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input6: "
+   #$ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output6: "
+   #$ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix blocked forward6: "
 
    ## Drop/reject all other traffic.
    $ip6tables_cmd -A INPUT -j DROP

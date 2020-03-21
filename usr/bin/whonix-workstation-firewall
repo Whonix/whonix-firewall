@@ -504,7 +504,9 @@ ipv6() {
 
    ## Drop/reject all other traffic.
    $ip6tables_cmd -A INPUT -j DROP
+   ## --reject-with icmp-admin-prohibited not supported by ip6tables
    $ip6tables_cmd -A OUTPUT -j REJECT --reject-with icmp6-port-unreachable
+   ## --reject-with icmp-admin-prohibited not supported by ip6tables
    $ip6tables_cmd -A FORWARD -j DROP
 }
 
