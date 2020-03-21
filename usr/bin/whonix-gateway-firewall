@@ -285,7 +285,7 @@ ipv4_defaults() {
    ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
    $iptables_cmd -P FORWARD DROP
 
-   ## Only the Tor process is allowed to establish outgoing connections.
+   ## Will be lifted below.
    $iptables_cmd -P OUTPUT DROP
 }
 
