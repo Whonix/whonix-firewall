@@ -740,7 +740,7 @@ firewall_mode_detection() {
       firewall_mode=full
       echo_and_sdwdate_log "OK: (/run/sdwdate/success exists.)"
    ## /run/whonix_firewall/first_run_current_boot.status already exists,
-   ## therefore have Whonxi firewall run in full mode.
+   ## therefore have Whonix firewall run in full mode.
    elif [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
       firewall_mode=full
       echo_and_sdwdate_log "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
