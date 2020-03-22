@@ -1,3 +1,95 @@
+commit fb4b21883cc2d67242927ac97ba8b60f8461ab40
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:40:06 2020 -0400
+
+    minor
+
+commit 2b90a050feef8781eb71c48d6d36dda2185703c2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:38:57 2020 -0400
+
+    refactoring
+    
+    Just so Whonix-Workstation firewall can be more similar to Whonix-Gateway firewall.
+
+commit 5820b46380677b14c457b759f72aa8bfa0924de3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:37:20 2020 -0400
+
+    refactoring
+
+commit 32420f7a6d21b171dfe3d32e4a9c500d910b9463
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:36:35 2020 -0400
+
+    comments
+
+commit 1d115bc90eedc6c19db3390731f898a35e137011
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:33:34 2020 -0400
+
+    comment
+
+commit d73bb9e46a98fdc1d323721f821f9b8ab252d528
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:32:48 2020 -0400
+
+    output
+
+commit 8d99f9c542e0de0844b6d21f06621ae1a16a042a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:31:53 2020 -0400
+
+    comment
+
+commit ba3d73bbc21603519e6a5a5ccdeb9d5b98c1f3d6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:29:09 2020 -0400
+
+    comment
+
+commit 8cda8af2e143a377ac43ad9058cacc84f460ea72
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:28:42 2020 -0400
+
+    config
+
+commit 65b1028fb13e75a00eb7ec1e42a920966425fdd3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:26:45 2020 -0400
+
+    import from whonix-host-firewall
+
+commit 2b69ab3be420036d343ff3bf45a04e86034bb576
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:24:37 2020 -0400
+
+    improve Whonix-Host detection
+
+commit 3a7b142b102e8e2d38562cb22c74fc36ad996c97
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:23:49 2020 -0400
+
+    improve Whonix-Host detection
+
+commit fc0d2e25847aca89ced79ec149047639980b3910
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:22:00 2020 -0400
+
+    Whonix-Host detection
+
+commit b90214f6226e0a011ffef5d1181b4ff16b4e2c4a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Mar 21 15:18:01 2020 -0400
+
+    import from whonix-host-firewall
+
+commit 1bd560ff6c8c969db81994dd22e0b780a7b942e1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Jan 13 12:33:54 2020 -0500
+
+    bumped changelog version
+
 commit c947e14a682299f6d5c724bc22176b6bdf700021
 Merge: 16932a0 bdfed09
 Author: Patrick Schleizer <adrelanos@riseup.net>
