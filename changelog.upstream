@@ -1,3 +1,15 @@
+commit f4a01a76fb0c1957fa297d1207db2834853c299f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Mar 24 03:47:22 2020 -0400
+
+    /usr/local/etc/whonix_firewall.d/*.conf
+
+commit ebc095a12c2dc3b8e5e025ad84480944434d26b1
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Mar 22 06:15:32 2020 -0400
+
+    bumped changelog version
+
 commit fb4b21883cc2d67242927ac97ba8b60f8461ab40
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Mar 21 15:40:06 2020 -0400
