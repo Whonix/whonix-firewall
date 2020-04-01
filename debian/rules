@@ -9,7 +9,6 @@
 	dh $@
 
 override_dh_installman:
-	make manpages
 	dh_installman $(CURDIR)/auto-generated-man-pages/*
 
 override_dh_installchangelogs:
