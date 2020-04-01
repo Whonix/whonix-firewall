@@ -1,0 +1,38 @@
+.\" generated with Ronn-NG/v0.8.0
+.\" http://github.com/apjanke/ronn-ng/tree/0.8.0
+.TH "WHONIX_FIREWALL" "8" "April 2020" "whonix-firewall" "whonix-firewall Manual"
+.SH "NAME"
+\fBwhonix_firewall\fR \- Whonix Firewall
+.P
+.SH "SYNOPSIS"
+\fBwhonix_firewall\fR
+.SH "DESCRIPTION"
+Gets autostarted by default\. Only useful to start manually, if you changed settings in \fB/etc/whonix_firewall\.d/\fR configuration folder and did not restart\.
+.SH "RETURN VALUES"
+0 Success
+.P
+1 Error
+.SH "EXAMPLE"
+\fBsudo whonix_firewall\fR
+.SH "WHONIX\-WORKSTATION FIREWALL DESIGN NOTES"
+.IP "\[ci]" 4
+Whonix\-Gateways Firewall is responsible for routing all traffic over Tor\.
+.IP "\[ci]" 4
+Whonix\-Workstation Firewall is much less important than the Whonix\-Gateway Firewall\.
+.IP "\[ci]" 4
+Staying anonymous, is by Whonix design, not dependent on Whonix\-Workstations Firewall\. You could drop this firewall at all and were still anonymous\. This was always and will always be that way for all Whonix versions\.
+.IP "\[ci]" 4
+Whonix\-Workstation Firewall script provides only damage limitation\.
+.IP "\[ci]" 4
+Some additional security\.
+.IP "\[ci]" 4
+For example, if Tor on Whonix\-Gateway were compromised through a zero day exploit, it were harder to attack Whonix\-Workstation, which might contain confidential data\.
+.IP "\[ci]" 4
+When using multiple Whonix\-Workstations on Non\-Qubes\-Whonix, this offers some protection from attacks from compromised other Whonix\-Workstations, see https://www\.whonix\.org/wiki/Multiple_Whonix\-Workstations for details\.
+.IP "\[ci]" 4
+Whonix\-Workstation Firewall might also enhance the connectivity of certain custom installed applications, because it rejects traffic, which is not supported by Tor so or so, such as UDP and ICMP\. For example, ping will fail instantly (reject), instant of waiting for a timeout (drop)\.
+.IP "" 0
+.SH "WWW"
+https://www\.whonix\.org
+.SH "AUTHOR"
+This man page has been written by Patrick Schleizer (adrelanos@riseup\.net)\.
