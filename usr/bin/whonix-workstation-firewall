@@ -23,9 +23,9 @@
 set -e
 
 error_handler() {
-   echo "$0 ##################################################" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
-   echo "$0 Whonix firewall script failed!" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
-   echo "$0 ##################################################" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
+   echo "$0 ##################################################"
+   echo "$0 ERROR: Whonix firewall script failed!"
+   echo "$0 ##################################################"
 
    exit 1
 }
@@ -33,15 +33,10 @@ error_handler() {
 trap "error_handler" ERR
 
 init() {
-   echo "OK: Loading Whonix firewall..."
+   output_cmd "OK: Loading Whonix firewall..."
 
    set -o pipefail
    set -o errtrace
-
-   ## In case sdwdate is not installed.
-   ## Defensive measure to not mess up file permissions.
-   mkdir --parents /run/sdwdate
-   chown --recursive sdwdate:sdwdate /run/sdwdate
 }
 
 source_config_folder() {
@@ -55,7 +50,7 @@ source_config_folder() {
       bash_n_exit_code="0"
       bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
       if [ ! "$bash_n_exit_code" = "0" ]; then
-         echo "Invalid config file: $i
+         output_cmd "Invalid config file: $i
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
@@ -228,7 +223,7 @@ qubes_dns() {
    fi
 
    if [ "$counter" -ge "2" ]; then
-      echo "OK: Qubes DNS firewall rules ok."
+      output_cmd "OK: Qubes DNS firewall rules ok."
    else
       $iptables_cmd -A OUTPUT -p udp --dport 53 -j ACCEPT
    fi
@@ -325,11 +320,11 @@ qubes_updates_proxy() {
 
    ## Detect if torified Qubes updates proxy was detected.
    if test -f "/run/qubes-service/whonix-secure-proxy" ; then
-      echo "OK: Torified Qubes Updates Proxy check ok. Full access to Qubes Updates Proxy."
+      output_cmd "OK: Torified Qubes Updates Proxy check ok. Full access to Qubes Updates Proxy."
       return 0
    fi
 
-   echo "OK: Torified Qubes Updates Proxy check not done yet. Limiting access to Qubes Updates Proxy to user 'updatesproxycheck'."
+   output_cmd "OK: Torified Qubes Updates Proxy check not done yet. Limiting access to Qubes Updates Proxy to user 'updatesproxycheck'."
 
    $iptables_cmd -A OUTPUT -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
    $iptables_cmd -A OUTPUT -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
@@ -526,27 +521,21 @@ date_cmd(){
    date -u +"%Y-%m-%d %T"
 }
 
-echo_and_sdwdate_log() {
-   if [ -e /run/qubes/this-is-templatevm ]; then
-      ## Do not write to /var/log/sdwdate.log in TemplateVM since sdwdate does
-      ## not run there to avoid polluting the log.
-      echo "$(date_cmd) - $0 - $@"
-   else
-      echo "$(date_cmd) - $0 - $@" | sudo -u sdwdate tee -a /var/log/sdwdate.log || true
-   fi
+output_cmd() {
+   echo "$(date_cmd) - $0 - $@"
 }
 
 firewall_mode_detection() {
    if [ ! "$firewall_mode" = "" ]; then
-      echo_and_sdwdate_log "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
+      output_cmd "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
       if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-         echo_and_sdwdate_log "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
+         output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
          return 0
       elif [ "$firewall_mode" = "full" ]; then
-         echo_and_sdwdate_log "OK: (Full torified network access allowed.)"
+         output_cmd "OK: (Full torified network access allowed.)"
          return 0
       else
-         echo_and_sdwdate_log "ERROR: firewall_mode must be set to either 'full' or 'timesync-fail-closed'."
+         output_cmd "ERROR: firewall_mode must be set to either 'full' or 'timesync-fail-closed'."
          error_handler
       fi
    fi
@@ -554,15 +543,15 @@ firewall_mode_detection() {
    ## Run Whonix firewall in full mode if sdwdate already succeeded.
    if [ -e /run/sdwdate/first_success ]; then
       firewall_mode=full
-      echo_and_sdwdate_log "OK: (/run/sdwdate/first_success exists.)"
+      output_cmd "OK: (/run/sdwdate/first_success exists.)"
    elif [ -e /run/sdwdate/success ]; then
       firewall_mode=full
-      echo_and_sdwdate_log "OK: (/run/sdwdate/success exists.)"
+      output_cmd "OK: (/run/sdwdate/success exists.)"
    ## /run/whonix_firewall/first_run_current_boot.status already exists,
    ## therefore have Whonix firewall run in full mode.
    elif [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
       firewall_mode=full
-      echo_and_sdwdate_log "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
+      output_cmd "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
    else
       ## /run/whonix_firewall/first_run_current_boot.status does not yet exist,
       ## therefore return 'yes, timesync-fail-closed'.
@@ -570,18 +559,16 @@ firewall_mode_detection() {
    fi
 
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      echo_and_sdwdate_log "OK: First run during current boot, therefore running in timesync-fail-closed mode."
-      echo_and_sdwdate_log "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
+      output_cmd "OK: First run during current boot, therefore running in timesync-fail-closed mode."
+      output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
    else
-      echo_and_sdwdate_log "OK: Consecutive run during current boot, therefore running in full mode."
-      echo_and_sdwdate_log "OK: (Full torified network access allowed.)"
+      output_cmd "OK: Consecutive run during current boot, therefore running in full mode."
+      output_cmd "OK: (Full torified network access allowed.)"
    fi
 }
 
 end() {
-   echo "OK: The firewall should not show any messages,"
-   echo "OK: besides output beginning with prefix OK:..."
-   echo_and_sdwdate_log "OK: Whonix firewall loaded."
+   output_cmd "OK: Whonix firewall loaded."
 
    exit 0
 }

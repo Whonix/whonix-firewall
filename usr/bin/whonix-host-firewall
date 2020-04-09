@@ -294,8 +294,6 @@ ip6tables -A FORWARD -j REJECT
 ## End
 ###########################
 
-echo "OK: The firewall should not show any messages,"
-echo "OK: besides output beginning with prefix OK:..."
 echo "OK: Whonix firewall loaded."
 
 exit 0

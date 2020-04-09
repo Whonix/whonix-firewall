@@ -67,4 +67,3 @@
   owner /run/utmp rk,
 
   /tmp/tmp.* rw,
-  owner /var/log/sdwdate.log w,
