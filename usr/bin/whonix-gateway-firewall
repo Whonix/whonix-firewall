@@ -48,7 +48,7 @@ source_config_folder() {
       bash_n_exit_code="0"
       bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
       if [ ! "$bash_n_exit_code" = "0" ]; then
-         output_cmd "Invalid config file: $i
+         output_cmd "ERROR: Invalid config file: $i
    bash_n_exit_code: $bash_n_exit_code
    bash_n_output:
    $bash_n_output" >&2
@@ -127,8 +127,6 @@ variables_defaults() {
    else
       NO_NAT_USERS+=" $TOR_USER"
    fi
-
-   output_cmd "OK: NO_NAT_USERS: $NO_NAT_USERS"
 
    if command -v "qubesdb-read" >/dev/null 2>&1 ; then
       [ -n "$INT_IF" ] || INT_IF="vif+"
