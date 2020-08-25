@@ -1,3 +1,21 @@
+commit 390a47b68f97336952e6afc092c2c66f4cf948a7
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 25 11:01:13 2020 -0400
+
+    remove auto restart feature if networking did not come up
+    
+    remove /lib/systemd/system/onion-grater.service.d/30_whonix_cpfpy.conf
+    
+    fixes https://forums.whonix.org/t/bug-restart-of-sdwdate-in-whonix-gateway-causes-100-cpu-use-of-tor-browser-in-whonix-workstation/9541/15
+    
+    fixes https://github.com/QubesOS/qubes-issues/issues/4969
+
+commit 8434ba010debc74eaca4460b52cc8d658e71f6be
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 16 08:50:55 2020 -0400
+
+    bumped changelog version
+
 commit d5a7b25e4f1aad7b4d264541c57b17bad7ff1bbc
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Apr 15 14:05:41 2020 -0400
