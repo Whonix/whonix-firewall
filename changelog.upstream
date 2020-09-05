@@ -1,3 +1,31 @@
+commit ac6e7a8fcf195747b69428dc5d4847435dbf03c8
+Merge: 2fcafcc 7bac90a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Sep 5 05:24:47 2020 -0400
+
+    Merge remote-tracking branch 'github/master'
+
+commit 7bac90ad0be19865f9b38fc37fc0989948f2027e
+Merge: 2fcafcc 840176c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Sep 5 08:57:51 2020 +0000
+
+    Merge pull request #6 from madaidan/fixes
+    
+    Fixes
+
+commit 840176c7c906c475b6bc78e1c8b1d0681713536b
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Fri Sep 4 19:37:01 2020 +0000
+
+    Fixes
+
+commit 2fcafccaa91d1333689b432e8a9a74bd0c300113
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Aug 25 12:17:16 2020 -0400
+
+    bumped changelog version
+
 commit 390a47b68f97336952e6afc092c2c66f4cf948a7
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 25 11:01:13 2020 -0400
