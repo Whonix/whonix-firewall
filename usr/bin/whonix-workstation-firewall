@@ -447,7 +447,11 @@ ipv4_output() {
       ##     0 packets transmitted, 0 received, +100 errors
       ##
       ## The next rule ensures, that only tcp can leave and achieves the desired result from (2).
-      $iptables_cmd -A OUTPUT ! -p tcp -j REJECT --reject-with icmp-port-unreachable
+      if [ "$firewall_allow_udp" = "true" ]; then
+         true "Allowing UDP."
+      else
+         $iptables_cmd -A OUTPUT ! -p tcp -j REJECT --reject-with icmp-port-unreachable
+      fi
 
       if [ "$firewall_mode" = "timesync-fail-closed" ]; then
          true "firewall_mode is $firewall_mode, therefore prohibiting all outgoing traffic."
