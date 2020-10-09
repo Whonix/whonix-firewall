@@ -15,7 +15,7 @@
 
   /dev/pts/[0-9]* rw,
 
-  /{,usr/}bin/bash ix,
+  /{,usr/}bin/bash mrix,
   /{,usr/}bin/chown mrix,
   /{,usr/}bin/date mrix,
   /{,usr/}bin/mktemp mrix,
