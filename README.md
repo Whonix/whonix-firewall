@@ -16,7 +16,7 @@ Whonix-Gateway Firewall Features:
 Do not remove, unless you no longer wish to use Whonix.
 ## How to install `whonix-firewall` using apt-get ##
 
-1\. Download [Whonix's Signing Key]().
+1\. Download Whonix's Signing Key.
 
 ```
 wget https://www.whonix.org/patrick.asc
