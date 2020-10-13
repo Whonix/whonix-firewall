@@ -1,3 +1,37 @@
+commit 4825aca0b34438a2e4a392bad174674d53fdb33f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 13 12:35:07 2020 -0400
+
+    readme
+
+commit f5487cb0eeea7202dc916f83b63e38b6fb44adfd
+Merge: 81d39af 016a01a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Oct 9 10:42:53 2020 -0400
+
+    Merge remote-tracking branch 'github/master'
+
+commit 016a01a78bf620947372b884e842f219844aca8d
+Merge: 81d39af f91ee6b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Oct 9 14:42:24 2020 +0000
+
+    Merge pull request #8 from madaidan/apparmor
+    
+    AppArmor fix
+
+commit f91ee6ba5aa65fcd11efaa6b7275de4db431bd21
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Fri Oct 9 14:37:11 2020 +0000
+
+    Fix
+
+commit 81d39af305b29b6ed5271a6017f19c13eac8c283
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Sep 14 06:45:42 2020 -0400
+
+    bumped changelog version
+
 commit 0964ee8ce4d40b0c50c81588d820441e66a07beb
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Sep 14 06:41:51 2020 -0400
