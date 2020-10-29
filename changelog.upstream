@@ -1,3 +1,15 @@
+commit 6be33c51a4a35e7340032470356a2f0a25c90f1e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Oct 29 16:14:17 2020 -0400
+
+    --tlsv1.3
+
+commit 863e3b4604bd4b26216d65baca3f67de41ff3699
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 13 12:35:08 2020 -0400
+
+    bumped changelog version
+
 commit 4825aca0b34438a2e4a392bad174674d53fdb33f
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Oct 13 12:35:07 2020 -0400
