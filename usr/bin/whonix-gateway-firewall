@@ -147,6 +147,9 @@ variables_defaults() {
          NON_TOR_GATEWAY=""
       else
          ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
+	 ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
+	 ## drop-in configuration snippet in /etc/whonix_firewall.d
+	 ## configuration folder instead.
          NON_TOR_GATEWAY="\
             127.0.0.0-127.0.0.24 \
             192.168.0.0-192.168.0.24 \
@@ -168,6 +171,9 @@ variables_defaults() {
          "
       else
          ## 10.0.2.2/24: VirtualBox DHCP
+	 ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
+	 ## drop-in configuration snippet in /etc/whonix_firewall.d
+	 ## configuration folder instead.
          LOCAL_NET="\
             127.0.0.0-127.0.0.24 \
             192.168.0.0-192.168.0.24 \
@@ -185,9 +191,14 @@ variables_defaults() {
       ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
       if command -v "qubesdb-read" >/dev/null 2>&1 ; then
          ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
-         ## 10.152.152.10 is hardcoded in some places.
+         ## Qubes-Whonix:
+         ## IP HARDCODED. IP 10.152.152.10 is hardcoded in some places.
          WORKSTATION_DEST_SOCKSIFIED="10.137.0.0/16,10.138.0.0/16,10.152.152.10"
       else
+         ## Non-Qubes-Whonix:
+	 ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
+	 ## drop-in configuration snippet in /etc/whonix_firewall.d
+	 ## configuration folder instead.
          WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
       fi
    fi

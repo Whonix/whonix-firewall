@@ -37,6 +37,7 @@ fi
 ip_transparent="$(UWT_DEV_PASSTHROUGH=1 curl --fail --tlsv1.3 --proto =https https://check.torproject.org | grep IP)"
 
 ## tests should should fail if transparent proxying is disabled
+## IP HARDCODED but no need to change since comment only.
 #UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://10.152.152.12:9117 --tlsv1.3 --proto =https https://check.torproject.org | grep IP
 
 ## Using usual uwt.
@@ -46,6 +47,7 @@ ip_socksified_two="$(UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://$(qubes
 
 ip_socksified_three="$(UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://192.168.0.10:9117 --tlsv1.3 --proto =https https://check.torproject.org | grep IP)"
 
+## IP HARDCODED but only used during manual testing.
 ip_socksified_four="$(UWT_DEV_PASSTHROUGH=1 curl --fail --proxy socks5h://10.152.152.10:9117 --tlsv1.3 --proto =https https://check.torproject.org | grep IP)"
 
 if [ "$ip_transparent" = "$ip_socksified_uwt" ]; then
