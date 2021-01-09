@@ -326,7 +326,7 @@ qubes_updates_proxy() {
    fi
 
    ## Detect if torified Qubes updates proxy was detected.
-   if test -f "/run/qubes-service/whonix-secure-proxy" ; then
+   if test -f "/run/updatesproxycheck/whonix-secure-proxy" ; then
       output_cmd "OK: Torified Qubes Updates Proxy check ok. Full access to Qubes Updates Proxy."
       return 0
    fi
