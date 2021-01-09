@@ -1,3 +1,17 @@
+commit 3321bfd14f3b4f50f1699aba1a9193f555688e9a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 9 00:54:46 2021 -0500
+
+    update path
+    
+    https://phabricator.whonix.org/T1001
+
+commit c43b1fb954d30a1e87ac49a09261a6f2bb886b3e
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Nov 14 11:58:18 2020 -0500
+
+    bumped changelog version
+
 commit 111c24d3b7dff86f282bcce26419a1d11a9b4c2a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Nov 14 08:01:10 2020 -0500
