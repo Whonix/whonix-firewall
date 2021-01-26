@@ -101,7 +101,7 @@ variables_defaults() {
    [ -n "$UPDATESPROXYCHECK_USER" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)"
 
    [ -n "$SDWDATE_USER" ] || SDWDATE_USER="$(id -u sdwdate)" || true
-   [ -n "$WHONIXCHECK_USER" ] || WHONIXCHECK_USER="$(id -u whonixcheck)" || true
+   [ -n "$SYSTEMCHECK_USER" ] || SYSTEMCHECK_USER="$(id -u systemcheck)" || true
 
    [ -n "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" ] || TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER="true"
 
@@ -122,7 +122,7 @@ variables_defaults() {
    [ -n "$SOCKS_PORT_GIT" ] || SOCKS_PORT_GIT="9107"
    [ -n "$SOCKS_PORT_SDWDATE" ] || SOCKS_PORT_SDWDATE="9108"
    [ -n "$SOCKS_PORT_WGET" ] || SOCKS_PORT_WGET="9109"
-   [ -n "$SOCKS_PORT_WHONIXCHECK" ] || SOCKS_PORT_WHONIXCHECK="9110"
+   [ -n "$SOCKS_PORT_SYSTEMCHECK" ] || SOCKS_PORT_SYSTEMCHECK="9110"
    [ -n "$SOCKS_PORT_BITCOIN" ] || SOCKS_PORT_BITCOIN="9111"
    [ -n "$SOCKS_PORT_PRIVOXY" ] || SOCKS_PORT_PRIVOXY="9112"
    [ -n "$SOCKS_PORT_POLIPO" ] || SOCKS_PORT_POLIPO="9113"
@@ -415,13 +415,13 @@ ipv4_output() {
          fi
       fi
 
-      if [ "$TUNNEL_FIREWALL_ALLOW_WHONIXCHECK" = "true" ]; then
+      if [ "$TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK" = "true" ]; then
          if [ "$firewall_mode" = "timesync-fail-closed" ]; then
             true
          else
-            $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-            $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-            $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+            $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+            $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+            $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
          fi
       fi
    else
@@ -471,9 +471,9 @@ ipv4_output() {
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
          $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
 
-         $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-         $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-         $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+         $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
 
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT

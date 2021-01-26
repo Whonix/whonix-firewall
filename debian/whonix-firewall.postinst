@@ -8,7 +8,7 @@
 #### category networking and firewall
 #### description
 ## Creates linux user accounts used by firewall script
-## clearnet tunnel notunnel whonixcheck sdwdate updatesproxycheck.
+## clearnet tunnel notunnel systemcheck sdwdate updatesproxycheck.
 ##
 ## Creates empty /etc/whonix_firewall.d/50_user.conf which is not owned
 ## by any package if not existing.
@@ -30,7 +30,7 @@ case "$1" in
    configure)
       true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
-      user_account_list="clearnet tunnel notunnel whonixcheck sdwdate updatesproxycheck"
+      user_account_list="clearnet tunnel notunnel systemcheck sdwdate updatesproxycheck"
       for user_account in $user_account_list ; do
          ## Create users so we do not have to depend on these packages.
          ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html

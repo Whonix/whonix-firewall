@@ -87,7 +87,7 @@ variables_defaults() {
    [ -n "$ROOT_USER" ] || ROOT_USER="$(id -u root)"
    [ -n "$TUNNEL_USER" ] || TUNNEL_USER="$(id -u tunnel)"
    [ -n "$SDWDATE_USER" ] || SDWDATE_USER="$(id -u sdwdate)"
-   [ -n "$WHONIXCHECK_USER" ] || WHONIXCHECK_USER="$(id -u whonixcheck)"
+   [ -n "$SYSTEMCHECK_USER" ] || SYSTEMCHECK_USER="$(id -u systemcheck)"
 
    ## No NAT for clearnet user.
    NO_NAT_USERS+=" $CLEARNET_USER"
@@ -236,7 +236,7 @@ variables_defaults() {
    [ -n "$SOCKS_PORT_GIT" ] || SOCKS_PORT_GIT="9107"
    [ -n "$SOCKS_PORT_SDWDATE" ] || SOCKS_PORT_SDWDATE="9108"
    [ -n "$SOCKS_PORT_WGET" ] || SOCKS_PORT_WGET="9109"
-   [ -n "$SOCKS_PORT_WHONIXCHECK" ] || SOCKS_PORT_WHONIXCHECK="9110"
+   [ -n "$SOCKS_PORT_SYSTEMCHECK" ] || SOCKS_PORT_SYSTEMCHECK="9110"
    [ -n "$SOCKS_PORT_BITCOIN" ] || SOCKS_PORT_BITCOIN="9111"
    [ -n "$SOCKS_PORT_PRIVOXY" ] || SOCKS_PORT_PRIVOXY="9112"
    [ -n "$SOCKS_PORT_POLIPO" ] || SOCKS_PORT_POLIPO="9113"
@@ -652,7 +652,7 @@ ipv4_output() {
       ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
       ## Otherwise in Whonix firewall full mode this rule is redundant.
       $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$WHONIXCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
 
       $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
    fi
