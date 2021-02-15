@@ -1,3 +1,30 @@
+commit 179bfa820381cace9659a9b4755cc5c4ebd85d48
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Feb 15 09:25:43 2021 -0500
+
+    readme
+
+commit 21b467cb71400da373aa3b96bf76d8b22c9ff65b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 12 03:30:55 2021 -0500
+
+    disable the following Tor stream isolation ports
+    
+    - privoxy 9112
+    - polipo 9113
+    - Tor Browser Updater by Whonix Developers gpg 9116
+    - TorChat 9119
+    - mixmaster update 9120
+    - mixmaster 9121
+    
+    since deprecated applications in Whonix and no longer in use
+
+commit 18599d0a9e3382280d8028a7283cc1fbefe25bb5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Jan 26 09:54:41 2021 -0500
+
+    bumped changelog version
+
 commit 2a58d628f23e3e74d50bdf58928e8c211a71b26a
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 26 07:08:36 2021 -0500
