@@ -643,7 +643,8 @@ ipv4_output() {
       local socks_port_item
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
          true "$socks_port_item: ${!socks_port_item}"
-         if [ "$SOCKS_PORT_SDWDATE" = "${!socks_port_item}" ]; then
+         ## SOCKS_PORT_SDWDATE
+         if [ "$socks_port_item" = "9108" ]; then
             continue
          fi
          $iptables_cmd -A OUTPUT -p tcp --dport "${!socks_port_item}" --dst "127.0.0.1" -j REJECT
