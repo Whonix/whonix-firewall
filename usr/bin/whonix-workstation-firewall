@@ -110,6 +110,28 @@ variables_defaults() {
 
    [ -n "$qubes_updates_proxy_port" ] || qubes_updates_proxy_port="8082"
 
+   [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
+
+   ## Destinations you do not routed through VPN.
+   if [ "$LOCAL_NET" = "" ]; then
+      if command -v "qubesdb-read" >/dev/null 2>&1 ; then
+         LOCAL_NET="\
+            127.0.0.0-127.0.0.24 \
+            10.137.0.0-10.138.255.255 \
+         "
+      else
+         ## 10.0.2.2/24: VirtualBox DHCP
+         ## IP HARDCODED unfortunately. Use a /etc/whonix_firewall.d configuration folder drop-in if you want to change it.
+         LOCAL_NET="\
+            127.0.0.0-127.0.0.24 \
+            192.168.0.0-192.168.0.24 \
+            192.168.1.0-192.168.1.24 \
+            10.152.152.0-10.152.152.24 \
+            10.0.2.2-10.0.2.24 \
+         "
+      fi
+   fi
+
    ## Socks Ports for per application circuits.
    [ -n "$SOCKS_PORT_TOR_DEFAULT" ] || SOCKS_PORT_TOR_DEFAULT="9050"
    [ -n "$SOCKS_PORT_TB" ] || SOCKS_PORT_TB="9100"
@@ -141,28 +163,6 @@ variables_defaults() {
    [ -n "$SOCKS_PORT_TBB_DEFAULT" ] || SOCKS_PORT_TBB_DEFAULT="9150"
 
    socks_ports_list="$(compgen -v | grep SOCKS\_PORT\_)"
-
-   [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
-
-   ## Destinations you do not routed through VPN.
-   if [ "$LOCAL_NET" = "" ]; then
-      if command -v "qubesdb-read" >/dev/null 2>&1 ; then
-         LOCAL_NET="\
-            127.0.0.0-127.0.0.24 \
-            10.137.0.0-10.138.255.255 \
-         "
-      else
-         ## 10.0.2.2/24: VirtualBox DHCP
-         ## IP HARDCODED unfortunately. Use a /etc/whonix_firewall.d configuration folder drop-in if you want to change it.
-         LOCAL_NET="\
-            127.0.0.0-127.0.0.24 \
-            192.168.0.0-192.168.0.24 \
-            192.168.1.0-192.168.1.24 \
-            10.152.152.0-10.152.152.24 \
-            10.0.2.2-10.0.2.24 \
-         "
-      fi
-   fi
 }
 
 ipv4_defaults() {
