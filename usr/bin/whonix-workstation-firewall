@@ -431,11 +431,9 @@ ipv4_output() {
          if [ "$firewall_mode" = "timesync-fail-closed" ]; then
             true
          else
-            local socks_port_tbb
-            for socks_port_tbb in $SOCKS_PORT_TBB_DOWNLOAD ; do
-               $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_tbb" --dst "$GATEWAY_IP" -j ACCEPT
-               $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_tbb" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
-            done
+            ## SOCKS_PORT_TBB_DOWNLOAD
+            $iptables_cmd -A OUTPUT -p tcp --dport "9115" --dst "$GATEWAY_IP" -j ACCEPT
+            $iptables_cmd -A OUTPUT -p tcp --dport "9115" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
          fi
       fi
 
