@@ -432,7 +432,7 @@ ipv4_output() {
             true
          else
             local socks_port_tbb
-            for socks_port_tbb in $SOCKS_PORT_TBB_DOWNLOAD $SOCKS_PORT_TBB_GPG ; do
+            for socks_port_tbb in $SOCKS_PORT_TBB_DOWNLOAD ; do
                $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_tbb" --dst "$GATEWAY_IP" -j ACCEPT
                $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_tbb" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
             done
