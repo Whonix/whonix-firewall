@@ -1,3 +1,66 @@
+commit 490e3409e1c86c10f17fc35ebecf95093bef3d7d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 19:20:55 2021 -0400
+
+    fix
+
+commit 24dd32c992a426c43d08e972fb8004614a314f75
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 19:19:25 2021 -0400
+
+    remove deprecated variable SOCKS_PORT_TBB_GPG
+
+commit 4949f4e8721b5ec219fd3e2dd8fe9763f3980683
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 19:16:44 2021 -0400
+
+    comment
+
+commit 674e313906b59087cd1f6dcb8a574192c24e3a2f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 19:14:31 2021 -0400
+
+    fix
+
+commit ce798b56e00d6969124d414477d2f6a7af2e588c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 19:12:12 2021 -0400
+
+    refactoring
+    
+    https://forums.whonix.org/t/internal-open-ports-setting/11404
+
+commit d10be32db0e745a9b439e9e8a3d398dd6c278e33
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 18:51:38 2021 -0400
+
+    comment
+
+commit 810e08f2b21a65387208926d72a3379008af8ae2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 18:49:47 2021 -0400
+
+    refactoring
+
+commit f8fce1133fbb1408b281dd9175b781f657fa3d5e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 10 18:46:18 2021 -0400
+
+    Whonix-Gateway firewall: implement INTERNAL_OPEN_PORTS
+    
+    Deprecate support for `SOCKS_PORT_CUSTOM=" 9230 "` syntax,
+    use INTERNAL_OPEN_PORTS+=" 9230 " instead.
+    
+    refactoring / code simplification
+    
+    https://forums.whonix.org/t/internal-open-ports-setting/11404
+
+commit 3f39be5fe4b5d8b2ac335313631b0e6f896ae580
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Mar 18 09:16:29 2021 -0400
+
+    bumped changelog version
+
 commit 8b1f94d6947561085fff036af118b9a767e260bd
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Mar 18 08:57:25 2021 -0400
