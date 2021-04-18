@@ -1,3 +1,41 @@
+commit 3454cc6babcfe3fa182f834eabd865207092a287
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 03:56:26 2021 -0400
+
+    comment
+
+commit 05a3701c37bfb4e4fa769129dd8d4ff65765e95b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 03:54:00 2021 -0400
+
+    fix
+    
+    https://forums.whonix.org/t/internal-open-ports-setting/11404
+
+commit 786da8da790da66ff6b3e807da06a6947a61a39d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 03:52:26 2021 -0400
+
+    minor
+
+commit 00d561c3ee2e6de7de58e237c1eea93c43bccd84
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 03:51:53 2021 -0400
+
+    minor
+
+commit ad16784531fa81384a1fa70208f2ec3cfedced5c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 03:50:10 2021 -0400
+
+    minor
+
+commit 325c9ef2db7b24c1ce059c2528980c8674009e80
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 17 08:23:24 2021 -0400
+
+    bumped changelog version
+
 commit 490e3409e1c86c10f17fc35ebecf95093bef3d7d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 10 19:20:55 2021 -0400
