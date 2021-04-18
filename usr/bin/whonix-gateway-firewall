@@ -481,7 +481,7 @@ ipv4_input_rules() {
       ## Allow socksified applications.
       if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
          for socks_port in $INTERNAL_OPEN_PORTS; do
-            true "$socks_port: ${!socks_port}"
+            true "socks_port: ${!socks_port}"
             $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "${!socks_port}" -j ACCEPT
          done
 
