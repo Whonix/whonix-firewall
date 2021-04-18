@@ -499,7 +499,7 @@ ipv4_input_rules() {
 
       if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
          for socks_port in $INTERNAL_OPEN_PORTS; do
-            true "$socks_port: ${!socks_port}"
+            true "socks_port: ${!socks_port}"
             ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
             $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "${!socks_port}" -j REDIRECT --to-ports "${!socks_port}"
          done
