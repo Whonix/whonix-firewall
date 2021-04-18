@@ -642,7 +642,7 @@ ipv4_output() {
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
       local socks_port_item
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
-         true "$socks_port_item: ${!socks_port_item}"
+         true "socks_port_item: $socks_port_item"
          ## SOCKS_PORT_SDWDATE
          if [ "$socks_port_item" = "9108" ]; then
             ## Permit connections to SOCKS_PORT_SDWDATE 9108 even in
@@ -650,7 +650,7 @@ ipv4_output() {
             ## succeed and firewall_mode could never change to 'full'.
             continue
          fi
-         $iptables_cmd -A OUTPUT -p tcp --dport "${!socks_port_item}" --dst "127.0.0.1" -j REJECT
+         $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_item" --dst "127.0.0.1" -j REJECT
       done
    fi
 
