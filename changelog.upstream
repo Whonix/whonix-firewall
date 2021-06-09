@@ -1,3 +1,31 @@
+commit ff3e83a1ef0427d1854fa51bed4cd56fd77fa339
+Merge: f7544f3 3e0967a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 9 10:46:17 2021 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 3e0967a041c0b62a28bdf6b4c37802af267a0a7a
+Merge: f7544f3 b5e89fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 9 10:45:27 2021 -0400
+
+    Merge pull request #9 from madaidan/denials
+    
+    Fix denial errors
+
+commit b5e89fb8e13e8b64006aa65cd39baa2c50abe823
+Author: madaidan <50278627+madaidan@users.noreply.github.com>
+Date:   Tue Jun 8 20:04:31 2021 +0000
+
+    Fix denial errors
+
+commit f7544f3792e98c9382107ec5f23ce3c87e5c15d8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 18 04:21:08 2021 -0400
+
+    bumped changelog version
+
 commit 65c3ca57e2ba26b1a270c6e32867bd6457530d90
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 18 04:20:24 2021 -0400
