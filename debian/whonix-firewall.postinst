@@ -14,8 +14,8 @@
 ## by any package if not existing.
 #### meta end
 
-if [ -f /usr/lib/helper-scripts/pre.bsh ]; then
-   source /usr/lib/helper-scripts/pre.bsh
+if [ -f /usr/libexec/helper-scripts/pre.bsh ]; then
+   source /usr/libexec/helper-scripts/pre.bsh
 fi
 
 set -e
