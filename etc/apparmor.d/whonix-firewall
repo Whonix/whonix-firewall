@@ -12,7 +12,7 @@
 }
 
 ## TODO: disable complain mode
-/usr/lib/whonix-firewall/** flags=(attach_disconnected,complain) {
+/usr/libexec/whonix-firewall/** flags=(attach_disconnected,complain) {
   #include <abstractions/whonix-firewall>
 
   # Site-specific additions and overrides. See local/README for details.

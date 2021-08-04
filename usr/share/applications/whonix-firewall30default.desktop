@@ -11,7 +11,7 @@
 
 [Desktop Entry]
 Type=Application
-Exec=/usr/lib/whonix-firewall/firewall30default
+Exec=/usr/libexec/whonix-firewall/firewall30default
 Name=Global Firewall Settings
 GenericName=Whonix Default Firewall Settings
 Comment=Open Whonix Default Firewall from /etc/whonix_firewall.d/ folder in editor

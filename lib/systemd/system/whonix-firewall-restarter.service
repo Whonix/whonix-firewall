@@ -9,7 +9,7 @@
 ## created, i.e. when sdwdate succeeded so Whonix firewall will move from
 ## timesync-fail-closed mode to full mode.
 ##
-## Starts <code>/usr/lib/whonix-firewall/firewall-restarter</code>.
+## Starts <code>/usr/libexec/whonix-firewall/firewall-restarter</code>.
 #### meta end
 
 [Unit]
@@ -27,7 +27,7 @@ Type=simple
 SuccessExitStatus=143
 KillMode=control-group
 
-ExecStart=/usr/lib/whonix-firewall/firewall-restarter
+ExecStart=/usr/libexec/whonix-firewall/firewall-restarter
 
 [Install]
 WantedBy=multi-user.target

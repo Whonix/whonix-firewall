@@ -6,7 +6,7 @@
 #### project Whonix
 #### category networking and firewall
 #### description
-## Runs <code>/usr/lib/whonix-firewall/enable-firewall</code>.
+## Runs <code>/usr/libexec/whonix-firewall/enable-firewall</code>.
 ##
 ## On Whonix-Gateway or Whonix-Workstation (if
 ## <code>/usr/share/anon-gw-base-files/gateway</code> or
@@ -53,7 +53,7 @@ Conflicts=shutdown.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/lib/whonix-firewall/enable-firewall
+ExecStart=/usr/libexec/whonix-firewall/enable-firewall
 
 [Install]
 WantedBy=sysinit.target
