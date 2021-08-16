@@ -1,3 +1,21 @@
+commit a64c6bd19810df3fdb36d68f29d5acfb27ab43e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Aug 16 16:08:27 2021 -0400
+
+    update path
+
+commit fa732e9634a44fa5a5952eebef953d735be64106
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Aug 16 16:07:27 2021 -0400
+
+    /var/log/journal/{,**} r,
+
+commit 24e81cc806237596c35b50263dd180e7026e43ad
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Aug 5 17:13:33 2021 -0400
+
+    bumped changelog version
+
 commit b935b29546023ef926c805dc7f3f325365a56634
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Aug 4 15:02:22 2021 -0400
