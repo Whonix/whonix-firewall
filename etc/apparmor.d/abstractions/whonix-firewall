@@ -51,6 +51,7 @@
   @{PROC}/@{pid}/{,environ,sched,stat,fd/} r,
 
   /run/log/journal/{,**} r,
+  /var/log/journal/{,**} r,
   /run/sdwdate/{,**} rw,
   owner /run/anon-firewall/{,*} w,
   owner /run/whonix_firewall/* w,
