@@ -29,7 +29,7 @@
   /{,usr/}bin/tee mrix,
   /{,usr/}bin/whonix-{gateway,workstation}-firewall mrix,
   /{,usr/}bin/whonix_firewall mrix,
-  /{,usr/}lib/whonix-firewall/* mrix,
+  /{,usr/}libexec/whonix-firewall/* mrix,
   /{,usr/}sbin/xtables-nft-multi mrix,
 
   /etc/group r,
