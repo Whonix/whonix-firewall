@@ -47,6 +47,9 @@ After=qubes-mount-home.service
 ## For /run/qubes/this-is-* files.
 After=qubes-sysinit.target
 
+## LKRG.
+After=systemd-modules-load.service
+
 Before=shutdown.target
 Conflicts=shutdown.target
 
