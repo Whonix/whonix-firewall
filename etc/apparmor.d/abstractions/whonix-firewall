@@ -34,6 +34,7 @@
 
   ## TODO
   /{,usr/}bin/qubesdb-read rUx,
+  /{,usr/}bin/qubesdb-cmd rUx,
 
   /etc/group r,
   /etc/sudoers r,
