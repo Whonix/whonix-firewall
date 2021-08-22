@@ -1,3 +1,15 @@
+commit 69e89b344c3cffaa9553b83b77858d60f040fba8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 22 06:40:42 2021 -0400
+
+    TODO: /{,usr/}bin/qubesdb-cmd rUx,
+
+commit d6cf54fd54ad5c35454b0a1d820d307d335c0874
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 22 06:31:41 2021 -0400
+
+    bumped changelog version
+
 commit 3f49f174091e5e84a801c81fc36082c7ad135e5a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 22 06:31:24 2021 -0400
