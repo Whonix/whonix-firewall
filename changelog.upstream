@@ -1,3 +1,15 @@
+commit 3f49f174091e5e84a801c81fc36082c7ad135e5a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 22 06:31:24 2021 -0400
+
+    owner /run/updatesproxycheck/** rw,
+
+commit 21317957712f70582e4c563466f777f32ba93d27
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 22 05:52:50 2021 -0400
+
+    bumped changelog version
+
 commit c9356e1e34b50fbc2de0a3d73e0f0c50cd486f92
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 22 05:52:22 2021 -0400
