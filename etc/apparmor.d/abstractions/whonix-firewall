@@ -61,6 +61,7 @@
   owner /run/qubes-service/ rw,
   owner /run/qubes-service/* w,
   owner /run/updatesproxycheck/ rw,
+  owner /run/updatesproxycheck/** rw,
   owner /run/utmp rk,
 
   /tmp/tmp.* rw,
