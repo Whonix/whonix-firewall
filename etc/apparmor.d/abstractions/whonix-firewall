@@ -32,6 +32,9 @@
   /{,usr/}libexec/whonix-firewall/* mrix,
   /{,usr/}sbin/xtables-nft-multi mrix,
 
+  ## TODO
+  /{,usr/}bin/qubesdb-read rUx,
+
   /etc/group r,
   /etc/sudoers r,
   /etc/sudoers.d/{,*} r,
