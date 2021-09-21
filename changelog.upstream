@@ -1,3 +1,15 @@
+commit 81c92bcb6e49364bf78482b0015f4d75b1868f71
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 21 06:27:21 2021 -0400
+
+    apparmor
+
+commit 200ec7b2521c2877baafc5c45ccea28e867e93b9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Sep 12 12:05:43 2021 -0400
+
+    bumped changelog version
+
 commit 1395a11ddbff511a1ab3c312891dd50c8da9ea87
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 11 16:31:47 2021 -0400
