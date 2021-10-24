@@ -501,9 +501,15 @@ ipv4_output() {
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
          $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
       else
-         true "firewall_mode is $firewall_mode, therefore allowing all outgoing traffic."
-         ## Allow full outgoing connection but no incoming stuff.
-         $iptables_cmd -A OUTPUT -j ACCEPT
+         if [ "$outgoing_allow_ip_list" = "" ]; then
+            true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
+            $iptables_cmd -A OUTPUT -j ACCEPT
+         else
+            for outgoing_allow_ip_item in $outgoing_allow_ip_list ; do
+               true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is set, allowing IP: $outgoing_allow_ip_list"
+               $iptables_cmd -A OUTPUT -p tcp --dst "$outgoing_allow_ip_item" -j ACCEPT
+            done
+         fi
       fi
 
       ## Log.
