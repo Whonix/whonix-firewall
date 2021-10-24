@@ -1,3 +1,15 @@
+commit 0dcdd8d318f895aee862d618778edbdb27647443
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 24 14:03:58 2021 -0400
+
+    add opt-in configuration for outgoing IP filtering through `outgoing_allow_ip_list`
+
+commit 03906e21a2e7b7336719aaf6ca39e6f1a04dab60
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 21 06:27:32 2021 -0400
+
+    bumped changelog version
+
 commit 81c92bcb6e49364bf78482b0015f4d75b1868f71
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Sep 21 06:27:21 2021 -0400
