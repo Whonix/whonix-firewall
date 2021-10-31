@@ -51,6 +51,7 @@
   owner /etc/resolv.conf r,
   owner /etc/shadow r,
   owner /etc/whonix_firewall.d/{,*} r,
+  owner /usr/local/etc/whonix_firewall.d/{,*} r,
 
   @{PROC}/{filesystems,sys/kernel/random/boot_id} r,
   @{PROC}/@{pid}/{,environ,sched,stat,fd/} r,
