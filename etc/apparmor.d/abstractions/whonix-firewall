@@ -55,6 +55,7 @@
 
   @{PROC}/{filesystems,sys/kernel/random/boot_id} r,
   @{PROC}/@{pid}/{,environ,sched,stat,fd/} r,
+  owner @{PROC}/*/comm r,
 
   /run/log/journal/{,**} r,
   /var/log/journal/{,**} r,
