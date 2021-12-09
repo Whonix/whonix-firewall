@@ -1,3 +1,49 @@
+commit 8b24141b046785edc94b1d4584b01c9e65663f68
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 4 16:08:58 2021 -0500
+
+    output
+
+commit 61e95c4c9908856abf5ba60efbc6c7f0f90cb140
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 4 16:07:46 2021 -0500
+
+    refactoring
+
+commit 9cb99610d5193dda547457ae2f864f5e1de427cd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 4 16:06:41 2021 -0500
+
+    refactoring
+
+commit 79b0ded43249414570b614b01d0a5710b227690c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 4 16:04:56 2021 -0500
+
+    refactoring
+
+commit cda126ad2bdde60c42a3fc3349845ad3afc5ebf4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Dec 4 16:03:48 2021 -0500
+
+    use `curl` with `--cert-status`
+    
+    Thanks for @yodawins for the suggestion!
+    
+    https://forums.whonix.org/t/scurl-secure-curl-wrapper/7125/8
+
+commit 7cc5b0d978bd74c338718c208d70ea861e8afb3d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 9 14:32:36 2021 -0500
+
+    readme
+
+commit 9d29605a8ae1fc6ce1b4828cc824e11b764596a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 1 05:42:41 2021 -0400
+
+    bumped changelog version
+
 commit 3084000a7a828c6c76d883f2823c02b886a25eff
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 1 05:03:53 2021 -0400
