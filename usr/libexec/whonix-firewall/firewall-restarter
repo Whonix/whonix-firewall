@@ -10,8 +10,10 @@
 ## restart firewall when sdwdate succeeded
 #### meta end
 
-set -x
+#set -x
 set -e
+
+true "START: $0"
 
 ## inotifywait requires the folder to already exist.
 mkdir --parents /run/updatesproxycheck
