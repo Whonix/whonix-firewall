@@ -16,5 +16,5 @@ Name=Reload Firewall
 GenericName=Reload Whonix Firewall
 Comment=Reload Whonix Firewall using "sudo /usr/bin/whonix_firewall"
 Categories=System
-Icon=/usr/share/icons/anon-icon-pack/quick_restart.ico
+Icon=/usr/share/icons/icon-pack-dist/quick_restart.ico
 Keywords=system;Whonix;firewall

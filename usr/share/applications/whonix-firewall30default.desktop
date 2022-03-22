@@ -16,5 +16,5 @@ Name=Global Firewall Settings
 GenericName=Whonix Default Firewall Settings
 Comment=Open Whonix Default Firewall from /etc/whonix_firewall.d/ folder in editor
 Categories=System
-Icon=/usr/share/icons/anon-icon-pack/firewall.png
+Icon=/usr/share/icons/icon-pack-dist/firewall.png
 Keywords=system;Whonix;firewall
