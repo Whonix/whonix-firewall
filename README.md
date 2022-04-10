@@ -14,6 +14,7 @@ Whonix-Gateway Firewall Features:
 - optional Tor relay
 
 Do not remove, unless you no longer wish to use Whonix.
+
 ## How to install `whonix-firewall` using apt-get ##
 
 1\. Download the APT Signing Key.
@@ -22,7 +23,7 @@ Do not remove, unless you no longer wish to use Whonix.
 wget https://www.whonix.org/derivative.asc
 ```
 
-Users can [check Whonix Signing Key](https://www.whonix.org/wiki/Whonix_Signing_Key) for better security.
+Users can [check Whonix Signing Key](https://www.whonix.org/wiki/Signing_Key) for better security.
 
 2\. Add the APT Signing Key..
 
@@ -56,7 +57,9 @@ Can be build using standard Debian package build tools such as:
 dpkg-buildpackage -b
 ```
 
-See instructions. (Replace `generic-package` with the actual name of this package `whonix-firewall`.)
+See instructions.
+
+NOTE: Replace `generic-package` with the actual name of this package `whonix-firewall`.
 
 * **A)** [easy](https://www.whonix.org/wiki/Dev/Build_Documentation/generic-package/easy), _OR_
 * **B)** [including verifying software signatures](https://www.whonix.org/wiki/Dev/Build_Documentation/generic-package)
