@@ -15,7 +15,7 @@
 #### meta end
 
 if [ -f /usr/libexec/helper-scripts/pre.bsh ]; then
-   source /usr/libexec/helper-scripts/pre.bsh
+  source /usr/libexec/helper-scripts/pre.bsh
 fi
 
 set -e
@@ -27,32 +27,32 @@ true "
 "
 
 case "$1" in
-   configure)
-      true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
+configure)
+  true "INFO: Configuring $DPKG_MAINTSCRIPT_PACKAGE..."
 
-      user_account_list="clearnet tunnel notunnel systemcheck sdwdate updatesproxycheck"
-      for user_account in $user_account_list ; do
-         ## Create users so we do not have to depend on these packages.
-         ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
-         adduser --home "/run/$user_account" --no-create-home --quiet --system --group --shell /bin/false "$user_account" || true
-      done
+  user_account_list="clearnet tunnel notunnel systemcheck sdwdate updatesproxycheck"
+  for user_account in $user_account_list; do
+    ## Create users so we do not have to depend on these packages.
+    ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
+    adduser --home "/run/$user_account" --no-create-home --quiet --system --group --shell /bin/false "$user_account" || true
+  done
 
-      ## Whonix start menu entry is using:
-      ## xdg-open /etc/whonix_firewall.d/50_user.conf
-      ## In XFCE this reuslts in:
-      ## exo-open /etc/whonix_firewall.d/50_user.conf
-      ## Which fails if the file is non-existing.
-      if [ ! -f /etc/whonix_firewall.d/50_user.conf ]; then
-         mkdir -p /etc/whonix_firewall.d || true
-         touch /etc/whonix_firewall.d/50_user.conf || true
-      fi
+  ## Whonix start menu entry is using:
+  ## xdg-open /etc/whonix_firewall.d/50_user.conf
+  ## In XFCE this reuslts in:
+  ## exo-open /etc/whonix_firewall.d/50_user.conf
+  ## Which fails if the file is non-existing.
+  if [ ! -f /etc/whonix_firewall.d/50_user.conf ]; then
+    mkdir -p /etc/whonix_firewall.d || true
+    touch /etc/whonix_firewall.d/50_user.conf || true
+  fi
 
-      true "INFO: End configuring $DPKG_MAINTSCRIPT_PACKAGE."
+  true "INFO: End configuring $DPKG_MAINTSCRIPT_PACKAGE."
 
-      ;;
+  ;;
 
-   *)
-      ;;
+*) ;;
+
 esac
 
 true "INFO: debhelper beginning here."
