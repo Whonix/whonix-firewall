@@ -618,6 +618,7 @@ main() {
    init
    firewall_mode_detection
    variables_defaults
+   source_config_folder
    ipv4_defaults
    ipv4_preparation
    ipv4_drop_invalid_incoming_packages
@@ -634,5 +635,4 @@ main() {
    end
 }
 
-source_config_folder
 main
