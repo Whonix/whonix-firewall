@@ -30,16 +30,19 @@ trap "error_handler" ERR
 
 shopt -s nullglob
 for i in /etc/whonix_firewall.d/*.conf /rw/config/whonix_firewall.d/*.conf /usr/local/etc/whonix_firewall.d/*.conf; do
-   bash_n_exit_code="0"
-   bash_n_output="$(bash -n "$i" 2>&1)" || { bash_n_exit_code="$?" ; true; };
-   if [ ! "$bash_n_exit_code" = "0" ]; then
-      echo "ERROR: Invalid config file: $i
+  bash_n_exit_code="0"
+  bash_n_output="$(bash -n "$i" 2>&1)" || {
+    bash_n_exit_code="$?"
+    true
+  }
+  if [ ! "$bash_n_exit_code" = "0" ]; then
+    echo "ERROR: Invalid config file: $i
 bash_n_exit_code: $bash_n_exit_code
 bash_n_output:
 $bash_n_output" >&2
-      exit 1
-   fi
-   source "$i"
+    exit 1
+  fi
+  source "$i"
 done
 
 ###########################
@@ -149,20 +152,20 @@ iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT
 ## allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should
 ## still be dropped to filter for example ICMP time stamp requests.
 if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
-   iptables -A INPUT -p icmp -j DROP
+  iptables -A INPUT -p icmp -j DROP
 fi
 
 ## Allow all incoming connections on the virtual VPN network interface,
 ## when VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
-   iptables -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
+  iptables -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
 fi
 
 ## Allow incoming SSH connections on the external interface.
 ## DISABLED BY DEFAULT. For testing/debugging only.
 if [ "$GATEWAY_ALLOW_INCOMING_SSH" = "1" ]; then
-   iptables -A INPUT -i "$EXT_IF" -p tcp --dport 22 -j ACCEPT
+  iptables -A INPUT -i "$EXT_IF" -p tcp --dport 22 -j ACCEPT
 fi
 
 ## Log.
@@ -190,25 +193,25 @@ iptables -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
 ## Drop invalid outgoing packages,
 ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
 if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
-   ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
-   iptables -A OUTPUT -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
-   iptables -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
-   #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
-   #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
+  ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
+  iptables -A OUTPUT -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
+  iptables -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
+  #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
+  #iptables -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
 
-   ## DROP INVALID SYN PACKETS
-   iptables -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-   iptables -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-   iptables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
+  ## DROP INVALID SYN PACKETS
+  iptables -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+  iptables -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+  iptables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
 
-   ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-   iptables -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
+  ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
+  iptables -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
 
-   ## DROP INCOMING MALFORMED XMAS PACKETS
-   iptables -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
+  ## DROP INCOMING MALFORMED XMAS PACKETS
+  iptables -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
 
-   ## DROP INCOMING MALFORMED NULL PACKETS
-   iptables -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
+  ## DROP INCOMING MALFORMED NULL PACKETS
+  iptables -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
 fi
 
 ###########################
@@ -221,7 +224,7 @@ fi
 ## if VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
-   iptables -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
+  iptables -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
 fi
 
 ## Existing connections are accepted.
@@ -231,18 +234,18 @@ iptables -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
 ## unless VPN_FIREWALL mode is enabled.
 ## ENABLED BY DEFAULT.
 if [ ! "$VPN_FIREWALL" = "1" ]; then
-   for NET in $NON_TOR_GATEWAY; do
-      iptables -A OUTPUT -d "$NET" -j ACCEPT
-   done
+  for NET in $NON_TOR_GATEWAY; do
+    iptables -A OUTPUT -d "$NET" -j ACCEPT
+  done
 fi
 
 ## Connections to VPN servers are allowed,
 ## when VPN_FIREWALL mode is enabled.
 ## DISABLED BY DEFAULT.
 if [ "$VPN_FIREWALL" = "1" ]; then
-   for SERVER in $VPN_SERVERS; do
-      iptables -A OUTPUT -d "$SERVER" -j ACCEPT
-   done
+  for SERVER in $VPN_SERVERS; do
+    iptables -A OUTPUT -d "$SERVER" -j ACCEPT
+  done
 fi
 
 ## clearnet user is allowed to connect any outside target.
@@ -254,8 +257,8 @@ iptables -A OUTPUT -m owner --uid-owner "$CLEARNET_USER" -j ACCEPT
 ## No output filtering yet!
 
 if [ "$VPN_FIREWALL" = "1" ]; then
-   ## Reject all other outgoing traffic.
-   iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
+  ## Reject all other outgoing traffic.
+  iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 fi
 
 ###########################
