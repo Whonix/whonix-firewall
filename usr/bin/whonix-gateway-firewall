@@ -130,7 +130,7 @@ variables_defaults() {
     NO_NAT_USERS+=" $TOR_USER"
   fi
 
-  if command -v "qubesdb-read" >/dev/null 2>&1; then
+  if command -v "qubesdb-read" > /dev/null 2>&1; then
     [ -n "$INT_IF" ] || INT_IF="vif+"
     [ -n "$INT_TIF" ] || INT_TIF="vif+"
   fi
@@ -145,7 +145,7 @@ variables_defaults() {
   [ -n "$INT_TIF" ] || INT_TIF="eth1"
 
   if [ "$NON_TOR_GATEWAY" = "" ]; then
-    if command -v "qubesdb-read" >/dev/null 2>&1; then
+    if command -v "qubesdb-read" > /dev/null 2>&1; then
       NON_TOR_GATEWAY=""
     else
       ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
@@ -166,7 +166,7 @@ variables_defaults() {
 
   ## Destinations you do not routed through VPN, only for Whonix-Gateway.
   if [ "$LOCAL_NET" = "" ]; then
-    if command -v "qubesdb-read" >/dev/null 2>&1; then
+    if command -v "qubesdb-read" > /dev/null 2>&1; then
       LOCAL_NET="\
             127.0.0.0-127.0.0.24 \
             10.137.0.0-10.138.255.255 \
@@ -191,7 +191,7 @@ variables_defaults() {
     ##
     ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
     ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
-    if command -v "qubesdb-read" >/dev/null 2>&1; then
+    if command -v "qubesdb-read" > /dev/null 2>&1; then
       ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
       ## Qubes-Whonix:
       ## IP HARDCODED. IP 10.152.152.10 is hardcoded in some places.
@@ -364,7 +364,7 @@ qubes() {
     $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
 
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
-    if getent passwd vm-updates >/dev/null; then
+    if getent passwd vm-updates > /dev/null; then
       $iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
       $iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
     fi
@@ -849,15 +849,15 @@ usage() {
 
 while true; do
   case $1 in
-  -i | --info)
-    info_enabled=1
-    shift 1
-    ;;
-  "") break ;;
-  -h | --help | *)
-    usage
-    exit 1
-    ;;
+    -i | --info)
+      info_enabled=1
+      shift 1
+      ;;
+    "") break ;;
+    -h | --help | *)
+      usage
+      exit 1
+      ;;
   esac
 done
 

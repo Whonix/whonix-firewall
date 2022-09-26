@@ -81,10 +81,10 @@ variables_defaults() {
   ## Internal interface
   [ -n "$INT_IF" ] || INT_IF="eth1"
 
-  if command -v "qubesdb-read" >/dev/null 2>&1; then
+  if command -v "qubesdb-read" > /dev/null 2>&1; then
     ## Would fail if netvm is set to 'none',
     ## which is the case in Qubes R4 TemplateVMs.
-    [ -n "$GATEWAY_IP" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2>/dev/null)" || GATEWAY_IP="127.0.0.1"
+    [ -n "$GATEWAY_IP" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2> /dev/null)" || GATEWAY_IP="127.0.0.1"
   else
     ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
     ## drop-in configuration snippet in /etc/whonix_firewall.d
@@ -116,7 +116,7 @@ variables_defaults() {
 
   ## Destinations you do not routed through VPN.
   if [ "$LOCAL_NET" = "" ]; then
-    if command -v "qubesdb-read" >/dev/null 2>&1; then
+    if command -v "qubesdb-read" > /dev/null 2>&1; then
       LOCAL_NET="\
             127.0.0.0-127.0.0.24 \
             10.137.0.0-10.138.255.255 \
@@ -241,12 +241,12 @@ qubes_dns() {
   ## Using '2>/dev/null' because 'qubesdb-read' DNS would fail in Qubes R4
   ## TemplateVMs, because these are non-networked by default.
 
-  if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns 2>/dev/null)"; then
+  if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns 2> /dev/null)"; then
     $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_primary_dns" -j ACCEPT
     counter=$((counter + 1))
   fi
 
-  if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns 2>/dev/null)"; then
+  if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns 2> /dev/null)"; then
     $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_secondary_dns" -j ACCEPT
     counter=$((counter + 1))
   fi
@@ -345,7 +345,7 @@ ipv4_reject_invalid_outgoing_packages() {
 
 qubes_updates_proxy() {
   ## Detect Qubes.
-  if ! command -v "qubesdb-read" >/dev/null 2>&1; then
+  if ! command -v "qubesdb-read" > /dev/null 2>&1; then
     return 0
   fi
 
@@ -464,7 +464,7 @@ ipv4_output() {
       ## Allow Whonix-Workstation to query Whonix-Gateway for DNS.
       $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP" -j ACCEPT
       $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
-      if command -v "qubesdb-read" >/dev/null 2>&1; then
+      if command -v "qubesdb-read" > /dev/null 2>&1; then
         qubes_dns
       fi
     fi
@@ -655,15 +655,15 @@ usage() {
 
 while test -n $1; do
   case $1 in
-  -i | --info)
-    info_enabled=1
-    shift 1
-    ;;
-  "") break ;;
-  -h | --help | *)
-    usage
-    exit 1
-    ;;
+    -i | --info)
+      info_enabled=1
+      shift 1
+      ;;
+    "") break ;;
+    -h | --help | *)
+      usage
+      exit 1
+      ;;
   esac
 done
 
