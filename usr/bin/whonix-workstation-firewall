@@ -286,7 +286,7 @@ ipv4_input_rules() {
         output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}"
       fi
       for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
-        
+
          $iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
       done
 
@@ -625,8 +625,9 @@ end() {
 
 main() {
    init
-   firewall_mode_detection
    variables_defaults
+   source_config_folder
+   firewall_mode_detection
    ipv4_defaults
    ipv4_preparation
    ipv4_drop_invalid_incoming_packages
@@ -657,6 +658,4 @@ while test -n $1; do
   esac
 done
 
-
-source_config_folder
 main

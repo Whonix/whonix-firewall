@@ -817,8 +817,9 @@ print_variables(){
 
 main() {
    init
-   firewall_mode_detection
    variables_defaults
+   source_config_folder
+   firewall_mode_detection
    [ "${info_enabled}" = "1" ] && print_variables
    ipv4_defaults
    ipv4_preparation
@@ -850,6 +851,4 @@ while true; do
   esac
 done
 
-
-source_config_folder
 main
