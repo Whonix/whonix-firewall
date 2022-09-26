@@ -225,9 +225,7 @@ variables_defaults() {
    [ -n "$FLASHPROXY_PORT" ] || FLASHPROXY_PORT="9000"
 
    if [ ! "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
-      if [ "${info_enabled}" = "1" ]; then
-        output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='${WORKSTATION_ALLOW_SOCKSIFIED}', Socks Ports will not be opened"
-      fi
+      output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='${WORKSTATION_ALLOW_SOCKSIFIED}', Socks Ports will not be opened"
       return 0
    fi
 
