@@ -1,3 +1,87 @@
+commit 058c03186f9474ba7223a4766d4ed92e89a750ba
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 26 15:31:42 2022 -0400
+
+    verbosity
+
+commit 6b89523b06aa3886d2291421e2a299b663f1bac3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 26 15:28:25 2022 -0400
+
+    refactoring
+
+commit cdf359736aa6e81e0c7200723849afd0b2ba9277
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 26 15:23:46 2022 -0400
+
+    set all defaults first before parsing config folder
+    
+    Thanks to @nyxnor for the report!
+    
+    https://forums.whonix.org/t/how-to-unset-firewall-array/15604
+
+commit 4a8faa6cce08f31f6b6dcb77556f900013b4bf34
+Merge: 9da705e 67760a6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 26 15:21:08 2022 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 67760a66e95b41fd2bb85ff3a63fd2279fff1a37
+Merge: 9da705e 5ec6e1f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 26 15:15:37 2022 -0400
+
+    Merge pull request #1 from nyxnor/master
+    
+    info messages to firewall
+
+commit 5ec6e1fac57c5dd6d5f6a80170c61476e95141b3
+Author: nyxnor <nyxnor@protonmail.com>
+Date:   Mon Sep 26 15:58:16 2022 +0000
+
+    not opening ports instead of closing, wording
+
+commit 3c5fd6b4eb446cd997384818bee35d2baf0629bc
+Author: nyxnor <nyxnor@protonmail.com>
+Date:   Mon Sep 26 15:49:08 2022 +0000
+
+    be verbose no port is being opened
+
+commit 682be4c3c74668f21aa873bfe92c3a52d8caf81b
+Author: nyxnor <nyxnor@protonmail.com>
+Date:   Mon Sep 26 15:41:25 2022 +0000
+
+    double quote "$@"
+
+commit b303e37017a25fe6893cc739cde430755f3c1f92
+Author: nyxnor <nyxnor@protonmail.com>
+Date:   Mon Sep 26 15:32:33 2022 +0000
+
+    always inform SOCKSIFIED if set to '0'
+
+commit 950cdaf1a721aa3e5230ab83d1fe678b84a64a56
+Author: nyxnor <nyxnor@protonmail.com>
+Date:   Mon Sep 26 14:29:00 2022 +0000
+
+    print informational messages
+    
+    https://forums.whonix.org/t/print-ports-opened-in-the-firewall/15469
+
+commit 6e0dd7bed6138f2121938399b6d30bc9f2016ce1
+Author: nyxnor <nyxnor@protonmail.com>
+Date:   Mon Sep 26 14:28:23 2022 +0000
+
+    make the main script pass arguments to child
+    
+    also make the script be called by path, so easier to test by placing script at /usr/local/bin
+
+commit 9da705ed2ce94994c952df4c8cd57631a1b83b7a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 8 11:13:16 2022 -0400
+
+    bumped changelog version
+
 commit 1ce2cbaf1243145b5c3b1b0eccf7b8c5173b3a54
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 8 09:40:16 2022 -0400
