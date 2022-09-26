@@ -286,7 +286,6 @@ ipv4_input_rules() {
         output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}"
       fi
       for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
-
          $iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
       done
 
@@ -373,7 +372,7 @@ ipv4_output() {
    ## https://phabricator.whonix.org/T533#11025
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
       local socks_port_item
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: not opening Internal TCP ports ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate, because firewall_mode=$firewall_mode"
+      output_cmd "INFO: not opening Internal TCP ports ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate, because firewall_mode=$firewall_mode"
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
          true "socks_port_item: $socks_port_item"
          ## SOCKS_PORT_SDWDATE

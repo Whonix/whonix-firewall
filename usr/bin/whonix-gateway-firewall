@@ -653,9 +653,7 @@ ipv4_output() {
    ## Prevent connections to Tor SocksPorts.
    ## https://phabricator.whonix.org/T533#11025
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      if [ "${info_enabled}" = "1" ]; then
-        output_cmd "INFO: not opening Internal TCP port(s): ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate, because firewall_mode=${firewall_mode}"
-      fi
+      output_cmd "INFO: not opening Internal TCP port(s): ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate, because firewall_mode=${firewall_mode}"
       local socks_port_item
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
          true "socks_port_item: $socks_port_item"
