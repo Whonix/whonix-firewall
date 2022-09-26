@@ -225,6 +225,9 @@ variables_defaults() {
    [ -n "$FLASHPROXY_PORT" ] || FLASHPROXY_PORT="9000"
 
    if [ ! "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+      if [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='${WORKSTATION_ALLOW_SOCKSIFIED}', Socks Ports will not be opened"
+      fi
       return 0
    fi
 
@@ -411,17 +414,24 @@ ipv4_input_rules() {
       fi
 
       local local_port_to_open
+      if test -n "${EXTERNAL_OPEN_PORTS}" && [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: Opening External TCP port(s): ${EXTERNAL_OPEN_PORTS}"
+      fi
       for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
          $iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$local_port_to_open" -j ACCEPT
       done
 
       local local_udp_port_to_open
+      if test -n "${EXTERNAL_UDP_OPEN_PORTS}" && [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS}"
+      fi
       for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
          $iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
       done
 
       if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
-         $iptables_cmd -A INPUT -j ACCEPT
+        [ "${info_enabled}" = "1" ] && output_cmd "INFO: EXTERNAL_OPEN_ALL='true', opening all External ports"
+        $iptables_cmd -A INPUT -j ACCEPT
       fi
    done
 
@@ -480,6 +490,10 @@ ipv4_input_rules() {
 
       ## Allow socksified applications.
       if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+        if [ "${info_enabled}" = "1" ]; then
+          output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='1', Socks Ports will be reacheable from the Workstation"
+          output_cmd "INFO: opening Internal TCP port(s): ${INTERNAL_OPEN_PORTS}"
+        fi
          for socks_port in $INTERNAL_OPEN_PORTS; do
             true "socks_port: $socks_port"
             $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$socks_port" -j ACCEPT
@@ -487,6 +501,7 @@ ipv4_input_rules() {
 
          ## Accept ports 9152-9189 prepared for user custom applications.
          ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
+         [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9189 for user custom applications"
          $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
       fi
    done
@@ -640,6 +655,9 @@ ipv4_output() {
    ## Prevent connections to Tor SocksPorts.
    ## https://phabricator.whonix.org/T533#11025
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+      if [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: firewall_mode=${firewall_mode}, closing Internal TCP port(s): ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate"
+      fi
       local socks_port_item
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
          true "socks_port_item: $socks_port_item"
@@ -773,10 +791,37 @@ end() {
    exit 0
 }
 
+
+variable_list="
+WORKSTATION_TRANSPARENT_TCP
+WORKSTATION_TRANSPARENT_DNS
+WORKSTATION_ALLOW_SOCKSIFIED
+CONTROL_PORT_FILTER_PROXY_ENABLE
+GATEWAY_ALLOW_INCOMING_DIR_PORT
+GATEWAY_ALLOW_INCOMING_OR_PORT
+DIR_PORT
+OR_PORT
+GATEWAY_TRANSPARENT_TCP
+GATEWAY_TRANSPARENT_UDP
+GATEWAY_TRANSPARENT_DNS
+ALLOW_GATEWAY_ROOT_USER
+ALLOW_GATEWAY_USER_USER
+GATEWAY_ALLOW_INCOMING_SSH
+GATEWAY_ALLOW_INCOMING_ICMP
+"
+
+print_variables(){
+  for item in ${variable_list}; do
+    eval value='$'"${item}"
+    output_cmd "INFO: ${item}=${value}"
+  done
+}
+
 main() {
    init
    firewall_mode_detection
    variables_defaults
+   [ "${info_enabled}" = "1" ] && print_variables
    ipv4_defaults
    ipv4_preparation
    ipv4_drop_invalid_incoming_packages
@@ -792,6 +837,21 @@ main() {
    status_files
    end
 }
+
+usage(){
+  echo "usage: ${0##*/} [options]
+    -i, --info           print informational messages
+    -h, --help           print this help message"
+}
+
+while true; do
+  case $1 in
+    -i|--info) info_enabled=1; shift 1;;
+    "") break;;
+    -h|--help|*) usage; exit 1;;
+  esac
+done
+
 
 source_config_folder
 main

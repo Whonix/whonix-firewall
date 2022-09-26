@@ -274,16 +274,24 @@ ipv4_input_rules() {
       true "firewall_mode is $firewall_mode, therefore not opening EXTERNAL_OPEN_PORTS."
    else
       local local_port_to_open
+      if test -n "${EXTERNAL_OPEN_PORTS}" && [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: Opening External TCP port(s): ${EXTERNAL_OPEN_PORTS}"
+      fi
       for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
          $iptables_cmd -A INPUT -p tcp --dport "$local_port_to_open" -j ACCEPT
       done
 
       local local_udp_port_to_open
+      if test -n "${EXTERNAL_UDP_OPEN_PORTS}" && [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS}"
+      fi
       for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
+        
          $iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
       done
 
       if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
+         [ "${info_enabled}" = "1" ] && output_cmd "INFO: EXTERNAL_OPEN_ALL='true', all external ports will be opened"
          $iptables_cmd -A INPUT -j ACCEPT
       fi
    fi
@@ -365,6 +373,7 @@ ipv4_output() {
    ## https://phabricator.whonix.org/T533#11025
    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
       local socks_port_item
+      [ "${info_enabled}" = "1" ] && output_cmd "firewall_mode='${firewall_mode}', closing all internal TCP ports ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate"
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
          true "socks_port_item: $socks_port_item"
          ## SOCKS_PORT_SDWDATE
@@ -633,6 +642,21 @@ main() {
    status_files
    end
 }
+
+usage(){
+  echo "usage: ${0##*/} [options]
+    -i, --info           print informational messages
+    -h, --help           print this help message"
+}
+
+while test -n $1; do
+  case $1 in
+    -i|--info) info_enabled=1; shift 1;;
+    "") break;;
+    -h|--help|*) usage; exit 1;;
+  esac
+done
+
 
 source_config_folder
 main
