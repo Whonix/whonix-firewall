@@ -530,6 +530,10 @@ ipv4_output() {
 }
 
 ipv6() {
+   if [ ! -d /proc/sys/net/ipv6/ ]; then
+      return 0
+   fi
+
    ## Policy DROP for all traffic as fallback.
    $ip6tables_cmd -P INPUT DROP
    $ip6tables_cmd -P OUTPUT DROP
@@ -637,9 +641,7 @@ main() {
    ipv4_forward
    ipv4_reject_invalid_outgoing_packages
    ipv4_output
-   if [ -d /proc/sys/net/ipv6/ ]; then
-     ipv6
-   fi
+   ipv6
    status_files
    end
 }

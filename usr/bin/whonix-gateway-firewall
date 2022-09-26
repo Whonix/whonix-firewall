@@ -695,6 +695,10 @@ ipv4_output() {
 }
 
 ipv6() {
+   if [ ! -d /proc/sys/net/ipv6/ ]; then
+      return 0
+   fi
+
    ## Policy DROP for all traffic as fallback.
    $ip6tables_cmd -P INPUT DROP
    $ip6tables_cmd -P OUTPUT DROP
@@ -809,6 +813,9 @@ GATEWAY_ALLOW_INCOMING_ICMP
 "
 
 print_variables(){
+  if [ ! "${info_enabled}" = "1" ]; then
+    return 0
+  fi
   for item in ${variable_list}; do
     eval value='$'"${item}"
     output_cmd "INFO: ${item}=${value}"
@@ -820,7 +827,7 @@ main() {
    variables_defaults
    source_config_folder
    firewall_mode_detection
-   [ "${info_enabled}" = "1" ] && print_variables
+   print_variables
    ipv4_defaults
    ipv4_preparation
    ipv4_drop_invalid_incoming_packages
@@ -830,9 +837,7 @@ main() {
    ipv4_forward
    ipv4_reject_invalid_outgoing_packages
    ipv4_output
-   if [ -d /proc/sys/net/ipv6/ ]; then
-     ipv6
-   fi
+   ipv6
    status_files
    end
 }
