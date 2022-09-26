@@ -19,17 +19,17 @@ set -o pipefail
 set -o errtrace
 
 error_handler() {
-   true "ERROR: ERROR!"
-   exit 1
+  true "ERROR: ERROR!"
+  exit 1
 }
 
 trap error_handler ERR
 
-if UWT_DEV_PASSTHROUGH=1 scurl --cert-status --fail --proxy socks5h://127.0.0.1:9117 https://check.torproject.org ; then
-   true "ERROR: FAILED!"
-   exit 1
+if UWT_DEV_PASSTHROUGH=1 scurl --cert-status --fail --proxy socks5h://127.0.0.1:9117 https://check.torproject.org; then
+  true "ERROR: FAILED!"
+  exit 1
 else
-   true "INFO: Failed as expected, ok."
+  true "INFO: Failed as expected, ok."
 fi
 
 ## No proxy settings at all, using "real" transparent proxying.
@@ -51,20 +51,20 @@ ip_socksified_three="$(UWT_DEV_PASSTHROUGH=1 scurl --cert-status --fail --proxy 
 ip_socksified_four="$(UWT_DEV_PASSTHROUGH=1 scurl --cert-status --fail --proxy socks5h://10.152.152.10:9117 https://check.torproject.org/api/ip)"
 
 if [ "$ip_transparent" = "$ip_socksified_uwt" ]; then
-   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
-   exit 1
+  true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
+  exit 1
 fi
 if [ "$ip_transparent" = "$ip_socksified_two" ]; then
-   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
-   exit 1
+  true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
+  exit 1
 fi
 if [ "$ip_transparent" = "$ip_socksified_three" ]; then
-   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
-   exit 1
+  true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
+  exit 1
 fi
 if [ "$ip_transparent" = "$ip_socksified_four" ]; then
-   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
-   exit 1
+  true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
+  exit 1
 fi
 
 true "OK."

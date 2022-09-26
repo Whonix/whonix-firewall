@@ -25,25 +25,25 @@ rm --force "$inotifywait_subshell_fifo"
 mkfifo "$inotifywait_subshell_fifo"
 
 {
-   inotifywait --quiet --recursive --monitor --event create --format "%w%f" "/run/sdwdate/" "/run/updatesproxycheck/" &
-   wait "$!"
+  inotifywait --quiet --recursive --monitor --event create --format "%w%f" "/run/sdwdate/" "/run/updatesproxycheck/" &
+  wait "$!"
 
-} > "$inotifywait_subshell_fifo" &
+} >"$inotifywait_subshell_fifo" &
 
 inotifywait_subshell_pid="$!"
 
 if [ -f "/run/sdwdate/first_success" ] || [ -f "/run/updatesproxycheck/whonix-secure-proxy" ]; then
-      if systemctl --no-pager --no-block status whonix-firewall ; then
-         systemctl --no-pager --no-block restart whonix-firewall || true
-      fi
+  if systemctl --no-pager --no-block status whonix-firewall; then
+    systemctl --no-pager --no-block restart whonix-firewall || true
+  fi
 fi
 
 while read file_name; do
-   if [ "$file_name" = "/run/sdwdate/first_success" ] || [ "$file_name" = "/run/updatesproxycheck/whonix-secure-proxy" ]; then
-      if systemctl --no-pager --no-block status whonix-firewall ; then
-         systemctl --no-pager --no-block restart whonix-firewall || true
-      fi
-   fi
-done < "$inotifywait_subshell_fifo"
+  if [ "$file_name" = "/run/sdwdate/first_success" ] || [ "$file_name" = "/run/updatesproxycheck/whonix-secure-proxy" ]; then
+    if systemctl --no-pager --no-block status whonix-firewall; then
+      systemctl --no-pager --no-block restart whonix-firewall || true
+    fi
+  fi
+done <"$inotifywait_subshell_fifo"
 
 wait "$inotifywait_subshell_pid"

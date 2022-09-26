@@ -35,54 +35,54 @@
 [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
 
 failed_status_file_create() {
-   mkdir -p /run/anon-firewall || true
-   touch /run/anon-firewall/failed.status || true
+  mkdir -p /run/anon-firewall || true
+  touch /run/anon-firewall/failed.status || true
 
-   ## Legacy.
-   ## mkdir should not be required for Qubes-Whonix, just as a defensive action.
-   ## mkdir is required for simpler Non-Qubes-Whonix code.
-   mkdir -p /run/qubes-service || true
-   touch /run/qubes-service/whonix-firewall-failed || true
+  ## Legacy.
+  ## mkdir should not be required for Qubes-Whonix, just as a defensive action.
+  ## mkdir is required for simpler Non-Qubes-Whonix code.
+  mkdir -p /run/qubes-service || true
+  touch /run/qubes-service/whonix-firewall-failed || true
 }
 
 firewall_lockdown() {
-   ## Set secure defaults.
-   $iptables_cmd -P INPUT DROP
-   $iptables_cmd -P FORWARD DROP
-   $iptables_cmd -P OUTPUT DROP
+  ## Set secure defaults.
+  $iptables_cmd -P INPUT DROP
+  $iptables_cmd -P FORWARD DROP
+  $iptables_cmd -P OUTPUT DROP
 
-   ## Flush old rules.
-   $iptables_cmd -F
-   $iptables_cmd -X
-   $iptables_cmd -t nat -F
-   $iptables_cmd -t nat -X
-   $iptables_cmd -t mangle -F
-   $iptables_cmd -t mangle -X
-   $iptables_cmd -t raw -F
-   $iptables_cmd -t raw -X
+  ## Flush old rules.
+  $iptables_cmd -F
+  $iptables_cmd -X
+  $iptables_cmd -t nat -F
+  $iptables_cmd -t nat -X
+  $iptables_cmd -t mangle -F
+  $iptables_cmd -t mangle -X
+  $iptables_cmd -t raw -F
+  $iptables_cmd -t raw -X
 
-   ## Set secure defaults.
-   $ip6tables_cmd -P INPUT DROP
-   $ip6tables_cmd -P OUTPUT DROP
-   $ip6tables_cmd -P FORWARD DROP
+  ## Set secure defaults.
+  $ip6tables_cmd -P INPUT DROP
+  $ip6tables_cmd -P OUTPUT DROP
+  $ip6tables_cmd -P FORWARD DROP
 
-   ## Flush old rules.
-   $ip6tables_cmd -F
-   $ip6tables_cmd -X
-   $ip6tables_cmd -t mangle -F
-   $ip6tables_cmd -t mangle -X
-   $ip6tables_cmd -t raw -F
-   $ip6tables_cmd -t raw -X
+  ## Flush old rules.
+  $ip6tables_cmd -F
+  $ip6tables_cmd -X
+  $ip6tables_cmd -t mangle -F
+  $ip6tables_cmd -t mangle -X
+  $ip6tables_cmd -t raw -F
+  $ip6tables_cmd -t raw -X
 }
 
 on_failure() {
-   failed_status_file_create
-   firewall_lockdown || true
-   exit 1
+  failed_status_file_create
+  firewall_lockdown || true
+  exit 1
 }
 
 if [ -e /usr/share/anon-gw-base-files/gateway ] || [ -e /usr/share/anon-ws-base-files/workstation ]; then
-    /usr/bin/whonix_firewall || on_failure
+  /usr/bin/whonix_firewall || on_failure
 else
-    on_failure
+  on_failure
 fi
