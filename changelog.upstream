@@ -1,3 +1,17 @@
+commit 2b01fe561435cdd86d76971dedab464b85913e3d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 10 12:13:19 2023 +0000
+
+    add deterministic tabels dumps for later comparison
+    
+    after port to nftables
+
+commit efc9844a78b35ff295b9d224b620e471e79d3bd7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 26 16:19:15 2022 -0400
+
+    bumped changelog version
+
 commit 48eb9e019551ea714fb6b1ee8de54c3b7c168571
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 26 16:16:24 2022 -0400
