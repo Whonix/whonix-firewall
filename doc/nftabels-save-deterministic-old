@@ -1,0 +1,193 @@
+sudo nft --stateless list ruleset
+table ip filter {
+	chain INPUT {
+		type filter hook input priority filter; policy drop;
+		ct state invalid counter drop
+		ct state invalid counter drop
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter drop
+		meta l4proto tcp tcp flags & (fin|syn) == fin|syn counter drop
+		meta l4proto tcp tcp flags & (syn|rst) == syn|rst counter drop
+		ip frag-off & 8191 != 0 counter drop
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter drop
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter drop
+		iifname "vif*" meta l4proto tcp tcp dport 8082 counter accept
+		iifname "lo" counter accept
+		ct state established counter accept
+		meta l4proto icmp counter drop
+		iifname "vif*" meta l4proto udp udp dport 5300 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9040 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9051 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9050 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9100 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9101 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9102 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9103 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9104 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9105 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9106 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9107 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9108 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9109 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9110 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9111 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9114 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9115 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9117 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9118 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9122 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9123 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9124 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9125 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9150 counter accept
+		iifname "vif*" meta l4proto tcp tcp dport 9152-9189 counter accept
+		counter drop
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+		counter reject with icmp type admin-prohibited
+	}
+
+	chain OUTPUT {
+		type filter hook output priority filter; policy drop;
+		oifname "vif*" meta l4proto tcp tcp sport 8082 counter accept
+		meta l4proto udp ip daddr 127.0.0.1 skuid 999 ct state new udp dport 5400 counter accept
+		meta l4proto tcp ip daddr 127.0.0.1 skuid 999 ct state new tcp dport 9041 counter accept
+		ct state invalid counter reject with icmp type admin-prohibited
+		ct state invalid counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn) == fin|syn counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (syn|rst) == syn|rst counter reject with icmp type admin-prohibited
+		ip frag-off & 8191 != 0 counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter reject with icmp type admin-prohibited
+		ct state established counter accept
+		oifname "lo" counter accept
+		skuid 107 counter accept
+		skuid 105 counter accept
+		skuid 104 counter accept
+		counter reject with icmp type admin-prohibited
+	}
+}
+table ip nat {
+	chain PR-QBS-SERVICES {
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.255.254 tcp dport 8082 counter
+	}
+
+	chain PREROUTING {
+		type nat hook prerouting priority dstnat; policy accept;
+		counter jump PR-QBS-SERVICES
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9051 counter redirect to :9051
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9051 counter redirect to :9051
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9051 counter redirect to :9051
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9050 counter redirect to :9050
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9050 counter redirect to :9050
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9050 counter redirect to :9050
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9100 counter redirect to :9100
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9100 counter redirect to :9100
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9100 counter redirect to :9100
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9101 counter redirect to :9101
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9101 counter redirect to :9101
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9101 counter redirect to :9101
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9102 counter redirect to :9102
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9102 counter redirect to :9102
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9102 counter redirect to :9102
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9103 counter redirect to :9103
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9103 counter redirect to :9103
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9103 counter redirect to :9103
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9104 counter redirect to :9104
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9104 counter redirect to :9104
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9104 counter redirect to :9104
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9105 counter redirect to :9105
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9105 counter redirect to :9105
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9105 counter redirect to :9105
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9106 counter redirect to :9106
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9106 counter redirect to :9106
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9106 counter redirect to :9106
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9107 counter redirect to :9107
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9107 counter redirect to :9107
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9107 counter redirect to :9107
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9108 counter redirect to :9108
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9108 counter redirect to :9108
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9108 counter redirect to :9108
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9109 counter redirect to :9109
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9109 counter redirect to :9109
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9109 counter redirect to :9109
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9110 counter redirect to :9110
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9110 counter redirect to :9110
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9110 counter redirect to :9110
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9111 counter redirect to :9111
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9111 counter redirect to :9111
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9111 counter redirect to :9111
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9114 counter redirect to :9114
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9114 counter redirect to :9114
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9114 counter redirect to :9114
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9115 counter redirect to :9115
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9115 counter redirect to :9115
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9115 counter redirect to :9115
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9117 counter redirect to :9117
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9117 counter redirect to :9117
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9117 counter redirect to :9117
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9118 counter redirect to :9118
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9118 counter redirect to :9118
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9118 counter redirect to :9118
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9122 counter redirect to :9122
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9122 counter redirect to :9122
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9122 counter redirect to :9122
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9123 counter redirect to :9123
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9123 counter redirect to :9123
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9123 counter redirect to :9123
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9124 counter redirect to :9124
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9124 counter redirect to :9124
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9124 counter redirect to :9124
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9125 counter redirect to :9125
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9125 counter redirect to :9125
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9125 counter redirect to :9125
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9150 counter redirect to :9150
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9150 counter redirect to :9150
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9150 counter redirect to :9150
+		iifname "vif*" meta l4proto tcp ip daddr 10.137.0.0/16 tcp dport 9152-9189 counter
+		iifname "vif*" meta l4proto tcp ip daddr 10.138.0.0/16 tcp dport 9152-9189 counter
+		iifname "vif*" meta l4proto tcp ip daddr 10.152.152.10 tcp dport 9152-9189 counter
+		iifname "vif*" meta l4proto udp udp dport 53 counter redirect to :5300
+		iifname "vif*" meta l4proto tcp tcp flags & (fin|syn|rst|ack) == syn counter redirect to :9040
+	}
+
+	chain OUTPUT {
+		type nat hook output priority -100; policy accept;
+		meta l4proto udp skuid 999 ct state new counter dnat to 127.0.0.1:5400
+		meta l4proto tcp skuid 999 ct state new counter dnat to 127.0.0.1:9041
+		skuid 107 counter return
+		skuid 105 counter return
+		skuid 104 counter return
+	}
+}
+table ip6 filter {
+	chain INPUT {
+		type filter hook input priority filter; policy drop;
+		counter drop
+	}
+
+	chain OUTPUT {
+		type filter hook output priority filter; policy drop;
+		counter reject
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+		counter reject
+	}
+}
+table ip raw {
+	chain PREROUTING {
+		type filter hook prerouting priority raw; policy accept;
+		iifname != "vif*" ip saddr 10.137.0.82 counter drop
+		iifname "vif11.0" ip saddr != 10.137.0.82 counter drop
+	}
+}
+table ip6 raw {
+	chain PREROUTING {
+		type filter hook prerouting priority raw; policy accept;
+		iifname "vif11.0" counter drop
+	}
+}
