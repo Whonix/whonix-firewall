@@ -14,7 +14,7 @@ while IFS= read -r line ; do
   line_without_leading_whitespace="${line#"${line%%[![:space:]]*}"}"
   read -r first _ <<< "$line_without_leading_whitespace" || true
 
-  if [ "$first" = '$iptables_cmd' ] || [ "$first" = '#$iptables_cmd' ]; then
+  if [ "$first" = '$iptables_cmd' ] || [ "$first" = '#$iptables_cmd' ] || [ "$first" = '##$iptables_cmd' ]; then
     continue
   fi
 
