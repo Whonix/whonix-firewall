@@ -150,16 +150,16 @@ variables_defaults() {
     if command -v "qubesdb-read" > /dev/null 2>&1; then
       NON_TOR_GATEWAY=""
     else
-      ## 10.0.2.2-10.0.2.24: VirtualBox DHCP
+      ## 10.0.2.2/24: VirtualBox DHCP
       ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
       ## drop-in configuration snippet in /etc/whonix_firewall.d
       ## configuration folder instead.
       NON_TOR_GATEWAY="\
-            127.0.0.0-127.0.0.24 \
-            192.168.0.0-192.168.0.24 \
-            192.168.1.0-192.168.1.24 \
-            10.152.152.0-10.152.152.24 \
-            10.0.2.2-10.0.2.24 \
+            127.0.0.0/24 \
+            192.168.0.0/24 \
+            192.168.1.0/24 \
+            10.152.152.0/24 \
+            10.0.2.2/24 \
          "
     fi
   fi
@@ -170,8 +170,9 @@ variables_defaults() {
   if [ "$LOCAL_NET" = "" ]; then
     if command -v "qubesdb-read" > /dev/null 2>&1; then
       LOCAL_NET="\
-            127.0.0.0-127.0.0.24 \
-            10.137.0.0-10.138.255.255 \
+            127.0.0.0/24 \
+            10.137.0.0/16 \
+            10.138.0.0/16 \
          "
     else
       ## 10.0.2.2/24: VirtualBox DHCP
@@ -179,11 +180,11 @@ variables_defaults() {
       ## drop-in configuration snippet in /etc/whonix_firewall.d
       ## configuration folder instead.
       LOCAL_NET="\
-            127.0.0.0-127.0.0.24 \
-            192.168.0.0-192.168.0.24 \
-            192.168.1.0-192.168.1.24 \
-            10.152.152.0-10.152.152.24 \
-            10.0.2.2-10.0.2.24 \
+            127.0.0.0/24 \
+            192.168.0.0/24 \
+            192.168.1.0/24 \
+            10.152.152.0/24 \
+            10.0.2.2/24 \
          "
     fi
   fi
@@ -691,7 +692,7 @@ nft_output() {
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j RETURN
         ## TODO: $NON_TOR_GATEWAY syntax
-        $nftables_cmd add rule ip nat OUTPUT ip daddr "$NON_TOR_GATEWAY" counter return
+        $nftables_cmd add rule ip nat OUTPUT ip daddr { "$NON_TOR_GATEWAY" } counter return
       done
     fi
   fi
