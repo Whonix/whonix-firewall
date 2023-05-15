@@ -332,23 +332,23 @@ nft_drop_invalid_incoming_packages() {
 
   ## DROP INVALID SYN PACKETS
   #$iptables_cmd -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP
-  $nftables_cmd add rule ip filter INPUT tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter drop
+  $nftables_cmd add rule ip filter INPUT tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|ack" counter drop
   #$iptables_cmd -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
-  $nftables_cmd add rule ip filter INPUT tcp flags & (fin|syn) == fin|syn counter drop
+  $nftables_cmd add rule ip filter INPUT tcp flags "&" "(fin|syn)" == "fin|syn" counter drop
   #$iptables_cmd -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-  $nftables_cmd add rule ip filter INPUT tcp flags & (syn|rst) == syn|rst counter drop
+  $nftables_cmd add rule ip filter INPUT tcp flags "&" "(syn|rst)" == "syn|rst" counter drop
 
   ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
   #$iptables_cmd -A INPUT -f -j DROP
-  $nftables_cmd add rule ip filter INPUT ip frag-off & 0x1fff != 0 counter drop
+  $nftables_cmd add rule ip filter INPUT ip frag-off "&" 0x1fff != 0 counter drop
 
   ## DROP INCOMING MALFORMED XMAS PACKETS
   #$iptables_cmd -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
-  $nftables_cmd add rule ip filter INPUT tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter drop
+  $nftables_cmd add rule ip filter INPUT tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|psh|ack|urg" counter drop
 
   ## DROP INCOMING MALFORMED NULL PACKETS
   #$iptables_cmd -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
-  $nftables_cmd add rule ip filter INPUT tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter drop
+  $nftables_cmd add rule ip filter INPUT tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
 }
 
 qubes() {
@@ -603,12 +603,12 @@ nft_input_rules() {
       ## Catch all remaining TCP and redirect to TransPort.
       ## Only user installed applications not configured to use a SocksPort are affected.
       #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
-      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" tcp flags & (fin|syn|rst|ack) == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
+      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
 
       ## Optionally restrict TransPort.
       ## Replace above rule with a more restrictive one, e.g.:
       ##$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
-      #$nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" tcp dport { 80,443} tcp flags & (fin|syn|rst|ack) == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
+      #$nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" tcp dport { 80,443} tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
     fi
   done
 }
@@ -645,29 +645,29 @@ nft_reject_invalid_outgoing_packages() {
     #$iptables_cmd -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
     $nftables_cmd add rule ip filter OUTPUT ct state invalid  counter reject with icmp type admin-prohibited
     ##$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
-    #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags & (fin|ack) == fin|ack counter reject with icmp type admin-prohibited
+    #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == fin|ack counter reject with icmp type admin-prohibited
     ##$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
     #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags & (rst|ack) == rst|ack counter reject with icmp type admin-prohibited
 
     ## DROP INVALID SYN PACKETS
     #$iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule ip filter OUTPUT tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule ip filter OUTPUT tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject with icmp type admin-prohibited
     #$iptables_cmd -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule ip filter OUTPUT tcp flags & (fin|syn) == fin|syn counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule ip filter OUTPUT tcp flags "&" "(fin|syn)" == "fin|syn" counter reject with icmp type admin-prohibited
     #$iptables_cmd -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule ip filter OUTPUT tcp flags & (syn|rst) == syn|rst counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule ip filter OUTPUT tcp flags "&" "(syn|rst)" == "syn|rst" counter reject with icmp type admin-prohibited
 
     ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
     #$iptables_cmd -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule ip filter OUTPUT ip frag-off & 0x1fff != 0 counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule ip filter OUTPUT ip frag-off "&" 0x1fff != 0 counter reject with icmp type admin-prohibited
 
     ## DROP INCOMING MALFORMED XMAS PACKETS
     #$iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule ip filter OUTPUT tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule ip filter OUTPUT tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject with icmp type admin-prohibited
 
     ## DROP INCOMING MALFORMED NULL PACKETS
     #$iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule ip filter OUTPUT tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule ip filter OUTPUT tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject with icmp type admin-prohibited
   fi
 }
 
@@ -713,7 +713,7 @@ nft_output() {
     ## DISABLED BY DEFAULT. Using SocksPort instead.
     if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
       #$iptables_cmd -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
-      $nftables_cmd add rule ip nat OUTPUT tcp flags & (fin|syn|rst|ack) == syn counter redirect to :"$TRANS_PORT_GATEWAY"
+      $nftables_cmd add rule ip nat OUTPUT tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"$TRANS_PORT_GATEWAY"
     fi
   fi
 
