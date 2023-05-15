@@ -1,0 +1,60 @@
+table ip filter {
+	chain INPUT {
+		type filter hook input priority filter; policy drop;
+		ct state invalid counter drop
+		ct state invalid counter drop
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter drop
+		meta l4proto tcp tcp flags & (fin|syn) == fin|syn counter drop
+		meta l4proto tcp tcp flags & (syn|rst) == syn|rst counter drop
+		ip frag-off & 8191 != 0 counter drop
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter drop
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter drop
+		iifname "lo" counter accept
+		ct state established counter accept
+		meta l4proto tcp counter reject with tcp reset
+		counter reject
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+		counter drop
+	}
+
+	chain OUTPUT {
+		type filter hook output priority filter; policy drop;
+		ct state invalid counter reject with icmp type admin-prohibited
+		ct state invalid counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn) == fin|syn counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (syn|rst) == syn|rst counter reject with icmp type admin-prohibited
+		ip frag-off & 8191 != 0 counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter reject with icmp type admin-prohibited
+		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter reject with icmp type admin-prohibited
+		oifname "lo" counter accept
+		meta l4proto udp ip daddr 10.137.0.83 udp dport 53 counter accept
+		meta l4proto udp ip daddr 10.152.152.10 udp dport 53 counter accept
+		meta l4proto udp ip daddr 10.139.1.1 udp dport 53 counter accept
+		meta l4proto udp ip daddr 10.139.1.2 udp dport 53 counter accept
+		meta l4proto != tcp counter reject
+		counter accept
+		counter reject
+	}
+}
+table ip6 filter {
+	chain INPUT {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" counter accept
+		counter drop
+	}
+
+	chain OUTPUT {
+		type filter hook output priority filter; policy drop;
+		oifname "lo" counter accept
+		counter reject
+	}
+
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+		counter drop
+	}
+}
