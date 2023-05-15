@@ -62,7 +62,7 @@ source_config_folder() {
 
 variables_defaults() {
   [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
-  [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
+  [ -n "$nftables_cmd" ] || nftables_cmd="nft --wait"
 
   [ -n "$WORKSTATION_TRANSPARENT_TCP" ] || WORKSTATION_TRANSPARENT_TCP=1
   [ -n "$WORKSTATION_TRANSPARENT_DNS" ] || WORKSTATION_TRANSPARENT_DNS=1
