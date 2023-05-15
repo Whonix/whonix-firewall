@@ -1,3 +1,55 @@
+commit 59c45277be8c88a1e261cbc32d9771e8bbf436bf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 11:56:20 2023 +0000
+
+    remove unicode
+
+commit 6fc473dd989a6ca7cca4861cd40c610a93ca378e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 11:53:10 2023 +0000
+
+    comment
+
+commit 69833fc1612da1beb096a681397798e1263856a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 11:52:09 2023 +0000
+
+    support new setting `GATEWAY_ALLOW_INCOMING_RELATED_STATE=1`
+    
+    disabled by default
+    
+    if enabled:
+    
+    Allow ESTABLISHED,RELATED instead of only ESTABLISHED.
+    
+    Reported to be required sometimes for Whonix KVM.
+    
+    https://forums.whonix.org/t/tor-is-not-yet-fully-bootstrapped-30-done/8792/3
+    https://forums.whonix.org/t/have-firewall-accept-icmp-fragmentation-needed/10233
+    https://phabricator.whonix.org/T28
+
+commit 33bf8ac8c599dc744fcf005e52c8b4c3e82c655e
+Merge: b2ff0e3 810b740
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 11:38:35 2023 +0000
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 810b740fd144294d85670a8d5d04e3d067f0de3d
+Merge: b2ff0e3 f604259
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 07:37:57 2023 -0400
+
+    Merge pull request #3 from IainKay/allow-incoming-related-state
+    
+    add opt-in configuration for incoming Related connections through 'gateway_allow_incoming_related_state'
+
+commit b2ff0e370d42fa8bf3e935c2bcb5b7a8ecdb1ea4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 10 23:16:43 2023 +0000
+
+    bumped changelog version
+
 commit 2b01fe561435cdd86d76971dedab464b85913e3d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 10 12:13:19 2023 +0000
@@ -5,6 +57,22 @@ Date:   Wed May 10 12:13:19 2023 +0000
     add deterministic tabels dumps for later comparison
     
     after port to nftables
+
+commit f604259dd55e5dde4765ac7e2ad095d95258caa0
+Author: Iain Kay <github@iain.it>
+Date:   Mon May 8 20:05:52 2023 +0100
+
+    add opt-in configuration for incoming Related connections through 'gateway_allow_incoming_related_state'
+    
+    When running a freshly installed Whonix-Gateway (confirmed that at least 16.0.9.8 and 16.0.9.0 are affected) on a KVM host (note: with Kicksecure installed on the host), Tor gets stuck at 30% when attempting to bootstrap.
+    
+    When I enable the new configuration option "GATEWAY_ALLOW_INCOMING_RELATED_STATE" in file "/usr/local/etc/whonix_firewall.d/50_user.conf", this allows the connection to complete successfully every time.
+    
+    When I disable the "GATEWAY_ALLOW_INCOMING_RELATED_STATE" option I observe that the issue returns.
+    
+    I saw a suggestion on the Whonix forums (I believe from Patrick Schleizer) that this could be made into a configuration option. Rather than wasting time replying saying: "yes please I would love this", I've gone ahead and made the necessary changes myself.
+    
+    Tested on my end and confirmed that this is working as expected.
 
 commit efc9844a78b35ff295b9d224b620e471e79d3bd7
 Author: Patrick Schleizer <adrelanos@whonix.org>
