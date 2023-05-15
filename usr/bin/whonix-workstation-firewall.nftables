@@ -204,17 +204,13 @@ ipv4_defaults() {
 ipv4_preparation() {
   ## Flush old rules.
   #$iptables_cmd -F
-  nft flush table ip filter
   #$iptables_cmd -X
-  nft delete chain ip filter (null)
   #$iptables_cmd -t nat -F
-  nft flush table ip nat
   #$iptables_cmd -t nat -X
-  nft delete chain ip nat (null)
   #$iptables_cmd -t mangle -F
-  nft flush table ip mangle
   #$iptables_cmd -t mangle -X
-  nft delete chain ip mangle (null)
+  nft flush ruleset
+}
 }
 
 ipv4_drop_invalid_incoming_packages() {
