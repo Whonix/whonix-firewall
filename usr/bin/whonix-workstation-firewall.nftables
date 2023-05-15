@@ -190,15 +190,15 @@ variables_defaults() {
 nft_defaults() {
   ## Set secure defaults.
   #$iptables_cmd -P INPUT DROP
-  nftables-todo
+  $nftables_cmd add rule filter input counter drop
 
   ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
   #$iptables_cmd -P FORWARD DROP
-  nftables-todo
+  $nftables_cmd add rule filter forward counter drop
 
   ## Will be lifted below.
   #$iptables_cmd -P OUTPUT DROP
-  nftables-todo
+  $nftables_cmd add rule filter output counter drop
 }
 
 nft_preparation() {
@@ -210,7 +210,6 @@ nft_preparation() {
   #$iptables_cmd -t mangle -F
   #$iptables_cmd -t mangle -X
   $nftables_cmd flush ruleset
-}
 }
 
 nft_drop_invalid_incoming_packages() {
