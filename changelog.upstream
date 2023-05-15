@@ -1,3 +1,153 @@
+commit 6b5b04c4b69c0804e0f95339dd06a0f6217775da
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 17:12:43 2023 +0000
+
+    add nftabels-save-deterministic-old-vpn
+
+commit ff78a2ff4e75208d15f0931ee0d4d7f9d6252dd7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 17:09:48 2023 +0000
+
+    add nftabels-save-deterministic-old-normal
+
+commit 374f6ca8c06ebbf08112cbdf060c22f11026099a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 17:02:23 2023 +0000
+
+    rename
+
+commit f6b70301e18f9b5a2fdf0a9ea5c4497de6c97876
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 17:01:34 2023 +0000
+
+    add doc nftabels-save-deterministic-old-normal
+
+commit c70d09cc72db49899cf0e9a069586b8abbb7ff46
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 16:59:57 2023 +0000
+
+    move
+
+commit 6103187ae1b0757348e366f23a52946630ece193
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 16:55:14 2023 +0000
+
+    nftables WIP
+
+commit 1229576ea8536a9763780c0b41fbde546e8ca2b2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 16:45:50 2023 +0000
+
+    nftables WIP
+
+commit cc6eadebd8945c90f84005783b052ed74daaa58f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 16:44:19 2023 +0000
+
+    nftables WIP
+
+commit 06f550ec5d87981302a1281099a896370bf4ec6e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 15:33:33 2023 +0000
+
+    nftables WIP
+
+commit f4e2ccd5d91f529d168eba2fd72547e0582d7164
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 15:29:06 2023 +0000
+
+    nftables WIP
+
+commit 7e584e268ca9334ac6603d036b1326095971b24d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 15:27:51 2023 +0000
+
+    add `translate-remove-iptables-comments`
+
+commit c621fd2841f20eb72cf680aaf54b0b20684d8277
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 15:09:12 2023 +0000
+
+    nftables WIP
+
+commit 3fd2f34307b7750c98d390f5658b9368f7e1ce1f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 15:08:30 2023 +0000
+
+    nftables WIP
+
+commit 7853ad1c2427028d3904a50587b3ce9d16f6b6f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:32:52 2023 +0000
+
+    nftables WIP
+
+commit d990036cab16ccc9538a1f790617817136473888
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:29:31 2023 +0000
+
+    nftables WIP
+
+commit afbea6d5656996bba04b1e7df1f0d21ee48696ed
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:28:18 2023 +0000
+
+    nftables WIP
+
+commit 781f4df096e8438273fd1b90a4e2d0f908bb8d64
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:26:47 2023 +0000
+
+    nftables WIP
+
+commit 5ab59728ba3ab89de2066c8593210081974136d9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:23:45 2023 +0000
+
+    nftables WIP
+
+commit bfda76f7509206281163a5ab46457d9429771d45
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:21:52 2023 +0000
+
+    nftables WIP
+
+commit 228e2c2a4eae61cf3dac1ff7ed42e76d2e9dad81
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:18:27 2023 +0000
+
+    port to `nftables` work in progress:
+    
+    - `whonix-gateway-firewall.nftables`
+    - `whonix-workstation-firewall.nftables`
+    
+    translated using `translate-iptables-to-nftables`
+    (Which uses `iptables-translate`.)
+
+commit a35e3bfdd7cf55747e3931aa5f518d9c9b2dccf2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 14:15:55 2023 +0000
+
+    add translate-iptables-to-nftables
+
+commit 99874541b2d131019f724f662cfed1dbd8a39397
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 13:20:03 2023 +0000
+
+    make firewall scripts easier to translate to nftables
+
+commit 2f8bac88817940adb5143739bc099c1c37fcb0b9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 13:12:31 2023 +0000
+
+    make firewall scripts easier to translate to nftables
+
+commit ad68f98c74a43bb8102bac1c552622496dc337e7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 15 11:56:45 2023 +0000
+
+    bumped changelog version
+
 commit 59c45277be8c88a1e261cbc32d9771e8bbf436bf
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 15 11:56:20 2023 +0000
