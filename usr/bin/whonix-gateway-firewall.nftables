@@ -785,40 +785,6 @@ ipv4_output() {
   nft add rule ip filter OUTPUT counter reject with icmp type admin-prohibited
 }
 
-ipv6() {
-  if [ ! -d /proc/sys/net/ipv6/ ]; then
-    return 0
-  fi
-
-  ## Policy DROP for all traffic as fallback.
-  $ip6tables_cmd -P INPUT DROP
-  $ip6tables_cmd -P OUTPUT DROP
-  $ip6tables_cmd -P FORWARD DROP
-
-  ## Flush old rules.
-  $ip6tables_cmd -F
-  $ip6tables_cmd -X
-  $ip6tables_cmd -t mangle -F
-  $ip6tables_cmd -t mangle -X
-
-  ## Allow unlimited access on loopback.
-  ## Not activated, since we do not need it.
-  #$ip6tables_cmd -A INPUT -i lo -j ACCEPT
-  #$ip6tables_cmd -A OUTPUT -o lo -j ACCEPT
-
-  ## Log.
-  #$ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix_blocked_input6: "
-  #$ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix_blocked_output6: "
-  #$ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix_blocked_forward6: "
-
-  ## Drop/reject all other traffic.
-  $ip6tables_cmd -A INPUT -j DROP
-  ## --reject-with icmp-admin-prohibited not supported by ip6tables
-  $ip6tables_cmd -A OUTPUT -j REJECT
-  ## --reject-with icmp-admin-prohibited not supported by ip6tables
-  $ip6tables_cmd -A FORWARD -j REJECT
-}
-
 status_files() {
   mkdir --parents /run/whonix_firewall
   if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
@@ -927,7 +893,6 @@ main() {
   ipv4_forward
   ipv4_reject_invalid_outgoing_packages
   ipv4_output
-  ipv6
   status_files
   end
 }
