@@ -198,7 +198,11 @@ variables_defaults() {
       ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
       ## Qubes-Whonix:
       ## IP HARDCODED. IP 10.152.152.10 is hardcoded in some places.
-      WORKSTATION_DEST_SOCKSIFIED="10.137.0.0/16,10.138.0.0/16,10.152.152.10"
+      WORKSTATION_DEST_SOCKSIFIED="\
+        10.137.0.0/16 \
+        10.138.0.0/16 \
+        10.152.152.10 \
+      "
     else
       ## Non-Qubes-Whonix:
       ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
