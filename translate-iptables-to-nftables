@@ -1,0 +1,73 @@
+#!/bin/bash
+
+#set -x
+set -e
+set -o pipefail
+
+user_acnumber_of_leading_whitespaces_list="clearnet tunnel notunnel systemcheck sdwdate updatesproxycheck vm-updates"
+for user_acnumber_of_leading_whitespaces in $user_acnumber_of_leading_whitespaces_list; do
+  sudo adduser --home "/run/$user_acnumber_of_leading_whitespaces" --no-create-home --quiet --system --group --shell /bin/false "$user_acnumber_of_leading_whitespaces" || true
+done
+
+script=./usr/bin/whonix-gateway-firewall
+#script=./usr/bin/whonix-workstation-firewall
+##script=./usr/bin/whonix-host-firewall
+
+source_only=1
+source "$script"
+variables_defaults
+
+set -o nounset
+
+## iptables needs actual examples, not variables.
+int_if_item=vif+
+ext_if_item=eth0
+local_port_to_open=0000
+local_udp_port_to_open=0000
+int_tif_item=eth1
+socks_port=9050
+no_nat_user=clearnet
+non_tor_gateway_item="127.0.0.0-127.0.0.24"
+local_net_item="127.0.0.0-127.0.0.24"
+socks_port_item=9050
+qubes_primary_dns=10.139.1.1
+qubes_secondary_dns=10.139.1.2
+outgoing_allow_ip_item=127.0.0.1
+
+rm -f "${script}.nftables"
+
+while IFS= read -r line ; do
+  line_without_leading_whitespace="${line#"${line%%[![:space:]]*}"}"
+  read -r first _ <<< "$line_without_leading_whitespace" || true
+
+  number_of_leading_whitespaces=${#line}
+  temp_line="${line#"${line%%[![:space:]]*}"}"
+  number_of_leading_whitespaces=$((number_of_leading_whitespaces - ${#temp_line}))
+
+  leading_whitespace=""
+  for (( i=0; i<number_of_leading_whitespaces; i++ )); do
+    leading_whitespace+=" "
+  done
+
+  if [ "$first" = '$iptables_cmd' ] || [ "$first" = '#$iptables_cmd' ]; then
+    ## Remove the first word which is "iptables_cmd".
+    line_without_first_word=$(echo "$line" | str_replace '#$iptables_cmd' "")
+    line_without_first_word=$(echo "$line_without_first_word" | str_replace '$iptables_cmd' "")
+
+    line_evaluated=$(eval echo "$line_without_first_word")
+    echo "$line_evaluated"
+
+    nftables_translation=$(iptables-translate $line_evaluated) || nftables_translation="nftables-todo"
+
+    echo "$nftables_translation"
+    echo ""
+
+    echo "$leading_whitespace#$line_without_leading_whitespace" | tee -a "${script}.nftables" >/dev/null
+    echo "$leading_whitespace$nftables_translation" | tee -a "${script}.nftables" >/dev/null
+
+    continue
+  fi
+
+    echo "$line" | tee -a "${script}.nftables" >/dev/null
+
+done < "$script"
