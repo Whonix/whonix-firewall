@@ -131,8 +131,10 @@ variables_defaults() {
   fi
 
   if command -v "qubesdb-read" > /dev/null 2>&1; then
-    [ -n "$INT_IF" ] || INT_IF="vif+"
-    [ -n "$INT_TIF" ] || INT_TIF="vif+"
+    #[ -n "$INT_IF" ] || INT_IF="vif+"
+    [ -n "$INT_IF" ] || INT_IF="vif*"
+    #[ -n "$INT_TIF" ] || INT_TIF="vif+"
+    [ -n "$INT_TIF" ] || INT_TIF="vif*"
   fi
 
   ## External interface
@@ -357,9 +359,9 @@ qubes() {
       ## Allow connections from port 8082 of internal vif interface for tinyproxy
       ## tinyproxy is responsible to handle TemplateVMs updates.
       #$iptables_cmd -A INPUT -i "$int_if_item" -p tcp -m tcp --dport 8082 -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "vif*" tcp dport 8082 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$int_if_item" tcp dport 8082 counter accept
       #$iptables_cmd -A OUTPUT -o "$int_if_item" -p tcp -m tcp --sport 8082 -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT oifname "vif*" tcp sport 8082 counter accept
+      $nftables_cmd add rule ip filter OUTPUT oifname "$int_if_item" tcp sport 8082 counter accept
     done
 
     ## Qubes pre-routing. Will be able to intercept traffic destined for
@@ -372,29 +374,30 @@ qubes() {
     for int_if_item in $INT_IF; do
       ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
       #$iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i "$int_if_item" -p tcp -m tcp --dport 8082 -j REDIRECT
-      $nftables_cmd add rule ip nat PR-QBS-SERVICES iifname "vif*" ip daddr 10.137.255.254 tcp dport 8082 counter
+      ## TODO: 10.137.255.254/32 vs dropping /32 ok?
+      $nftables_cmd add rule ip nat PR-QBS-SERVICES iifname "$int_if_item" ip daddr 10.137.255.254 tcp dport 8082 counter
     done
 
     ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
     ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
     #$iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
-    $nftables_cmd add rule ip nat OUTPUT ip protocol udp skuid 999 ct state new counter dnat to 127.0.0.1:5400
+    $nftables_cmd add rule ip nat OUTPUT ip protocol udp skuid tinyproxy ct state new counter dnat to 127.0.0.1:5400
     #$iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-    $nftables_cmd add rule ip nat OUTPUT ip protocol tcp skuid 999 ct state new counter dnat to 127.0.0.1:9041
+    $nftables_cmd add rule ip nat OUTPUT ip protocol tcp skuid tinyproxy ct state new counter dnat to 127.0.0.1:9041
 
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
     if getent passwd vm-updates > /dev/null; then
       #$iptables_cmd -t nat -A OUTPUT -p udp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
-      $nftables_cmd add rule ip nat OUTPUT ip protocol udp skuid 124 ct state new counter dnat to 127.0.0.1:5400
+      $nftables_cmd add rule ip nat OUTPUT ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
       #$iptables_cmd -t nat -A OUTPUT -p tcp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-      $nftables_cmd add rule ip nat OUTPUT ip protocol tcp skuid 124 ct state new counter dnat to 127.0.0.1:9041
+      $nftables_cmd add rule ip nat OUTPUT ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
     fi
 
     ## https://github.com/QubesOS/qubes-issues/issues/3201#issuecomment-338646742
     #$iptables_cmd -A OUTPUT -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -d 127.0.0.1 --dport "${DNS_PORT_GATEWAY}" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 skuid 999 ct state new udp dport 5400 counter accept
+    $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 skuid tinyproxy ct state new udp dport "${DNS_PORT_GATEWAY}" counter accept
     #$iptables_cmd -A OUTPUT -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -d 127.0.0.1 --dport "${TRANS_PORT_GATEWAY}" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 skuid 999 ct state new tcp dport 9041 counter accept
+    $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 skuid tinyproxy ct state new tcp dport "${TRANS_PORT_GATEWAY}" counter accept
   fi
 }
 
@@ -428,7 +431,7 @@ nft_input_rules() {
   ## DISABLED BY DEFAULT.
   if [ "$VPN_FIREWALL" = "1" ]; then
     #$iptables_cmd -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
-    $nftables_cmd add rule ip filter INPUT iifname "tun0" counter accept
+    $nftables_cmd add rule ip filter INPUT iifname "$VPN_INTERFACE" counter accept
   fi
 
   local ext_if_item
@@ -438,7 +441,7 @@ nft_input_rules() {
     ## DISABLED BY DEFAULT. For testing/debugging only.
     if [ "$GATEWAY_ALLOW_INCOMING_SSH" = "1" ]; then
       #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport 22 -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth0" tcp dport 22 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" tcp dport 22 counter accept
     fi
 
     ## Allow incoming Flash Proxy connections on the external interface.
@@ -446,7 +449,7 @@ nft_input_rules() {
     ## DISABLED BY DEFAULT.
     if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
       #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$FLASHPROXY_PORT" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth0" tcp dport 9000 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" tcp dport "$FLASHPROXY_PORT" counter accept
     fi
 
     local local_port_to_open
@@ -455,7 +458,7 @@ nft_input_rules() {
     fi
     for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
       #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$local_port_to_open" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth0" tcp dport 0 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" tcp dport "$local_port_to_open" counter accept
     done
 
     local local_udp_port_to_open
@@ -464,7 +467,7 @@ nft_input_rules() {
     fi
     for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
       #$iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT udp dport 0 counter accept
+      $nftables_cmd add rule ip filter INPUT udp dport "$local_udp_port_to_open" counter accept
     done
 
     if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
@@ -484,14 +487,14 @@ nft_input_rules() {
     ## DISABLED BY DEFAULT.
     if [ "$GATEWAY_ALLOW_INCOMING_DIR_PORT" = "1" ]; then
       #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$DIR_PORT" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth0" tcp dport 80 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" tcp dport "$DIR_PORT" counter accept
     fi
 
     ## Allow incoming ORPORT connections for an optional Tor relay.
     ## DISABLED BY DEFAULT.
     if [ "$GATEWAY_ALLOW_INCOMING_OR_PORT" = "1" ]; then
       #$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport "$OR_PORT" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth0" tcp dport 443 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" tcp dport "$OR_PORT" counter accept
     fi
 
     ## Custom Open Ports on external interface
@@ -500,13 +503,13 @@ nft_input_rules() {
     ##   or just 9050
     ## - $iptables_cmd v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
     ##$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-    $nftables_cmd add rule ip filter INPUT iifname "eth0" ip protocol tcp tcp dport { 22,9050,9051,9150,9151} counter accept
+    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" ip protocol tcp tcp dport { 22,9050,9051,9150,9151} counter accept
     ##$iptables_cmd -A INPUT -i "$ext_if_item" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-    $nftables_cmd add rule ip filter INPUT iifname "eth0" ip protocol udp udp dport { 22,9050,9051,9150,9151} counter accept
+    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" ip protocol udp udp dport { 22,9050,9051,9150,9151} counter accept
 
     ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
     ##$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
-    $nftables_cmd add rule ip filter INPUT iifname "eth0" tcp dport 1194 counter accept
+    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" tcp dport 1194 counter accept
   done
 
   local int_tif_item
@@ -516,7 +519,7 @@ nft_input_rules() {
     if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
       ## Allow DNS traffic to DnsPort.
       #$iptables_cmd -A INPUT -i "$int_tif_item" -p udp --dport "$DNS_PORT_WORKSTATION" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth1" udp dport 5300 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$int_tif_item" udp dport "$DNS_PORT_WORKSTATION" counter accept
     fi
   done
 
@@ -524,7 +527,7 @@ nft_input_rules() {
     if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
       ## Allow TCP traffic TransPort.
       #$iptables_cmd -A INPUT -i "$int_if_item" -p tcp --dport "$TRANS_PORT_WORKSTATION" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "vif*" tcp dport 9040 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$int_if_item" tcp dport "$TRANS_PORT_WORKSTATION" counter accept
     fi
   done
 
@@ -532,7 +535,7 @@ nft_input_rules() {
     ## Allow TCP traffic to Control Port Filter Proxy.
     if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
       #$iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth1" tcp dport 9051 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$int_tif_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     fi
 
     ## Allow socksified applications.
@@ -544,24 +547,23 @@ nft_input_rules() {
       for socks_port in $INTERNAL_OPEN_PORTS; do
         true "socks_port: $socks_port"
         #$iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$socks_port" -j ACCEPT
-        $nftables_cmd add rule ip filter INPUT iifname "eth1" tcp dport 9050 counter accept
+        $nftables_cmd add rule ip filter INPUT iifname "$int_tif_item" tcp dport "$socks_port" counter accept
       done
 
       ## Accept ports 9152-9189 prepared for user custom applications.
       ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
       [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9189 for user custom applications"
       #$iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "eth1" ip protocol tcp tcp dport 9152-9189 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$int_tif_item" ip protocol tcp tcp dport 9152-9189 counter accept
     fi
   done
 
+  ## TODO: syntax of "$WORKSTATION_DEST_SOCKSIFIED"
   for int_if_item in $INT_IF; do
     ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
     if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
       #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
-      $nftables_cmd add rule ip nat PREROUTING iifname "vif*" ip daddr 10.137.0.0/16 tcp dport 9051 counter redirect to :9051
-add rule ip nat PREROUTING iifname "vif*" ip daddr 10.138.0.0/16 tcp dport 9051 counter redirect to :9051
-add rule ip nat PREROUTING iifname "vif*" ip daddr 10.152.152.10 tcp dport 9051 counter redirect to :9051
+      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport 9051 counter redirect to :9051
     fi
 
     if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
@@ -569,35 +571,31 @@ add rule ip nat PREROUTING iifname "vif*" ip daddr 10.152.152.10 tcp dport 9051 
         true "socks_port: $socks_port"
         ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
         #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
-        $nftables_cmd add rule ip nat PREROUTING iifname "vif*" ip daddr 10.137.0.0/16 tcp dport 9050 counter redirect to :9050
-add rule ip nat PREROUTING iifname "vif*" ip daddr 10.138.0.0/16 tcp dport 9050 counter redirect to :9050
-add rule ip nat PREROUTING iifname "vif*" ip daddr 10.152.152.10 tcp dport 9050 counter redirect to :9050
+        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport 9050 counter redirect to :9050
       done
 
       ## Redirect ports 9152-9189 prepared for user custom applications.
       #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9189 -j REDIRECT
-      $nftables_cmd add rule ip nat PREROUTING iifname "vif*" ip daddr 10.137.0.0/16 tcp dport 9152-9189 counter
-add rule ip nat PREROUTING iifname "vif*" ip daddr 10.138.0.0/16 tcp dport 9152-9189 counter
-add rule ip nat PREROUTING iifname "vif*" ip daddr 10.152.152.10 tcp dport 9152-9189 counter
+      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport 9152-9189 counter
     fi
 
     if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
       ## Redirect remaining DNS traffic to DNS_PORT_WORKSTATION.
       ## Only user installed applications not configured to use a SocksPort are affected.
       #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_WORKSTATION"
-      $nftables_cmd add rule ip nat PREROUTING iifname "vif*" udp dport 53 counter redirect to :5300
+      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" udp dport 53 counter redirect to :"$DNS_PORT_WORKSTATION"
     fi
 
     if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
       ## Catch all remaining TCP and redirect to TransPort.
       ## Only user installed applications not configured to use a SocksPort are affected.
       #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
-      $nftables_cmd add rule ip nat PREROUTING iifname "vif*" tcp flags & (fin|syn|rst|ack) == syn counter redirect to :9040
+      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" tcp flags & (fin|syn|rst|ack) == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
 
       ## Optionally restrict TransPort.
       ## Replace above rule with a more restrictive one, e.g.:
       ##$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -p tcp --match multiport --dports 80,443 --syn -j REDIRECT --to-ports "$TRANS_PORT_WORKSTATION"
-      $nftables_cmd add rule ip nat PREROUTING iifname "vif*" tcp dport { 80,443} tcp flags & (fin|syn|rst|ack) == syn counter redirect to :9040
+      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" tcp dport { 80,443} tcp flags & (fin|syn|rst|ack) == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
     fi
   done
 }
@@ -605,7 +603,7 @@ add rule ip nat PREROUTING iifname "vif*" ip daddr 10.152.152.10 tcp dport 9152-
 nft_input_defaults() {
   ## Log.
   ##$iptables_cmd -A INPUT -j LOG --log-prefix "Whonix_blocked_input4: "
-  $nftables_cmd add rule ip filter INPUT counter log prefix \"Whonix_blocked_input4:\"
+  #$nftables_cmd add rule ip filter INPUT counter log prefix \"Whonix_blocked_input4:\"
 
   ## Reject anything not explicitly allowed above.
   ## Drop is better than reject here, because we do not want to reveal it's a Whonix-Gateway.
@@ -617,7 +615,7 @@ nft_input_defaults() {
 nft_forward() {
   ## Log.
   ##$iptables_cmd -A FORWARD -j LOG --log-prefix "Whonix_blocked_forward4: "
-  $nftables_cmd add rule ip filter FORWARD counter log prefix \"Whonix_blocked_forward4:\"
+  #$nftables_cmd add rule ip filter FORWARD counter log prefix \"Whonix_blocked_forward4:\"
 
   ## Reject everything.
   #$iptables_cmd -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
@@ -666,13 +664,13 @@ nft_output() {
   ## DISABLED BY DEFAULT.
   if [ "$VPN_FIREWALL" = "1" ]; then
     #$iptables_cmd -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT oifname "tun0" counter accept
+    $nftables_cmd add rule ip filter OUTPUT oifname "$VPN_INTERFACE" counter accept
   fi
 
   local no_nat_user
   for no_nat_user in $NO_NAT_USERS; do
     #$iptables_cmd -t nat -A OUTPUT -m owner --uid-owner "$no_nat_user" -j RETURN
-    $nftables_cmd add rule ip nat OUTPUT skuid 121 counter return
+    $nftables_cmd add rule ip nat OUTPUT skuid "$no_nat_user" counter return
   done
 
   if [ "$firewall_mode" = "full" ]; then
@@ -680,7 +678,7 @@ nft_output() {
     ## DISABLED BY DEFAULT. default. Using SocksPort instead.
     if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
       #$iptables_cmd -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports "$DNS_PORT_GATEWAY"
-      $nftables_cmd add rule ip nat OUTPUT udp dport 53 counter redirect to :5400
+      $nftables_cmd add rule ip nat OUTPUT udp dport 53 counter redirect to :"$DNS_PORT_GATEWAY"
     fi
   fi
 
@@ -692,7 +690,8 @@ nft_output() {
       local non_tor_gateway_item
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j RETURN
-        $nftables_cmd add rule ip nat OUTPUT ip daddr 127.0.0.0-127.0.0.24 counter return
+        ## TODO: $NON_TOR_GATEWAY syntax
+        $nftables_cmd add rule ip nat OUTPUT ip daddr "$NON_TOR_GATEWAY" counter return
       done
     fi
   fi
@@ -702,7 +701,7 @@ nft_output() {
     ## DISABLED BY DEFAULT. Using SocksPort instead.
     if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
       #$iptables_cmd -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports "$TRANS_PORT_GATEWAY"
-      $nftables_cmd add rule ip nat OUTPUT tcp flags & (fin|syn|rst|ack) == syn counter redirect to :9041
+      $nftables_cmd add rule ip nat OUTPUT tcp flags & (fin|syn|rst|ack) == syn counter redirect to :"$TRANS_PORT_GATEWAY"
     fi
   fi
 
@@ -717,7 +716,8 @@ nft_output() {
     if [ ! "$VPN_FIREWALL" = "1" ]; then
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j ACCEPT
-        $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.0-127.0.0.24 counter accept
+        ## TODO: $non_tor_gateway_item syntax
+        $nftables_cmd add rule ip filter OUTPUT ip daddr "$non_tor_gateway_item" counter accept
       done
     fi
   fi
@@ -730,7 +730,8 @@ nft_output() {
       local local_net_item
       for local_net_item in $LOCAL_NET; do
         #$iptables_cmd -A OUTPUT -m iprange --dst-range "$local_net_item" -j ACCEPT
-        $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.0-127.0.0.24 counter accept
+        ## TODO: $local_net_item syntax
+        $nftables_cmd add rule ip filter OUTPUT ip daddr "$local_net_item" counter accept
       done
     fi
   fi
@@ -750,7 +751,7 @@ nft_output() {
         continue
       fi
       #$iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_item" --dst "127.0.0.1" -j REJECT
-      $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 tcp dport 9050 counter reject
+      $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
     done
   fi
 
@@ -761,24 +762,24 @@ nft_output() {
 
   for no_nat_user in $NO_NAT_USERS; do
     #$iptables_cmd -A OUTPUT -m owner --uid-owner "$no_nat_user" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT skuid 121 counter accept
+    $nftables_cmd add rule ip filter OUTPUT skuid "$no_nat_user" counter accept
   done
 
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
     ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
     ## Otherwise in Whonix firewall full mode this rule is redundant.
     #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT skuid 115 ip daddr 127.0.0.1-127.0.0.1 counter accept
+    $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
     #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT skuid 118 ip daddr 127.0.0.1-127.0.0.1 counter accept
+    $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
 
     #$iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
-    $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 tcp dport 9051 counter accept
+    $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
   fi
 
   ## Log.
   ##$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix_blocked_output4: "
-  $nftables_cmd add rule ip filter OUTPUT counter log prefix \"Whonix_blocked_output4:\"
+  #$nftables_cmd add rule ip filter OUTPUT counter log prefix \"Whonix_blocked_output4:\"
 
   ## Reject all other outgoing traffic.
   #$iptables_cmd -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
