@@ -572,11 +572,11 @@ nft_output() {
       $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
 
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid 118 ip daddr 127.0.0.1-127.0.0.1 counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid 118 ip daddr "$GATEWAY_IP" counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP" counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid 118 ip daddr "$GATEWAY_IP_HARDCODED" counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
 
       #$iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
       $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
