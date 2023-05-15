@@ -354,9 +354,9 @@ nft_reject_invalid_outgoing_packages() {
     #$iptables_cmd -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
     $nftables_cmd add rule ip filter OUTPUT ct state invalid  counter reject with icmp type admin-prohibited
     ##$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
-    #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == fin|ack counter reject with icmp type admin-prohibited
+    #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject with icmp type admin-prohibited
     ##$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
-    #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags & (rst|ack) == rst|ack counter reject with icmp type admin-prohibited
+    #$nftables_cmd add rule ip filter OUTPUT oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(rst|ack)" == "rst|ack" counter reject with icmp type admin-prohibited
 
     ## DROP INVALID SYN PACKETS
     #$iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
