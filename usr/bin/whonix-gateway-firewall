@@ -379,8 +379,14 @@ ipv4_input_rules() {
   ## Traffic on the loopback interface is accepted.
   $iptables_cmd -A INPUT -i lo -j ACCEPT
 
-  ## Established incoming connections are accepted.
-  $iptables_cmd -A INPUT -m state --state ESTABLISHED -j ACCEPT
+  ## Established incoming connections are always accepted.
+  ## Optionally, allow Related incoming connections when
+  ## GATEWAY_ALLOW_INCOMING_RELATED_STATE mode is enabled.
+  if [ "$GATEWAY_ALLOW_INCOMING_RELATED_STATE" = "1" ]; then
+    $iptables_cmd -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+  else
+    $iptables_cmd -A INPUT -m state --state ESTABLISHED -j ACCEPT
+  fi
 
   ## Drop all incoming ICMP traffic by default.
   ## All incoming connections are dropped by default anyway, but should a user
