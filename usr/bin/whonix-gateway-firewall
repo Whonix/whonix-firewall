@@ -549,7 +549,7 @@ ipv4_input_rules() {
 
 ipv4_input_defaults() {
   ## Log.
-  #$iptables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input4: "
+  #$iptables_cmd -A INPUT -j LOG --log-prefix "Whonix_blocked_input4: "
 
   ## Reject anything not explicitly allowed above.
   ## Drop is better than reject here, because we do not want to reveal it's a Whonix-Gateway.
@@ -559,7 +559,7 @@ ipv4_input_defaults() {
 
 ipv4_forward() {
   ## Log.
-  #$iptables_cmd -A FORWARD -j LOG --log-prefix "Whonix blocked forward4: "
+  #$iptables_cmd -A FORWARD -j LOG --log-prefix "Whonix_blocked_forward4: "
 
   ## Reject everything.
   $iptables_cmd -A FORWARD -j REJECT --reject-with icmp-admin-prohibited
@@ -694,7 +694,7 @@ ipv4_output() {
   fi
 
   ## Log.
-  #$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output4: "
+  #$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix_blocked_output4: "
 
   ## Reject all other outgoing traffic.
   $iptables_cmd -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
@@ -722,9 +722,9 @@ ipv6() {
   #$ip6tables_cmd -A OUTPUT -o lo -j ACCEPT
 
   ## Log.
-  #$ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix blocked input6: "
-  #$ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix blocked output6: "
-  #$ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix blocked forward6: "
+  #$ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix_blocked_input6: "
+  #$ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix_blocked_output6: "
+  #$ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix_blocked_forward6: "
 
   ## Drop/reject all other traffic.
   $ip6tables_cmd -A INPUT -j DROP
