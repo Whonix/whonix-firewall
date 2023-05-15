@@ -11,6 +11,7 @@ table ip filter {
 		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter drop
 		iifname "lo" counter accept
 		ct state established counter accept
+		iifname "tun0" counter accept
 		meta l4proto tcp counter reject with tcp reset
 		counter reject
 	}
@@ -31,13 +32,11 @@ table ip filter {
 		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter reject with icmp type admin-prohibited
 		meta l4proto tcp tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter reject with icmp type admin-prohibited
 		oifname "lo" counter accept
-		meta l4proto udp ip daddr 10.137.0.83 udp dport 53 counter accept
-		meta l4proto udp ip daddr 10.152.152.10 udp dport 53 counter accept
-		meta l4proto udp ip daddr 10.139.1.1 udp dport 53 counter accept
-		meta l4proto udp ip daddr 10.139.1.2 udp dport 53 counter accept
-		meta l4proto != tcp counter reject
-		counter accept
-		counter reject
+		oifname "tun0" counter accept
+		skuid 105 counter accept
+		skuid 107 ip daddr 127.0.0.1-127.0.0.1 counter accept
+		skuid 107 ip daddr 10.137.0.83-10.137.0.83 counter accept
+		skuid 107 ip daddr 10.152.152.10-10.152.152.10 counter accept
 	}
 }
 table ip6 filter {
