@@ -298,18 +298,22 @@ variables_defaults() {
   #INTERNAL_OPEN_PORTS+=" 443 "
 }
 
+## TODO
 nft_defaults() {
+  $nftables_cmd add table inet filter
+  $nftables_cmd create table ip filter
+
   ## Set secure defaults.
   #$iptables_cmd -P INPUT DROP
-  $nftables_cmd chain inet filter input { policy drop ; }
+  $nftables_cmd "add chain filter input { type filter hook input priority 0; policy drop; }"
 
   ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
   #$iptables_cmd -P FORWARD DROP
-  $nftables_cmd chain inet filter forward { policy drop ; }
+  $nftables_cmd "add chain filter forward { type filter hook input priority 0; policy drop; }"
 
   ## Will be lifted below.
   #$iptables_cmd -P OUTPUT DROP
-  $nftables_cmd chain inet filter output { policy drop ; }
+  $nftables_cmd "add chain filter output { type filter hook input priority 0; policy drop; }"
 }
 
 nft_preparation() {
@@ -328,7 +332,7 @@ nft_drop_invalid_incoming_packages() {
   #$iptables_cmd -A INPUT -m conntrack --ctstate INVALID -j DROP
   $nftables_cmd add rule ip filter INPUT ct state invalid counter drop
   #$iptables_cmd -A INPUT -m state --state INVALID -j DROP
-  $nftables_cmd add rule ip filter INPUT ct state invalid  counter drop
+  $nftables_cmd add rule ip filter INPUT ct state invalid counter drop
 
   ## DROP INVALID SYN PACKETS
   #$iptables_cmd -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP
