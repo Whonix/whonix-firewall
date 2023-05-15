@@ -64,7 +64,7 @@ source_config_folder() {
 
 variables_defaults() {
   [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
-  [ -n "$nftables_cmd" ] || nftables_cmd="nft --wait"
+  [ -n "$nftables_cmd" ] || nftables_cmd="nft"
 
   ## Legacy.
   if [ "$VPN_FIREWALL" = "1" ]; then
