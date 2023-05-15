@@ -563,25 +563,33 @@ nft_input_rules() {
     fi
   done
 
-  ## TODO: syntax of "$WORKSTATION_DEST_SOCKSIFIED"
   for int_if_item in $INT_IF; do
     ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
     if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
-      #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
-      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+      local non_tor_gateway_item
+      for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
+        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
+        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+      done
     fi
 
     if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
       for socks_port in $INTERNAL_OPEN_PORTS; do
-        true "socks_port: $socks_port"
-        ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
-        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
-        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport "$socks_port" counter redirect to :"$socks_port"
+        local non_tor_gateway_item
+        for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
+          true "socks_port: $socks_port"
+          ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
+          #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
+          $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport "$socks_port" counter redirect to :"$socks_port"
+        done
       done
 
       ## Redirect ports 9152-9189 prepared for user custom applications.
-      #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9189 -j REDIRECT
-      $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport 9152-9189 counter
+      local non_tor_gateway_item
+      for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
+        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9189 -j REDIRECT
+        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport 9152-9189 counter
+      done
     fi
 
     if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
@@ -695,8 +703,7 @@ nft_output() {
       local non_tor_gateway_item
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -t nat -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j RETURN
-        ## TODO: $NON_TOR_GATEWAY syntax
-        $nftables_cmd add rule ip nat OUTPUT ip daddr { "$NON_TOR_GATEWAY" } counter return
+        $nftables_cmd add rule ip nat OUTPUT ip daddr "$NON_TOR_GATEWAY" counter return
       done
     fi
   fi
@@ -721,7 +728,6 @@ nft_output() {
     if [ ! "$VPN_FIREWALL" = "1" ]; then
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -A OUTPUT -m iprange --dst-range "$non_tor_gateway_item" -j ACCEPT
-        ## TODO: $non_tor_gateway_item syntax
         $nftables_cmd add rule ip filter OUTPUT ip daddr "$non_tor_gateway_item" counter accept
       done
     fi
@@ -735,7 +741,6 @@ nft_output() {
       local local_net_item
       for local_net_item in $LOCAL_NET; do
         #$iptables_cmd -A OUTPUT -m iprange --dst-range "$local_net_item" -j ACCEPT
-        ## TODO: $local_net_item syntax
         $nftables_cmd add rule ip filter OUTPUT ip daddr "$local_net_item" counter accept
       done
     fi
