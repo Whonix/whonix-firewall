@@ -301,15 +301,15 @@ variables_defaults() {
 nft_defaults() {
   ## Set secure defaults.
   #$iptables_cmd -P INPUT DROP
-  $nftables_cmd add rule filter input counter drop
+  $nftables_cmd chain inet filter input { policy drop ; }
 
   ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
   #$iptables_cmd -P FORWARD DROP
-  $nftables_cmd add rule filter forward counter drop
+  $nftables_cmd chain inet filter forward { policy drop ; }
 
   ## Will be lifted below.
   #$iptables_cmd -P OUTPUT DROP
-  $nftables_cmd add rule filter output counter drop
+  $nftables_cmd chain inet filter output { policy drop ; }
 }
 
 nft_preparation() {
