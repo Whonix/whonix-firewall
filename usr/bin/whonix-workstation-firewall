@@ -653,8 +653,12 @@ usage() {
     -h, --help           print this help message"
 }
 
-while test -n $1; do
+while true; do
   case $1 in
+      -s | --source)
+      source_only=1
+      shift 1
+      ;;
     -i | --info)
       info_enabled=1
       shift 1
@@ -666,5 +670,9 @@ while test -n $1; do
       ;;
   esac
 done
+
+if [ "$source_only" = "1" ]; then
+   return 0
+fi
 
 main

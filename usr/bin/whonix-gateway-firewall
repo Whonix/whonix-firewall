@@ -855,6 +855,10 @@ usage() {
 
 while true; do
   case $1 in
+      -s | --source)
+      source_only=1
+      shift 1
+      ;;
     -i | --info)
       info_enabled=1
       shift 1
@@ -866,5 +870,9 @@ while true; do
       ;;
   esac
 done
+
+if [ "$source_only" = "1" ]; then
+   return 0
+fi
 
 main
