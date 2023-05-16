@@ -224,11 +224,11 @@ nft_defaults() {
 
   ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
   #$iptables_cmd -P FORWARD DROP
-  $nftables_cmd "add chain filter FORWARD { type filter hook input priority 0; policy drop; }"
+  $nftables_cmd "add chain filter FORWARD { type filter hook forward priority 0; policy drop; }"
 
   ## Will be lifted below.
   #$iptables_cmd -P OUTPUT DROP
-  $nftables_cmd "add chain filter OUTPUT { type filter hook input priority 0; policy drop; }"
+  $nftables_cmd "add chain filter OUTPUT { type filter hook output priority 0; policy drop; }"
 }
 
 nft_drop_invalid_incoming_packages() {
