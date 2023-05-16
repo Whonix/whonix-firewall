@@ -343,7 +343,6 @@ nft_defaults() {
 nft_drop_invalid_incoming_packages() {
   ## DROP INVALID
   #$iptables_cmd -A INPUT -m conntrack --ctstate INVALID -j DROP
-  $nftables_cmd add rule ip filter INPUT ct state invalid counter drop
   #$iptables_cmd -A INPUT -m state --state INVALID -j DROP
   $nftables_cmd add rule ip filter INPUT ct state invalid counter drop
 
