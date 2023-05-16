@@ -524,9 +524,9 @@ nft_input_rules() {
     ##   or just 9050
     ## - $iptables_cmd v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
     ##$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" ip protocol tcp tcp dport { 22,9050,9051,9150,9151} counter accept
+    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" ip protocol tcp tcp dport { 22,9050,9051,9150,9151 } counter accept
     ##$iptables_cmd -A INPUT -i "$ext_if_item" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" ip protocol udp udp dport { 22,9050,9051,9150,9151} counter accept
+    $nftables_cmd add rule ip filter INPUT iifname "$ext_if_item" ip protocol udp udp dport { 22,9050,9051,9150,9151 } counter accept
 
     ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
     ##$iptables_cmd -A INPUT -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
