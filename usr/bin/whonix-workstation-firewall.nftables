@@ -37,6 +37,11 @@ init() {
 
   set -o pipefail
   set -o errtrace
+  mkdir --parents /var/lib/whonix-firewall
+}
+
+write_nft_script() {
+  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
 }
 
 source_config_folder() {
@@ -63,8 +68,8 @@ source_config_folder() {
 }
 
 variables_defaults() {
-  [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
-  [ -n "$nftables_cmd" ] || nftables_cmd="nft"
+  #[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
+  [ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
 
   ## Legacy.
   if [ "$VPN_FIREWALL" = "1" ]; then
@@ -404,12 +409,12 @@ qubes_updates_proxy() {
   output_cmd "OK: Torified Qubes Updates Proxy check not done yet. Limiting access to Qubes Updates Proxy to user 'updatesproxycheck'."
 
   #$iptables_cmd -A OUTPUT -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
-  $nftables_cmd add rule ip filter OUTPUT skuid "$UPDATESPROXYCHECK_USER" ip daddr 127.0.0.1-127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter accept
+  $nftables_cmd add rule ip filter OUTPUT skuid "$UPDATESPROXYCHECK_USER" ip daddr 127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter accept
   #$iptables_cmd -A OUTPUT -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
   $nftables_cmd add rule ip filter OUTPUT skuid "$UPDATESPROXYCHECK_USER" ip daddr 10.137.255.254-10.137.255.254 tcp dport "$qubes_updates_proxy_port" counter accept
 
   #$iptables_cmd -A OUTPUT -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j REJECT --reject-with icmp-admin-prohibited
-  $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1-127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter reject with icmp type admin-prohibited
+  $nftables_cmd add rule ip filter OUTPUT ip daddr 127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter reject with icmp type admin-prohibited
   #$iptables_cmd -A OUTPUT -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j REJECT --reject-with icmp-admin-prohibited
   $nftables_cmd add rule ip filter OUTPUT ip daddr 10.137.255.254-10.137.255.254 tcp dport "$qubes_updates_proxy_port" counter reject with icmp type admin-prohibited
 }
@@ -458,7 +463,7 @@ nft_output() {
 
     if [ "$TUNNEL_FIREWALL_ALLOW_SDWDATE_USER" = "true" ]; then
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
       $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
@@ -467,7 +472,7 @@ nft_output() {
 
     if [ "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" = "true" ]; then
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
       $nftables_cmd add rule ip filter OUTPUT skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP"  counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
@@ -513,7 +518,7 @@ nft_output() {
         true
       else
         #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-        $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
+        $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
         #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
         $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP" counter accept
         #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
@@ -567,14 +572,14 @@ nft_output() {
       ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
       ## Otherwise in Whonix firewall full mode this rule is redundant.
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
       $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
       $nftables_cmd add rule ip filter OUTPUT skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
 
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1-127.0.0.1 counter accept
+      $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
       $nftables_cmd add rule ip filter OUTPUT skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP" counter accept
       #$iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
