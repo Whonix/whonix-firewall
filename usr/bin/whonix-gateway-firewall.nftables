@@ -817,7 +817,9 @@ nft_check() {
 }
 
 nft_load() {
-   nft --file /var/lib/whonix-firewall/firewall.nft
+   ## TODO
+   #nft --file /var/lib/whonix-firewall/firewall.nft
+   true
 }
 
 status_files() {
