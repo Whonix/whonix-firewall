@@ -323,6 +323,7 @@ nft_defaults() {
   $nftables_cmd add table nat
 
   $nftables_cmd add chain ip nat OUTPUT
+  $nftables_cmd add chain ip nat PREROUTING
 
   $nftables_cmd create table ip filter
 
