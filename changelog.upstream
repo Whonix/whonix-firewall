@@ -1,3 +1,45 @@
+commit 3b4d13cebc68467d7d0824055d3d4d23cb382b29
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 13:28:17 2023 +0000
+
+    nftables WIP
+
+commit ba6e974b91eb275232fb83fd3b604f83e2efa44c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 13:05:08 2023 +0000
+
+    nftables WIP
+
+commit f5a1131d7466cd9017a908bb64804ecbe181ef06
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 12:55:15 2023 +0000
+
+    nftables WIP
+
+commit 341b6ebabcbd41362e7c5de16b1e3a65918456b0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 12:51:30 2023 +0000
+
+    nftables WIP
+
+commit 6f6f8a3b3189b4ea6a630ae3e74365be15d403ba
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 12:31:55 2023 +0000
+
+    chmod +x
+
+commit a893e7fd1a5cb66d92dee5919ef895240f9ad9a0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 12:30:50 2023 +0000
+
+    nftables WIP
+
+commit cc61b7f6d092093918c51fa578c5cfa526e8e46d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 12:13:19 2023 +0000
+
+    bumped changelog version
+
 commit a0f016e6777473fc01d7c0f6e3f9e5c3d398e3e0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 16 12:09:55 2023 +0000
