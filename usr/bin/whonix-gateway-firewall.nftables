@@ -35,7 +35,9 @@ init() {
 
   set -o pipefail
   set -o errtrace
+
   mkdir --parents /var/lib/whonix-firewall
+  rm -f /var/lib/whonix-firewall/firewall.nft
 }
 
 write_nft_script() {
@@ -63,6 +65,10 @@ source_config_folder() {
     fi
     source "$i"
   done
+}
+
+nft_script_header() {
+  $nftables_cmd "#!/usr/sbin/nft -f"
 }
 
 variables_defaults() {
@@ -303,25 +309,7 @@ variables_defaults() {
   #INTERNAL_OPEN_PORTS+=" 443 "
 }
 
-## TODO
 nft_defaults() {
-  $nftables_cmd add table inet filter
-  $nftables_cmd create table ip filter
-
-  ## Set secure defaults.
-  #$iptables_cmd -P INPUT DROP
-  $nftables_cmd "add chain filter input { type filter hook input priority 0; policy drop; }"
-
-  ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
-  #$iptables_cmd -P FORWARD DROP
-  $nftables_cmd "add chain filter forward { type filter hook input priority 0; policy drop; }"
-
-  ## Will be lifted below.
-  #$iptables_cmd -P OUTPUT DROP
-  $nftables_cmd "add chain filter output { type filter hook input priority 0; policy drop; }"
-}
-
-nft_preparation() {
   ## Flush old rules.
   #$iptables_cmd -F
   #$iptables_cmd -X
@@ -330,6 +318,25 @@ nft_preparation() {
   #$iptables_cmd -t mangle -F
   #$iptables_cmd -t mangle -X
   $nftables_cmd flush ruleset
+
+  $nftables_cmd add table inet filter
+  $nftables_cmd add table nat
+
+  $nftables_cmd add chain ip nat OUTPUT
+
+  $nftables_cmd create table ip filter
+
+  ## Set secure defaults.
+  #$iptables_cmd -P INPUT DROP
+  $nftables_cmd "add chain filter INPUT { type filter hook input priority 0; policy drop; }"
+
+  ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
+  #$iptables_cmd -P FORWARD DROP
+  $nftables_cmd "add chain filter FORWARD { type filter hook input priority 0; policy drop; }"
+
+  ## Will be lifted below.
+  #$iptables_cmd -P OUTPUT DROP
+  $nftables_cmd "add chain filter OUTPUT { type filter hook input priority 0; policy drop; }"
 }
 
 nft_drop_invalid_incoming_packages() {
@@ -805,6 +812,10 @@ nft_output() {
   $nftables_cmd add rule ip filter OUTPUT counter reject with icmp type admin-prohibited
 }
 
+nft_check() {
+   nft --check --file /var/lib/whonix-firewall/firewall.nft
+}
+
 status_files() {
   mkdir --parents /run/whonix_firewall
   if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
@@ -902,10 +913,10 @@ main() {
   init
   variables_defaults
   source_config_folder
+  nft_script_header
   firewall_mode_detection
   print_variables
   nft_defaults
-  nft_preparation
   nft_drop_invalid_incoming_packages
   qubes
   nft_input_rules
@@ -913,6 +924,7 @@ main() {
   nft_forward
   nft_reject_invalid_outgoing_packages
   nft_output
+  nft_check
   status_files
   end
 }
