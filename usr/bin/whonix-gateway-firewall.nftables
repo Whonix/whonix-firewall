@@ -816,6 +816,10 @@ nft_check() {
    nft --check --file /var/lib/whonix-firewall/firewall.nft
 }
 
+nft_load() {
+   nft --file /var/lib/whonix-firewall/firewall.nft
+}
+
 status_files() {
   mkdir --parents /run/whonix_firewall
   if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
@@ -925,6 +929,7 @@ main() {
   nft_reject_invalid_outgoing_packages
   nft_output
   nft_check
+  nft_load
   status_files
   end
 }
