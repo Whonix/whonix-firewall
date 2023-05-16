@@ -67,6 +67,7 @@ source_config_folder() {
     fi
     source "$i"
   done
+  shopt -u nullglob
 }
 
 nft_script_header() {
@@ -709,6 +710,7 @@ main() {
   init
   variables_defaults
   source_config_folder
+  set -f
   nft_script_header
   firewall_mode_detection
   print_variables
