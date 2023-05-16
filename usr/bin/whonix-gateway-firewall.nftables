@@ -585,8 +585,8 @@ nft_input_rules() {
     if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
       local non_tor_gateway_item
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
-        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
-        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
+        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
       done
     fi
 
@@ -596,16 +596,16 @@ nft_input_rules() {
         for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
           true "socks_port: $socks_port"
           ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
-          #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
-          $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport "$socks_port" counter redirect to :"$socks_port"
+          #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
+          $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$socks_port" counter redirect to :"$socks_port"
         done
       done
 
       ## Redirect ports 9152-9189 prepared for user custom applications.
       local non_tor_gateway_item
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
-        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9189 -j REDIRECT
-        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$WORKSTATION_DEST_SOCKSIFIED" tcp dport 9152-9189 counter
+        #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport 9152:9189 -j REDIRECT
+        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9189 counter
       done
     fi
 
