@@ -388,6 +388,13 @@ ipv4_input_rules() {
     $iptables_cmd -A INPUT -m state --state ESTABLISHED -j ACCEPT
   fi
 
+  ## Allow fragmentation-needed ICMP packets to avoid MTU problems
+  ## when Whonix Gateway is connected to a link that has smaller
+  ## MTU than 1500 assumed by Whonix Gateway
+  if [ "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" = "1" ]; then
+    $iptables_cmd -A INPUT -p icmp --icmp-type fragmentation-needed -m state --state RELATED -j ACCEPT
+  fi
+  
   ## Drop all incoming ICMP traffic by default.
   ## All incoming connections are dropped by default anyway, but should a user
   ## allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should
