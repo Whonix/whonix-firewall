@@ -441,8 +441,8 @@ nft_input_rules() {
   fi
 
   ## Allow fragmentation-needed ICMP packets to avoid MTU problems
-  ## when Whonix Gateway is connected to a link that has smaller
-  ## MTU than 1500 assumed by Whonix Gateway
+  ## when Whonix-Gateway is connected to a link that has smaller
+  ## MTU than 1500 assumed by Whonix-Gateway
   if [ "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" = "1" ]; then
     #$iptables_cmd -A INPUT -p icmp --icmp-type fragmentation-needed -m state --state RELATED -j ACCEPT
     $nftables_cmd add rule filter INPUT icmp type destination-unreachable icmp code frag-needed ct state related counter accept
