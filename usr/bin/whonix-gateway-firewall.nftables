@@ -91,7 +91,8 @@ variables_defaults() {
   [ -n "$ALLOW_GATEWAY_USER_USER" ] || ALLOW_GATEWAY_USER_USER=0
   [ -n "$GATEWAY_ALLOW_INCOMING_SSH" ] || GATEWAY_ALLOW_INCOMING_SSH=0
   [ -n "$GATEWAY_ALLOW_INCOMING_ICMP" ] || GATEWAY_ALLOW_INCOMING_ICMP=0
-
+  [ -n "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" ] || GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED=0
+  
   ## Get Tor username, distro specific!
   [ -n "$TOR_USER" ] || TOR_USER="$(id -u debian-tor)"
 
@@ -437,6 +438,14 @@ nft_input_rules() {
   else
     #$iptables_cmd -A INPUT -m state --state ESTABLISHED -j ACCEPT
     $nftables_cmd add rule ip filter INPUT ct state established counter accept
+  fi
+
+  ## Allow fragmentation-needed ICMP packets to avoid MTU problems
+  ## when Whonix Gateway is connected to a link that has smaller
+  ## MTU than 1500 assumed by Whonix Gateway
+  if [ "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" = "1" ]; then
+    #$iptables_cmd -A INPUT -p icmp --icmp-type fragmentation-needed -m state --state RELATED -j ACCEPT
+    $nftables_cmd add rule filter INPUT icmp type destination-unreachable icmp code frag-needed ct state related counter accept
   fi
 
   ## Drop all incoming ICMP traffic by default.
