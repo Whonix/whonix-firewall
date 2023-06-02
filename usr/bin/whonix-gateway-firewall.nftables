@@ -92,7 +92,7 @@ variables_defaults() {
   [ -n "$GATEWAY_ALLOW_INCOMING_SSH" ] || GATEWAY_ALLOW_INCOMING_SSH=0
   [ -n "$GATEWAY_ALLOW_INCOMING_ICMP" ] || GATEWAY_ALLOW_INCOMING_ICMP=0
   [ -n "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" ] || GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED=0
-  
+
   ## Get Tor username, distro specific!
   [ -n "$TOR_USER" ] || TOR_USER="$(id -u debian-tor)"
 
