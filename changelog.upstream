@@ -1,3 +1,43 @@
+commit d42542555519ea3a39fc905ba1900e4843eaae2c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 2 11:17:47 2023 +0000
+
+    remove trailing spaces
+
+commit b1d5824da11ca61354f7fd639bf90ecf1454bde2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 2 11:16:27 2023 +0000
+
+    comment
+
+commit 462775d480ae9bb0d79442a7c77e00d736368b8d
+Merge: 6ff9edb cf99266
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 2 11:15:34 2023 +0000
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit cf99266c64c447b86a1af87da5f6f5c813ba348a
+Merge: 6ff9edb bf26fc7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 2 11:13:16 2023 +0000
+
+    Merge pull request #5 from 1cho1ce/allow-icmp-frag-needed
+    
+    Fix MTU problem by allowing RELATED fragmentation-needed ICMP
+
+commit bf26fc743af48d68e0b1bd97484ba46228e1591b
+Author: 1cho1ce <1choice4u@proton.me>
+Date:   Thu May 25 18:13:36 2023 +0000
+
+    Fix MTU problem by allowing RELATED fragmentation-needed ICMP
+
+commit 6ff9edb04d746d59e3d669fc98c2f9507d36b1f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 16 13:28:28 2023 +0000
+
+    bumped changelog version
+
 commit 3b4d13cebc68467d7d0824055d3d4d23cb382b29
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 16 13:28:17 2023 +0000
