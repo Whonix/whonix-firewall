@@ -49,7 +49,6 @@ source_config_folder() {
   local i
   for i in \
     /etc/whonix_firewall.d/*.conf \
-    /rw/config/whonix_firewall.d/*.conf \
     /usr/local/etc/whonix_firewall.d/*.conf; do
     bash_n_exit_code="0"
     bash_n_output="$(bash -n "$i" 2>&1)" || {
