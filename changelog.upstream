@@ -1,3 +1,21 @@
+commit 5f1e0ef0fce2dfc991547a16a5b23637bb27f57c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 29 08:26:21 2023 -0400
+
+    Fix MTU problem by allowing RELATED fragmentation-needed ICMP by
+    
+    enabling `GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED=1` by default.
+    
+    Run
+    `iptables -A INPUT -p icmp --icmp-type fragmentation-needed -m state --state RELATED -j ACCEPT`
+    on Whonix-Gateway.
+
+commit 8e3b045fc2b93012e0d4a60017a870b7676d8a1a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 9 06:33:49 2023 -0400
+
+    bumped changelog version
+
 commit 0467e3a1430eefc57b8fbd84e7d704de6ec7e8fb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jul 9 06:15:12 2023 -0400
