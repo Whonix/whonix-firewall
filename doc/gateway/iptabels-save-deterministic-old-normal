@@ -20,6 +20,7 @@ COMMIT
 -A INPUT -i vif+ -p tcp -m tcp --dport 8082 -j ACCEPT
 -A INPUT -i lo -j ACCEPT
 -A INPUT -m state --state ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 3/4 -m state --state RELATED -j ACCEPT
 -A INPUT -p icmp -j DROP
 -A INPUT -i vif+ -p udp -m udp --dport 5300 -j ACCEPT
 -A INPUT -i vif+ -p tcp -m tcp --dport 9040 -j ACCEPT
