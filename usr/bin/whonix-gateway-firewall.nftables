@@ -320,7 +320,6 @@ nft_defaults() {
   #$iptables_cmd -t mangle -X
   $nftables_cmd flush ruleset
 
-  $nftables_cmd add table inet filter
   $nftables_cmd add table nat
 
   $nftables_cmd create table ip filter
