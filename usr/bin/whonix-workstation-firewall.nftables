@@ -383,6 +383,7 @@ nft_reject_invalid_outgoing_packages() {
 
     ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
     #$iptables_cmd -A output -f -j REJECT --reject-with icmp-admin-prohibited
+    ## TODO: IPv6?
     $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject with icmp type admin-prohibited
 
     ## DROP INCOMING MALFORMED XMAS PACKETS
