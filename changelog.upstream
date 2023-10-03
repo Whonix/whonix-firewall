@@ -1,3 +1,45 @@
+commit 712e175b5d8816e9773d63be1b5ce1152819548f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 05:26:57 2023 -0400
+
+    towards IPv6 support
+
+commit 786ddc742713e54995cd98a38968fa262cb13f85
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 05:22:10 2023 -0400
+
+    towards IPv6 support
+
+commit da33a0f2b6d704b4f45efc75e39c6627e6fd53f6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 05:11:46 2023 -0400
+
+    minor
+
+commit 9d90442dc97d169a48cf0273a6cec8e490fd7771
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 05:11:09 2023 -0400
+
+    comment
+
+commit 66f438653ea3d910ecdb6bddfb7c21ba0584d32a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 04:57:04 2023 -0400
+
+    towards IPv6 support
+
+commit 75b352b1ded47aaa3d48b255bd573bce434d4ff8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 04:40:10 2023 -0400
+
+    towards IPv6 support
+
+commit 72218e51d8c30e97a8ad4a9aa92520e0b04fdd8b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 03:59:18 2023 -0400
+
+    bumped changelog version
+
 commit fa5a98ecda65ed5619ca16c8e04fc100359dd036
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Oct 3 03:58:29 2023 -0400
