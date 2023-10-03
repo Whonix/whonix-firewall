@@ -612,7 +612,7 @@ nft_input_rules() {
       local non_tor_gateway_item
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
         #$iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport 9152:9189 -j REDIRECT
-        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9189 counter
+        $nftables_cmd add rule ip nat PREROUTING iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9189 counter redirect
       done
     fi
 
@@ -743,7 +743,7 @@ nft_output() {
 
   ## Existing connections are accepted.
   #$iptables_cmd -A OUTPUT -m state --state ESTABLISHED -j ACCEPT
-  $nftables_cmd add rule ip filter OUTPUT ct state established  counter accept
+  $nftables_cmd add rule ip filter OUTPUT ct state established counter accept
 
   if [ "$firewall_mode" = "full" ]; then
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
