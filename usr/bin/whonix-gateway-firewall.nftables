@@ -657,7 +657,7 @@ nft_forward() {
 
   ## Reject everything.
   #$iptables_cmd -A forward -j REJECT --reject-with icmp-admin-prohibited
-  $nftables_cmd add rule inet filter forward counter reject with icmp type admin-prohibited
+  $nftables_cmd add rule inet filter forward counter reject
 }
 
 nft_reject_invalid_outgoing_packages() {
@@ -666,34 +666,34 @@ nft_reject_invalid_outgoing_packages() {
   if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
     ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
     #$iptables_cmd -A output -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output ct state invalid counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output ct state invalid counter reject
     #$iptables_cmd -A output -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output ct state invalid counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output ct state invalid counter reject
     ##$iptables_cmd -A output ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
-    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject with icmp type admin-prohibited
+    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject
     ##$iptables_cmd -A output ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
-    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(rst|ack)" == "rst|ack" counter reject with icmp type admin-prohibited
+    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(rst|ack)" == "rst|ack" counter reject
 
     ## DROP INVALID SYN PACKETS
     #$iptables_cmd -A output -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject
     #$iptables_cmd -A output -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject
     #$iptables_cmd -A output -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject
 
     ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
     #$iptables_cmd -A output -f -j REJECT --reject-with icmp-admin-prohibited
     ## TODO: IPv6?
-    $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject
 
     ## DROP INCOMING MALFORMED XMAS PACKETS
     #$iptables_cmd -A output -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject
 
     ## DROP INCOMING MALFORMED NULL PACKETS
     #$iptables_cmd -A output -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject with icmp type admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject
   fi
 }
 
@@ -819,7 +819,7 @@ nft_output() {
 
   ## Reject all other outgoing traffic.
   #$iptables_cmd -A output -j REJECT --reject-with icmp-admin-prohibited
-  $nftables_cmd add rule inet filter output counter reject with icmp type admin-prohibited
+  $nftables_cmd add rule inet filter output counter reject
 }
 
 nft_check() {
