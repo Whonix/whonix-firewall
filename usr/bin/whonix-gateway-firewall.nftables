@@ -324,7 +324,6 @@ nft_defaults() {
   $nftables_cmd add table nat
 
   $nftables_cmd add chain ip nat OUTPUT
-  $nftables_cmd add chain ip nat PREROUTING
 
   $nftables_cmd create table ip filter
 
@@ -339,6 +338,8 @@ nft_defaults() {
   ## Will be lifted below.
   #$iptables_cmd -P OUTPUT DROP
   $nftables_cmd "add chain filter OUTPUT { type filter hook output priority 0; policy drop; }"
+
+  $nftables_cmd "add chain nat PREROUTING { type nat hook prerouting priority -100; }"
 }
 
 nft_drop_invalid_incoming_packages() {
