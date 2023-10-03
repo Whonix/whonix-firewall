@@ -629,8 +629,8 @@ end() {
 
 main() {
   init
-  variables_defaults
   source_config_folder
+  variables_defaults
   firewall_mode_detection
   ipv4_defaults
   ipv4_preparation

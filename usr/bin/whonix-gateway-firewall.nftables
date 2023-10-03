@@ -922,8 +922,8 @@ print_variables() {
 
 main() {
   init
-  variables_defaults
   source_config_folder
+  variables_defaults
   set -f
   nft_script_header
   firewall_mode_detection
