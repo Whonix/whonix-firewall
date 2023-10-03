@@ -396,8 +396,7 @@ qubes() {
     for int_if_item in $INT_IF; do
       ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
       #$iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i "$int_if_item" -p tcp -m tcp --dport 8082 -j REDIRECT
-      ## TODO: 10.137.255.254/32 vs dropping /32 ok?
-      $nftables_cmd add rule ip nat PR-QBS-SERVICES iifname "$int_if_item" ip daddr 10.137.255.254 tcp dport 8082 counter
+      $nftables_cmd add rule ip nat PR-QBS-SERVICES iifname "$int_if_item" ip daddr 10.137.255.254 tcp dport 8082 counter redirect
     done
 
     ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
@@ -584,7 +583,7 @@ nft_input_rules() {
       ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
       [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9189 for user custom applications"
       #$iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
-      $nftables_cmd add rule ip filter INPUT iifname "$int_tif_item" ip protocol tcp tcp dport 9152-9189 counter accept
+      $nftables_cmd add rule ip filter INPUT iifname "$int_tif_item" tcp dport 9152-9189 counter accept
     fi
   done
 
