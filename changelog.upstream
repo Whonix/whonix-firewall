@@ -1,3 +1,15 @@
+commit fa5a98ecda65ed5619ca16c8e04fc100359dd036
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 03:58:29 2023 -0400
+
+    fix, source config folder first before setting built-in default variables
+
+commit 4699890a7911a44798d3d7120e8d5a11cfcc5361
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 3 03:22:12 2023 -0400
+
+    bumped changelog version
+
 commit 518475aee6cc2683fde138eb29f9714b759cadfa
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Oct 3 03:11:58 2023 -0400
