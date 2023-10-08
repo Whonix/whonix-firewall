@@ -17,7 +17,7 @@ set -x
 ## https://forums.whonix.org/t/use-sudoedit-in-whonix-documentation-and-whonix-software/7599/30
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
-  lxsudo sudo -u "$(whoami)" env VISUAL="$VISUAL" sudoedit /etc/whonix_firewall.d/30_whonix_gateway_default.conf
+  gsudoedit /etc/whonix_firewall.d/30_whonix_gateway_default.conf
 else
-  lxsudo sudo -u "$(whoami)" env VISUAL="$VISUAL" sudoedit /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+  gsudoedit /etc/whonix_firewall.d/30_whonix_workstation_default.conf
 fi

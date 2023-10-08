@@ -15,4 +15,4 @@ set -x
 ## https://bugzilla.xfce.org/show_bug.cgi?id=15282
 ## https://github.com/lxqt/lxqt-sudo/issues/114
 ## https://forums.whonix.org/t/use-sudoedit-in-whonix-documentation-and-whonix-software/7599/30
-lxsudo sudo -u "$(whoami)" env VISUAL="$VISUAL" sudoedit /etc/whonix_firewall.d/50_user.conf
+gsudoedit /etc/whonix_firewall.d/50_user.conf
