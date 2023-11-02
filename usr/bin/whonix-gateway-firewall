@@ -511,10 +511,10 @@ ipv4_input_rules() {
         $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --dport "$socks_port" -j ACCEPT
       done
 
-      ## Accept ports 9152-9189 prepared for user custom applications.
+      ## Accept ports 9152-9229 prepared for user custom applications.
       ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9189 for user custom applications"
-      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
+      [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9229 for user custom applications"
+      $iptables_cmd -A INPUT -i "$int_tif_item" -p tcp --match multiport --dports 9152:9229 -j ACCEPT
     fi
   done
 
@@ -531,8 +531,8 @@ ipv4_input_rules() {
         $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
       done
 
-      ## Redirect ports 9152-9189 prepared for user custom applications.
-      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9189 -j REDIRECT
+      ## Redirect ports 9152-9229 prepared for user custom applications.
+      $iptables_cmd -t nat -A PREROUTING -i "$int_if_item" -d "$WORKSTATION_DEST_SOCKSIFIED" -p tcp --dport 9152:9229 -j REDIRECT
     fi
 
     if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then

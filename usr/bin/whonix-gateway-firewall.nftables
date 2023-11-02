@@ -580,11 +580,11 @@ nft_input_rules() {
         $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport "$socks_port" counter accept
       done
 
-      ## Accept ports 9152-9189 prepared for user custom applications.
+      ## Accept ports 9152-9229 prepared for user custom applications.
       ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9189 for user custom applications"
-      #$iptables_cmd -A input -i "$int_tif_item" -p tcp --match multiport --dports 9152:9189 -j ACCEPT
-      $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport 9152-9189 counter accept
+      [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9229 for user custom applications"
+      #$iptables_cmd -A input -i "$int_tif_item" -p tcp --match multiport --dports 9152:9229 -j ACCEPT
+      $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport 9152-9229 counter accept
     fi
   done
 
@@ -609,11 +609,11 @@ nft_input_rules() {
         done
       done
 
-      ## Redirect ports 9152-9189 prepared for user custom applications.
+      ## Redirect ports 9152-9229 prepared for user custom applications.
       local non_tor_gateway_item
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
-        #$iptables_cmd -t nat -A prerouting -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport 9152:9189 -j REDIRECT
-        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9189 counter redirect
+        #$iptables_cmd -t nat -A prerouting -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport 9152:9229 -j REDIRECT
+        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9229 counter redirect
       done
     fi
 
