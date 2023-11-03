@@ -1,3 +1,31 @@
+commit fc1bcd65ce2d9ec999d5f7cec45ff84d0900e6a4
+Merge: 937660e 462571d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 2 12:58:24 2023 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 462571d1882f8e48edc70fdc77e649c6446f9572
+Merge: 937660e c170d36
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 2 12:57:18 2023 -0400
+
+    Merge pull request #6 from 1cho1ce/firewall-accept-HTTPTunnelPort
+    
+    Allow input connections to HTTPTunnelPort
+
+commit c170d364c20c4582928fee7be6cfbafbfd3b8bec
+Author: 1cho1ce <1choice4u@proton.me>
+Date:   Thu Nov 2 06:44:53 2023 +0000
+
+    Allow input connections to HTTPTunnelPort https://github.com/Whonix/anon-gw-anonymizer-config/commit/68daef8443eb4845ba07dc33b983df3592d5bccd
+
+commit 937660e60fe6e9f39901e99883fbf41cd5a1032b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 8 06:32:49 2023 -0400
+
+    bumped changelog version
+
 commit 8ffea53ada36c05bd5c61fd5f309301b8f02131a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 8 04:38:16 2023 -0400
