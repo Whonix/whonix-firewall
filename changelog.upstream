@@ -1,3 +1,37 @@
+commit 3f7357472f40778898643ea3c2d123c289292558
+Merge: aa0fa45 fbe9b77
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 6 08:51:36 2024 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit fbe9b77c9c8b3b62ee10cc89ce4fa176df8eae77
+Merge: aa0fa45 73165d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 6 08:50:34 2024 -0400
+
+    Merge pull request #7 from DanWin/qubes-nftables
+    
+    Fix nftables firewall version for Qubes
+
+commit 73165d1ed758c9fe9f1b617799138c03d7b06453
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Mon May 6 11:21:08 2024 +0200
+
+    Add nftables version of enable-firewall
+
+commit 5415522a5f3babb10b1ddeda61157a1f922dc977
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Mon May 6 11:20:32 2024 +0200
+
+    Flush tables individually and fix table already exists error
+
+commit aa0fa450280cfc282f5d2f081649f91277f6bdd5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Feb 2 12:47:21 2024 +0000
+
+    bumped changelog version
+
 commit 975e90bbf5a83fac35e2e31fd8248b2acf2674eb
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Feb 2 07:33:07 2024 -0500
