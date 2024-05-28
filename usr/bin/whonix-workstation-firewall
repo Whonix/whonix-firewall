@@ -37,6 +37,13 @@ init() {
 
   set -o pipefail
   set -o errtrace
+
+  mkdir --parents /var/lib/whonix-firewall
+  rm -f /var/lib/whonix-firewall/firewall.nft
+}
+
+write_nft_script() {
+  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
 }
 
 source_config_folder() {
@@ -59,11 +66,16 @@ source_config_folder() {
     fi
     source "$i"
   done
+  shopt -u nullglob
+}
+
+nft_script_header() {
+  $nftables_cmd "#!/usr/sbin/nft -f"
 }
 
 variables_defaults() {
-  [ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
-  [ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
+  #[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
+  [ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
 
   ## Legacy.
   if [ "$VPN_FIREWALL" = "1" ]; then
@@ -117,18 +129,19 @@ variables_defaults() {
   if [ "$LOCAL_NET" = "" ]; then
     if command -v "qubesdb-read" > /dev/null 2>&1; then
       LOCAL_NET="\
-            127.0.0.0-127.0.0.24 \
-            10.137.0.0-10.138.255.255 \
+            127.0.0.0/24 \
+            10.137.0.0/16 \
+            10.138.0.0/16 \
          "
     else
       ## 10.0.2.2/24: VirtualBox DHCP
       ## IP HARDCODED unfortunately. Use a /etc/whonix_firewall.d configuration folder drop-in if you want to change it.
       LOCAL_NET="\
-            127.0.0.0-127.0.0.24 \
-            192.168.0.0-192.168.0.24 \
-            192.168.1.0-192.168.1.24 \
-            10.152.152.0-10.152.152.24 \
-            10.0.2.2-10.0.2.24 \
+            127.0.0.0/24 \
+            192.168.0.0/24 \
+            192.168.1.0/24 \
+            10.152.152.0/24 \
+            10.0.2.2/24 \
          "
     fi
   fi
@@ -186,45 +199,63 @@ variables_defaults() {
   INTERNAL_OPEN_PORTS+=" 9150 "
 }
 
-ipv4_defaults() {
-  ## Set secure defaults.
-  $iptables_cmd -P INPUT DROP
+nft_defaults() {
+  ## Flush old rules.
+  #$iptables_cmd -F
+  #$iptables_cmd -X
+  #$iptables_cmd -t nat -F
+  #$iptables_cmd -t nat -X
+  #$iptables_cmd -t mangle -F
+  #$iptables_cmd -t mangle -X
 
-  ## FORWARD rules does not actually do anything if forwarding is disabled. Better be safe just in case.
-  $iptables_cmd -P FORWARD DROP
+  $nftables_cmd add table inet filter
+  $nftables_cmd add table inet nat
+
+  $nftables_cmd flush table inet filter
+  $nftables_cmd flush table inet nat
+
+  $nftables_cmd add chain inet nat output
+  $nftables_cmd add chain inet nat prerouting
+
+  ## Set secure defaults.
+  #$iptables_cmd -P input DROP
+  $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
+
+  ## forward rules does not actually do anything if forwarding is disabled. Better be safe just in case.
+  #$iptables_cmd -P forward DROP
+  $nftables_cmd "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
 
   ## Will be lifted below.
-  $iptables_cmd -P OUTPUT DROP
+  #$iptables_cmd -P output DROP
+  $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 }
 
-ipv4_preparation() {
-  ## Flush old rules.
-  $iptables_cmd -F
-  $iptables_cmd -X
-  $iptables_cmd -t nat -F
-  $iptables_cmd -t nat -X
-  $iptables_cmd -t mangle -F
-  $iptables_cmd -t mangle -X
-}
-
-ipv4_drop_invalid_incoming_packages() {
+nft_drop_invalid_incoming_packages() {
   ## DROP INVALID
-  $iptables_cmd -A INPUT -m conntrack --ctstate INVALID -j DROP
-  $iptables_cmd -A INPUT -m state --state INVALID -j DROP
+  #$iptables_cmd -A input -m conntrack --ctstate INVALID -j DROP
+  #$iptables_cmd -A input -m state --state INVALID -j DROP
+  $nftables_cmd add rule inet filter input ct state invalid counter drop
 
   ## DROP INVALID SYN PACKETS
-  $iptables_cmd -A INPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP
-  $iptables_cmd -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
-  $iptables_cmd -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+  #$iptables_cmd -A input -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j DROP
+  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|ack" counter drop
+  #$iptables_cmd -A input -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn)" == "fin|syn" counter drop
+  #$iptables_cmd -A input -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+  $nftables_cmd add rule inet filter input tcp flags "&" "(syn|rst)" == "syn|rst" counter drop
 
   ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-  $iptables_cmd -A INPUT -f -j DROP
+  #$iptables_cmd -A input -f -j DROP
+  ## TODO: IPv6?
+  $nftables_cmd add rule inet filter input ip frag-off "&" 0x1fff != 0 counter drop
 
   ## DROP INCOMING MALFORMED XMAS PACKETS
-  $iptables_cmd -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+  #$iptables_cmd -A input -p tcp --tcp-flags ALL ALL -j DROP
+  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|psh|ack|urg" counter drop
 
   ## DROP INCOMING MALFORMED NULL PACKETS
-  $iptables_cmd -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+  #$iptables_cmd -A input -p tcp --tcp-flags ALL NONE -j DROP
+  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
 }
 
 qubes() {
@@ -241,34 +272,40 @@ qubes_dns() {
   ## TemplateVMs, because these are non-networked by default.
 
   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns 2> /dev/null)"; then
-    $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_primary_dns" -j ACCEPT
+    #$iptables_cmd -A output -p udp --dport 53 --dst "$qubes_primary_dns" -j ACCEPT
+    $nftables_cmd add rule inet filter output ip daddr "$qubes_primary_dns" udp dport 53 counter accept
     counter=$((counter + 1))
   fi
 
   if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns 2> /dev/null)"; then
-    $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$qubes_secondary_dns" -j ACCEPT
+    #$iptables_cmd -A output -p udp --dport 53 --dst "$qubes_secondary_dns" -j ACCEPT
+    $nftables_cmd add rule inet filter output ip daddr "$qubes_secondary_dns" udp dport 53 counter accept
     counter=$((counter + 1))
   fi
 
   if [ "$counter" -ge "2" ]; then
     output_cmd "OK: Qubes DNS firewall rules ok."
   else
-    $iptables_cmd -A OUTPUT -p udp --dport 53 -j ACCEPT
+    #$iptables_cmd -A output -p udp --dport 53 -j ACCEPT
+    $nftables_cmd add rule inet filter output udp dport 53 counter accept
   fi
 }
 
-ipv4_input_rules() {
+nft_input_rules() {
   ## Traffic on the loopback interface is accepted.
-  $iptables_cmd -A INPUT -i lo -j ACCEPT
+  #$iptables_cmd -A input -i lo -j ACCEPT
+  $nftables_cmd add rule inet filter input iifname "lo" counter accept
 
   ## Established incoming connections are accepted.
-  $iptables_cmd -A INPUT -m state --state ESTABLISHED -j ACCEPT
+  #$iptables_cmd -A input -m state --state ESTABLISHED -j ACCEPT
+  $nftables_cmd add rule inet filter input ct state established counter accept
 
   ## Allow all incoming connections on the virtual VPN network interface,
   ## when TUNNEL_FIREWALL_ENABLE mode is enabled.
   ## DISABLED BY DEFAULT.
   if [ "$TUNNEL_FIREWALL_ENABLE" = "true" ]; then
-    $iptables_cmd -A INPUT -i "$VPN_INTERFACE" -j ACCEPT
+    #$iptables_cmd -A input -i "$VPN_INTERFACE" -j ACCEPT
+    $nftables_cmd add rule inet filter input iifname "$VPN_INTERFACE" counter accept
   fi
 
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
@@ -279,7 +316,8 @@ ipv4_input_rules() {
       output_cmd "INFO: Opening External TCP port(s): ${EXTERNAL_OPEN_PORTS:-"NONE"}"
     fi
     for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
-      $iptables_cmd -A INPUT -p tcp --dport "$local_port_to_open" -j ACCEPT
+      #$iptables_cmd -A input -p tcp --dport "$local_port_to_open" -j ACCEPT
+      $nftables_cmd add rule inet filter input tcp dport "$local_port_to_open" counter accept
     done
 
     local local_udp_port_to_open
@@ -287,58 +325,76 @@ ipv4_input_rules() {
       output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}"
     fi
     for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
-      $iptables_cmd -A INPUT -p udp --dport "$local_udp_port_to_open" -j ACCEPT
+      #$iptables_cmd -A input -p udp --dport "$local_udp_port_to_open" -j ACCEPT
+      $nftables_cmd add rule inet filter input udp dport "$local_udp_port_to_open" counter accept
     done
 
     if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
       [ "${info_enabled}" = "1" ] && output_cmd "INFO: EXTERNAL_OPEN_ALL='true', all external ports will be opened"
-      $iptables_cmd -A INPUT -j ACCEPT
+      #$iptables_cmd -A input -j ACCEPT
+      $nftables_cmd add rule inet filter input counter accept
     fi
   fi
 }
 
-ipv4_input_defaults() {
+nft_input_defaults() {
   ## Log.
-  #$iptables_cmd -A INPUT -j LOG --log-prefix "Whonix_blocked_input4: "
+  ##$iptables_cmd -A input -j LOG --log-prefix "Whonix_blocked_input4: "
+  #$nftables_cmd add rule inet filter input counter log prefix \"Whonix_blocked_input4:\"
 
   ## Required for Control Port Filter Proxy Connection.
   ## https://phabricator.whonix.org/T112
-  $iptables_cmd -A INPUT -p tcp -j REJECT --reject-with tcp-reset
+  #$iptables_cmd -A input -p tcp -j REJECT --reject-with tcp-reset
+  $nftables_cmd add rule inet filter input ip protocol tcp counter reject with tcp reset
 
   ## Reject anything not explicitly allowed above.
-  $iptables_cmd -A INPUT -j REJECT --reject-with icmp-port-unreachable
+  #$iptables_cmd -A input -j REJECT --reject-with icmp-port-unreachable
+  $nftables_cmd add rule inet filter input counter reject
 }
 
-ipv4_forward() {
+nft_forward() {
   ## Log.
-  #$iptables_cmd -A FORWARD -j LOG --log-prefix "Whonix_blocked_forward4: "
+  ##$iptables_cmd -A forward -j LOG --log-prefix "Whonix_blocked_forward4: "
+  #$nftables_cmd add rule inet filter forward counter log prefix \"Whonix_blocked_forward4:\"
 
-  $iptables_cmd -A FORWARD -j DROP
+  #$iptables_cmd -A forward -j DROP
+  $nftables_cmd add rule inet filter forward counter drop
 }
 
-ipv4_reject_invalid_outgoing_packages() {
+nft_reject_invalid_outgoing_packages() {
   ## Drop invalid outgoing packages,
   ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
   if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
     ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
-    $iptables_cmd -A OUTPUT -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
-    $iptables_cmd -A OUTPUT -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
-    #$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
-    #$iptables_cmd -A OUTPUT ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
+    #$iptables_cmd -A output -m conntrack --ctstate INVALID -j REJECT --reject-with icmp-admin-prohibited
+    $nftables_cmd add rule inet filter output ct state invalid counter reject
+    #$iptables_cmd -A output -m state --state INVALID -j REJECT --reject-with icmp-admin-prohibited
+    #$nftables_cmd add rule inet filter output ct state invalid counter reject
+    ##$iptables_cmd -A output ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,FIN ACK,FIN -j REJECT --reject-with icmp-admin-prohibited
+    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject
+    ##$iptables_cmd -A output ! -o lo ! -d 127.0.0.1 ! -s 127.0.0.1 -p tcp -m tcp --tcp-flags ACK,RST ACK,RST -j REJECT --reject-with icmp-admin-prohibited
+    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(rst|ack)" == "rst|ack" counter reject
 
     ## DROP INVALID SYN PACKETS
-    $iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-    $iptables_cmd -A OUTPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
-    $iptables_cmd -A OUTPUT -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
+    #$iptables_cmd -A output -p tcp --tcp-flags ALL ACK,RST,SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject
+    #$iptables_cmd -A output -p tcp --tcp-flags SYN,FIN SYN,FIN -j REJECT --reject-with icmp-admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject
+    #$iptables_cmd -A output -p tcp --tcp-flags SYN,RST SYN,RST -j REJECT --reject-with icmp-admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject
 
     ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-    $iptables_cmd -A OUTPUT -f -j REJECT --reject-with icmp-admin-prohibited
+    #$iptables_cmd -A output -f -j REJECT --reject-with icmp-admin-prohibited
+    ## TODO: IPv6?
+    $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject
 
     ## DROP INCOMING MALFORMED XMAS PACKETS
-    $iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
+    #$iptables_cmd -A output -p tcp --tcp-flags ALL ALL -j REJECT --reject-with icmp-admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject
 
     ## DROP INCOMING MALFORMED NULL PACKETS
-    $iptables_cmd -A OUTPUT -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
+    #$iptables_cmd -A output -p tcp --tcp-flags ALL NONE -j REJECT --reject-with icmp-admin-prohibited
+    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject
   fi
 }
 
@@ -361,14 +417,18 @@ qubes_updates_proxy() {
 
   output_cmd "OK: Torified Qubes Updates Proxy check not done yet. Limiting access to Qubes Updates Proxy to user 'updatesproxycheck'."
 
-  $iptables_cmd -A OUTPUT -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
-  $iptables_cmd -A OUTPUT -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
+  #$iptables_cmd -A output -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
+  $nftables_cmd add rule inet filter output skuid "$UPDATESPROXYCHECK_USER" ip daddr 127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter accept
+  #$iptables_cmd -A output -m owner --uid-owner "$UPDATESPROXYCHECK_USER" -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j ACCEPT
+  $nftables_cmd add rule inet filter output skuid "$UPDATESPROXYCHECK_USER" ip daddr 10.137.255.254-10.137.255.254 tcp dport "$qubes_updates_proxy_port" counter accept
 
-  $iptables_cmd -A OUTPUT -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j REJECT --reject-with icmp-admin-prohibited
-  $iptables_cmd -A OUTPUT -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j REJECT --reject-with icmp-admin-prohibited
+  #$iptables_cmd -A output -m iprange --dst-range "127.0.0.1" -p tcp --dport "$qubes_updates_proxy_port" -j REJECT --reject-with icmp-admin-prohibited
+  $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter reject
+  #$iptables_cmd -A output -m iprange --dst-range "10.137.255.254" -p tcp --dport "$qubes_updates_proxy_port" -j REJECT --reject-with icmp-admin-prohibited
+  $nftables_cmd add rule inet filter output ip daddr 10.137.255.254-10.137.255.254 tcp dport "$qubes_updates_proxy_port" counter reject
 }
 
-ipv4_output() {
+nft_output() {
   ## Prevent connections to Tor SocksPorts.
   ## https://phabricator.whonix.org/T533#11025
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
@@ -383,7 +443,8 @@ ipv4_output() {
         ## succeed and firewall_mode could never change to 'full'.
         continue
       fi
-      $iptables_cmd -A OUTPUT -p tcp --dport "$socks_port_item" --dst "127.0.0.1" -j REJECT
+      #$iptables_cmd -A output -p tcp --dport "$socks_port_item" --dst "127.0.0.1" -j REJECT
+      $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
     done
   fi
 
@@ -391,7 +452,8 @@ ipv4_output() {
 
   ## Access to localhost is required even in timesync-fail-closed mode,
   ## otherwise breaks applications such as konsole and kwrite.
-  $iptables_cmd -A OUTPUT -o lo -j ACCEPT
+  #$iptables_cmd -A output -o lo -j ACCEPT
+  $nftables_cmd add rule inet filter output oifname "lo" counter accept
 
   ## Allow outgoing traffic on VPN interface,
   ## if TUNNEL_FIREWALL_ENABLE mode is enabled.
@@ -402,20 +464,28 @@ ipv4_output() {
     else
       true "firewall_mode is $firewall_mode, therefore allowing user $TUNNEL_USER traffic."
       ## Connections to VPN servers are allowed,
-      $iptables_cmd -A OUTPUT -o "$VPN_INTERFACE" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$TUNNEL_USER" -j ACCEPT
+      #$iptables_cmd -A output -o "$VPN_INTERFACE" -j ACCEPT
+      $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$TUNNEL_USER" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$TUNNEL_USER" counter accept
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_SDWDATE_USER" = "true" ]; then
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" = "true" ]; then
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP" counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$NOTUNNEL_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
     fi
 
     ## Accept outgoing connections to local network.
@@ -425,15 +495,19 @@ ipv4_output() {
       else
         local local_net_item
         for local_net_item in $LOCAL_NET; do
-          $iptables_cmd -A OUTPUT -m iprange --dst-range "$local_net_item" -j ACCEPT
+          #$iptables_cmd -A output -m iprange --dst-range "$local_net_item" -j ACCEPT
+          $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
         done
       fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY" = "true" ]; then
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_TB_UPDATER" = "true" ]; then
@@ -441,8 +515,10 @@ ipv4_output() {
         true
       else
         ## SOCKS_PORT_TBB_DOWNLOAD
-        $iptables_cmd -A OUTPUT -p tcp --dport "9115" --dst "$GATEWAY_IP" -j ACCEPT
-        $iptables_cmd -A OUTPUT -p tcp --dport "9115" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+        #$iptables_cmd -A output -p tcp --dport "9115" --dst "$GATEWAY_IP" -j ACCEPT
+        $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" tcp dport 9115 counter accept
+        #$iptables_cmd -A output -p tcp --dport "9115" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+        $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport 9115 counter accept
       fi
     fi
 
@@ -450,9 +526,12 @@ ipv4_output() {
       if [ "$firewall_mode" = "timesync-fail-closed" ]; then
         true
       else
-        $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-        $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-        $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+        #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr 127.0.0.1 counter accept
+        #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP" counter accept
+        #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP_HARDCODED" counter accept
       fi
     fi
   else
@@ -461,8 +540,10 @@ ipv4_output() {
     else
       true "firewall_mode is $firewall_mode, therefore allowing DNS traffic."
       ## Allow Whonix-Workstation to query Whonix-Gateway for DNS.
-      $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -p udp --dport 53 --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -p udp --dport 53 --dst "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" udp dport 53 counter accept
+      #$iptables_cmd -A output -p udp --dport 53 --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" udp dport 53 counter accept
       if command -v "qubesdb-read" > /dev/null 2>&1; then
         qubes_dns
       fi
@@ -490,7 +571,8 @@ ipv4_output() {
     if [ "$firewall_allow_udp" = "true" ]; then
       true "Allowing UDP."
     else
-      $iptables_cmd -A OUTPUT ! -p tcp -j REJECT --reject-with icmp-port-unreachable
+      #$iptables_cmd -A output ! -p tcp -j REJECT --reject-with icmp-port-unreachable
+      $nftables_cmd add rule inet filter output ip protocol != tcp counter reject
     fi
 
     if [ "$firewall_mode" = "timesync-fail-closed" ]; then
@@ -498,68 +580,56 @@ ipv4_output() {
 
       ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
       ## Otherwise in Whonix firewall full mode this rule is redundant.
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
 
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP" counter accept
+      #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
 
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
-      $iptables_cmd -A OUTPUT -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "$GATEWAY_IP_HARDCODED" -j ACCEPT
+      $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     else
       if [ "$outgoing_allow_ip_list" = "" ]; then
         true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
-        $iptables_cmd -A OUTPUT -j ACCEPT
+        #$iptables_cmd -A output -j ACCEPT
+        $nftables_cmd add rule inet filter output counter accept
       else
         for outgoing_allow_ip_item in $outgoing_allow_ip_list; do
           true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is set, allowing IP: $outgoing_allow_ip_list"
-          $iptables_cmd -A OUTPUT -p tcp --dst "$outgoing_allow_ip_item" -j ACCEPT
+          #$iptables_cmd -A output -p tcp --dst "$outgoing_allow_ip_item" -j ACCEPT
+          $nftables_cmd add rule inet filter output ip protocol tcp ip daddr "$outgoing_allow_ip_item" counter accept
         done
       fi
     fi
 
     ## Log.
-    #$iptables_cmd -A OUTPUT -j LOG --log-prefix "Whonix_blocked_output4: "
+    ##$iptables_cmd -A output -j LOG --log-prefix "Whonix_blocked_output4: "
+    #$nftables_cmd add rule inet filter output counter log prefix \"Whonix_blocked_output4:\"
 
     ## Reject all other outgoing traffic.
-    $iptables_cmd -A OUTPUT -j REJECT --reject-with icmp-port-unreachable
+    #$iptables_cmd -A output -j REJECT --reject-with icmp-port-unreachable
+    $nftables_cmd add rule inet filter output counter reject
   fi
 }
 
-ipv6() {
-  if [ ! -d /proc/sys/net/ipv6/ ]; then
-    return 0
-  fi
+nft_check() {
+  nft --check --file /var/lib/whonix-firewall/firewall.nft
+}
 
-  ## Policy DROP for all traffic as fallback.
-  $ip6tables_cmd -P INPUT DROP
-  $ip6tables_cmd -P OUTPUT DROP
-  $ip6tables_cmd -P FORWARD DROP
-
-  ## Flush old rules.
-  $ip6tables_cmd -F
-  $ip6tables_cmd -X
-  $ip6tables_cmd -t mangle -F
-  $ip6tables_cmd -t mangle -X
-
-  ## Allow unlimited access on loopback.
-  $ip6tables_cmd -A INPUT -i lo -j ACCEPT
-  $ip6tables_cmd -A OUTPUT -o lo -j ACCEPT
-
-  ## Log.
-  #$ip6tables_cmd -A INPUT -j LOG --log-prefix "Whonix_blocked_input6: "
-  #$ip6tables_cmd -A OUTPUT -j LOG --log-prefix "Whonix_blocked_output6: "
-  #$ip6tables_cmd -A FORWARD -j LOG --log-prefix "Whonix_blocked_forward6: "
-
-  ## Drop/reject all other traffic.
-  $ip6tables_cmd -A INPUT -j DROP
-  ## --reject-with icmp-admin-prohibited not supported by ip6tables
-  $ip6tables_cmd -A OUTPUT -j REJECT --reject-with icmp6-port-unreachable
-  ## --reject-with icmp-admin-prohibited not supported by ip6tables
-  $ip6tables_cmd -A FORWARD -j DROP
+nft_load() {
+  nft --file /var/lib/whonix-firewall/firewall.nft
 }
 
 status_files() {
@@ -627,21 +697,34 @@ end() {
   exit 0
 }
 
+print_variables() {
+  if [ ! "${info_enabled}" = "1" ]; then
+    return 0
+  fi
+  for item in ${variable_list}; do
+    eval value='$'"${item}"
+    output_cmd "INFO: ${item}=${value}"
+  done
+}
+
 main() {
   init
   source_config_folder
   variables_defaults
+  set -f
+  nft_script_header
   firewall_mode_detection
-  ipv4_defaults
-  ipv4_preparation
-  ipv4_drop_invalid_incoming_packages
+  print_variables
+  nft_defaults
+  nft_drop_invalid_incoming_packages
   qubes
-  ipv4_input_rules
-  ipv4_input_defaults
-  ipv4_forward
-  ipv4_reject_invalid_outgoing_packages
-  ipv4_output
-  ipv6
+  nft_input_rules
+  nft_input_defaults
+  nft_forward
+  nft_reject_invalid_outgoing_packages
+  nft_output
+  nft_check
+  nft_load
   status_files
   end
 }

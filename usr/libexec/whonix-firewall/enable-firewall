@@ -31,8 +31,7 @@
 ## Wrapper to start firewall and create failure status files on failure.
 #### meta end
 
-[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
-[ -n "$ip6tables_cmd" ] || ip6tables_cmd="ip6tables --wait"
+[ -n "$nftables_cmd" ] || nftables_cmd="nft"
 
 failed_status_file_create() {
   mkdir -p /run/anon-firewall || true
@@ -46,33 +45,17 @@ failed_status_file_create() {
 }
 
 firewall_lockdown() {
-  ## Set secure defaults.
-  $iptables_cmd -P INPUT DROP
-  $iptables_cmd -P FORWARD DROP
-  $iptables_cmd -P OUTPUT DROP
+  $nftables_cmd add table inet nat
+  $nftables_cmd add table inet filter
 
   ## Flush old rules.
-  $iptables_cmd -F
-  $iptables_cmd -X
-  $iptables_cmd -t nat -F
-  $iptables_cmd -t nat -X
-  $iptables_cmd -t mangle -F
-  $iptables_cmd -t mangle -X
-  $iptables_cmd -t raw -F
-  $iptables_cmd -t raw -X
+  $nftables_cmd flush table inet nat
+  $nftables_cmd flush table inet filter
 
   ## Set secure defaults.
-  $ip6tables_cmd -P INPUT DROP
-  $ip6tables_cmd -P OUTPUT DROP
-  $ip6tables_cmd -P FORWARD DROP
-
-  ## Flush old rules.
-  $ip6tables_cmd -F
-  $ip6tables_cmd -X
-  $ip6tables_cmd -t mangle -F
-  $ip6tables_cmd -t mangle -X
-  $ip6tables_cmd -t raw -F
-  $ip6tables_cmd -t raw -X
+  $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
+  $nftables_cmd "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
+  $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 }
 
 on_failure() {
