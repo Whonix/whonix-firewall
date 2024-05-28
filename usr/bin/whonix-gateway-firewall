@@ -186,6 +186,7 @@ variables_defaults() {
             10.137.0.0/16 \
             10.138.0.0/16 \
          "
+      ## TODO: IPv6 missing
     else
       ## 10.0.2.2/24: VirtualBox DHCP
       ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
@@ -321,9 +322,11 @@ nft_defaults() {
 
   $nftables_cmd add table inet nat
   $nftables_cmd add table inet filter
+  $nftables_cmd add table ip6 nat
 
   $nftables_cmd flush table inet nat
   $nftables_cmd flush table inet filter
+  $nftables_cmd flush table ip6 nat
 
   ## Set secure defaults.
   #$iptables_cmd -P input DROP
@@ -340,7 +343,7 @@ nft_defaults() {
   $nftables_cmd "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
   $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
 
-
+  $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"
 }
 
 nft_drop_invalid_incoming_packages() {
@@ -360,6 +363,7 @@ nft_drop_invalid_incoming_packages() {
   ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
   #$iptables_cmd -A input -f -j DROP
   $nftables_cmd add rule inet filter input ip frag-off "&" 0x1fff != 0 counter drop
+  ## TODO: Useful for IPv6?
 
   ## DROP INCOMING MALFORMED XMAS PACKETS
   #$iptables_cmd -A input -p tcp --tcp-flags ALL ALL -j DROP
@@ -399,28 +403,41 @@ qubes() {
       ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
       #$iptables_cmd -t nat -A PR-QBS-SERVICES -d 10.137.255.254/32 -i "$int_if_item" -p tcp -m tcp --dport 8082 -j REDIRECT
       $nftables_cmd add rule inet nat PR-QBS-SERVICES iifname "$int_if_item" ip daddr 10.137.255.254 tcp dport 8082 counter redirect
+      ## TODO: IPv6 missing
     done
 
     ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
     ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
     #$iptables_cmd -t nat -A output -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
     $nftables_cmd add rule inet nat output ip protocol udp skuid tinyproxy ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
+    ## TODO: IPv6 test
+    $nftables_cmd add rule ip6 nat output meta l4proto udp skuid tinyproxy ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
+
     #$iptables_cmd -t nat -A output -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
     $nftables_cmd add rule inet nat output ip protocol tcp skuid tinyproxy ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
+    ## TODO: IPv6 test
+    $nftables_cmd add rule ip6 nat output meta l4proto tcp skuid tinyproxy ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
 
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
     if getent passwd vm-updates > /dev/null; then
       #$iptables_cmd -t nat -A output -p udp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${DNS_PORT_GATEWAY}"
       $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
+      ## TODO: IPv6: missing rule
       #$iptables_cmd -t nat -A output -p tcp -m owner --uid-owner vm-updates -m conntrack --ctstate NEW -j DNAT --to "127.0.0.1:${TRANS_PORT_GATEWAY}"
       $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
+      ## TODO: IPv6: missing
     fi
 
     ## https://github.com/QubesOS/qubes-issues/issues/3201#issuecomment-338646742
     #$iptables_cmd -A output -p udp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -d 127.0.0.1 --dport "${DNS_PORT_GATEWAY}" -j ACCEPT
     $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 skuid tinyproxy ct state new udp dport "${DNS_PORT_GATEWAY}" counter accept
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter output ip6 daddr ::1 skuid tinyproxy ct state new udp dport "${DNS_PORT_GATEWAY}" counter accept
+
     #$iptables_cmd -A output -p tcp -m owner --uid-owner tinyproxy -m conntrack --ctstate NEW -d 127.0.0.1 --dport "${TRANS_PORT_GATEWAY}" -j ACCEPT
     $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 skuid tinyproxy ct state new tcp dport "${TRANS_PORT_GATEWAY}" counter accept
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter output ip6 daddr ::1 skuid tinyproxy ct state new tcp dport "${TRANS_PORT_GATEWAY}" counter accept
   fi
 }
 
@@ -455,6 +472,8 @@ nft_input_rules() {
   if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
     #$iptables_cmd -A input -p icmp -j DROP
     $nftables_cmd add rule inet filter input ip protocol icmp counter drop
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter input ip6 nexthdr icmpv6 counter drop
   fi
 
   ## Allow all incoming connections on the virtual VPN network interface,
@@ -534,9 +553,8 @@ nft_input_rules() {
     ##   or just 9050
     ## - $iptables_cmd v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
     ##$iptables_cmd -A input -i "$ext_if_item" -p tcp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-    $nftables_cmd add rule inet filter input iifname "$ext_if_item" ip protocol tcp tcp dport { 22,9050,9051,9150,9151 } counter accept
     ##$iptables_cmd -A input -i "$ext_if_item" -p udp --match multiport --dports 22,9050,9051,9150,9151 -j ACCEPT
-    $nftables_cmd add rule inet filter input iifname "$ext_if_item" ip protocol udp udp dport { 22,9050,9051,9150,9151 } counter accept
+    #$nftables_cmd add rule inet filter input iifname "$ext_if_item" th dport { 22, 9050, 9051, 9150, 9151 } counter accept
 
     ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
     ##$iptables_cmd -A input -i "$ext_if_item" -p tcp --dport 1194 -j ACCEPT
@@ -596,6 +614,7 @@ nft_input_rules() {
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
         #$iptables_cmd -t nat -A prerouting -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" -j REDIRECT --to-ports "$CONTROL_PORT_FILTER_PROXY_PORT"
         $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+        ## TODO: IPv6 missing
       done
     fi
 
@@ -607,6 +626,7 @@ nft_input_rules() {
           ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
           #$iptables_cmd -t nat -A prerouting -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport "$socks_port" -j REDIRECT --to-ports "$socks_port"
           $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$socks_port" counter redirect to :"$socks_port"
+          ## TODO: IPv6 missing
         done
       done
 
@@ -615,6 +635,7 @@ nft_input_rules() {
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
         #$iptables_cmd -t nat -A prerouting -i "$int_if_item" -d "$workstation_dest_socksified_item" -p tcp --dport 9152:9229 -j REDIRECT
         $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9229 counter redirect
+        ## TODO: IPv6 missing
       done
     fi
 
@@ -731,6 +752,7 @@ nft_output() {
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -t nat -A output -m iprange --dst-range "$non_tor_gateway_item" -j RETURN
         $nftables_cmd add rule inet nat output ip daddr "$NON_TOR_GATEWAY" counter return
+        ## TODO: IPv6 missing
       done
     fi
   fi
@@ -756,6 +778,7 @@ nft_output() {
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         #$iptables_cmd -A output -m iprange --dst-range "$non_tor_gateway_item" -j ACCEPT
         $nftables_cmd add rule inet filter output ip daddr "$non_tor_gateway_item" counter accept
+        ## TODO: IPv6 missing
       done
     fi
   fi
@@ -769,6 +792,7 @@ nft_output() {
       for local_net_item in $LOCAL_NET; do
         #$iptables_cmd -A output -m iprange --dst-range "$local_net_item" -j ACCEPT
         $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
+        ## TODO: IPv6 missing
       done
     fi
   fi
@@ -789,6 +813,8 @@ nft_output() {
       fi
       #$iptables_cmd -A output -p tcp --dport "$socks_port_item" --dst "127.0.0.1" -j REJECT
       $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
+      ## TODO: IPv6 test
+      $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$socks_port_item" counter reject
     done
   fi
 
@@ -807,11 +833,18 @@ nft_output() {
     ## Otherwise in Whonix firewall full mode this rule is redundant.
     #$iptables_cmd -A output -m owner --uid-owner "$SDWDATE_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
     $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+    ## TODO: IPV6 test
+    $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+
     #$iptables_cmd -A output -m owner --uid-owner "$SYSTEMCHECK_USER" -m iprange --dst-range "127.0.0.1" -j ACCEPT
     $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
+    ## TODO: IPV6 test
+    $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
 
     #$iptables_cmd -A output -p tcp --dport "$CONTROL_PORT_FILTER_PROXY_PORT" --dst "127.0.0.1" -j ACCEPT
-    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept#
+    ## TODO: IPV6 test
+    $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
   fi
 
   ## Log.
