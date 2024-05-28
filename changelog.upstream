@@ -1,3 +1,21 @@
+commit 6020ae8fc2506d8dd778a98e738c19244d289a6d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 28 14:32:03 2024 -0400
+
+    remove iptables equivalent commands comments
+
+commit d580765ea15844a988973b35fa537ba7d6b2b944
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 28 14:25:44 2024 -0400
+
+    towards IPv6 support
+
+commit a87527b68a6db2bd3ddbc255076ad4a12fd8636d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 28 13:34:02 2024 +0000
+
+    bumped changelog version
+
 commit b99f06a1167ae88e25464b3db26fa36686ec14c0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 28 09:33:37 2024 -0400
