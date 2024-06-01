@@ -359,40 +359,6 @@ nft_reject_invalid_outgoing_packages() {
   fi
 }
 
-qubes_updates_proxy() {
-  ## Detect Qubes.
-  if ! command -v "qubesdb-read" > /dev/null 2>&1; then
-    return 0
-  fi
-
-  ## Detect being run inside TemplateVM.
-  if [ ! -f "/run/qubes/this-is-templatevm" ]; then
-    return 0
-  fi
-
-  ## Detect if torified Qubes updates proxy was detected.
-  if test -f "/run/updatesproxycheck/whonix-secure-proxy"; then
-    output_cmd "OK: Torified Qubes Updates Proxy check ok. Full access to Qubes Updates Proxy."
-    return 0
-  fi
-
-  output_cmd "OK: Torified Qubes Updates Proxy check not done yet. Limiting access to Qubes Updates Proxy to user 'updatesproxycheck'."
-
-  $nftables_cmd add rule inet filter output skuid "$UPDATESPROXYCHECK_USER" ip daddr 127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter accept
-  ## TODO: IPv6 test
-  $nftables_cmd add rule inet filter output skuid "$UPDATESPROXYCHECK_USER" ip6 daddr ::1 tcp dport "$qubes_updates_proxy_port" counter accept
-
-  $nftables_cmd add rule inet filter output skuid "$UPDATESPROXYCHECK_USER" ip daddr 10.137.255.254-10.137.255.254 tcp dport "$qubes_updates_proxy_port" counter accept
-  ## TODO: IPv6 missing
-
-  $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$qubes_updates_proxy_port" counter reject
-  ## TODO: IPv6 test
-  $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$qubes_updates_proxy_port" counter reject
-
-  $nftables_cmd add rule inet filter output ip daddr 10.137.255.254-10.137.255.254 tcp dport "$qubes_updates_proxy_port" counter reject
-  ## TODO: IPv6 missing
-}
-
 nft_output() {
   ## Prevent connections to Tor SocksPorts.
   ## https://phabricator.whonix.org/T533#11025
@@ -414,7 +380,7 @@ nft_output() {
     done
   fi
 
-  qubes_updates_proxy
+  ## TODO: block Qubes UpdatesProxy in timesync-fail-closed firewall_mode
 
   ## Access to localhost is required even in timesync-fail-closed mode,
   ## otherwise breaks applications such as konsole and kwrite.

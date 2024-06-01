@@ -364,36 +364,6 @@ qubes() {
   fi
 
   if [ -e /run/qubes/this-is-netvm ] || [ -e /run/qubes/this-is-proxyvm ]; then
-    local int_if_item
-
-    for int_if_item in $INT_IF; do
-      ## Allow connections from port 8082 of internal vif interface for tinyproxy
-      ## tinyproxy is responsible to handle TemplateVMs updates.
-      $nftables_cmd add rule inet filter input iifname "$int_if_item" tcp dport 8082 counter accept
-      $nftables_cmd add rule inet filter output oifname "$int_if_item" tcp sport 8082 counter accept
-    done
-
-    ## Qubes pre-routing. Will be able to intercept traffic destined for
-    ## 10.137.255.254 to be re-routed to tinyproxy.
-    $nftables_cmd add chain inet nat PR-QBS-SERVICES
-    $nftables_cmd add rule inet nat prerouting counter jump PR-QBS-SERVICES
-
-    for int_if_item in $INT_IF; do
-      ## Redirects traffic destined for 10.137.255.154 to port 8082 (tinyproxy).
-      $nftables_cmd add rule inet nat PR-QBS-SERVICES iifname "$int_if_item" ip daddr 10.137.255.254 tcp dport 8082 counter redirect
-      ## TODO: IPv6 missing
-    done
-
-    ## Forward tinyproxy output to port 5300/9040 on internal (Tor) interface (eth1) to be
-    ## able to connect to Internet (via Tor) to proxy updates for TemplateVM.
-    $nftables_cmd add rule inet nat output ip protocol udp skuid tinyproxy ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
-    ## TODO: IPv6 test
-    $nftables_cmd add rule ip6 nat output meta l4proto udp skuid tinyproxy ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
-
-    $nftables_cmd add rule inet nat output ip protocol tcp skuid tinyproxy ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-    ## TODO: IPv6 test
-    $nftables_cmd add rule ip6 nat output meta l4proto tcp skuid tinyproxy ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
-
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
     if getent passwd vm-updates > /dev/null; then
       $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
@@ -401,15 +371,6 @@ qubes() {
       $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
       ## TODO: IPv6: missing
     fi
-
-    ## https://github.com/QubesOS/qubes-issues/issues/3201#issuecomment-338646742
-    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 skuid tinyproxy ct state new udp dport "${DNS_PORT_GATEWAY}" counter accept
-    ## TODO: IPv6 test
-    $nftables_cmd add rule inet filter output ip6 daddr ::1 skuid tinyproxy ct state new udp dport "${DNS_PORT_GATEWAY}" counter accept
-
-    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 skuid tinyproxy ct state new tcp dport "${TRANS_PORT_GATEWAY}" counter accept
-    ## TODO: IPv6 test
-    $nftables_cmd add rule inet filter output ip6 daddr ::1 skuid tinyproxy ct state new tcp dport "${TRANS_PORT_GATEWAY}" counter accept
   fi
 }
 
