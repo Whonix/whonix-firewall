@@ -1,3 +1,29 @@
+commit d95e6bc2a5b38ec901b0eb39905a767a642d8840
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 16:25:59 2024 -0400
+
+    cleanup
+
+commit fd16b7bea95e3ba6e94b5332dfd1e612ba281bb4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 16:24:17 2024 -0400
+
+    cleanup
+
+commit 874eb93d3b10f68b5221522ad7239f7f533aa0df
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 16:21:31 2024 -0400
+
+    firewall rules simplification: sys-whonix use Qubes UpdatesProxy tinyproxy with socks instead of transparent torification
+    
+    https://github.com/QubesOS/qubes-issues/issues/8398
+
+commit dcde7447aa11763d13966512cdf89885682679b6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 17:36:08 2024 +0000
+
+    bumped changelog version
+
 commit e58fe0fddcd54486787c9f5eb5a005e52e0e356e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jun 1 13:31:23 2024 -0400
