@@ -1,3 +1,17 @@
+commit e58fe0fddcd54486787c9f5eb5a005e52e0e356e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jun 1 13:31:23 2024 -0400
+
+    switch dependency from iptables to nftables
+    
+    https://forums.whonix.org/t/consider-nftables-berkeley-packet-filter-bpf-as-a-replacement-for-iptables/18896
+
+commit 9169557a9fba5ff1c4aa6ea264b38698ec1ea68f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 28 18:45:39 2024 +0000
+
+    bumped changelog version
+
 commit 6020ae8fc2506d8dd778a98e738c19244d289a6d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 28 14:32:03 2024 -0400
