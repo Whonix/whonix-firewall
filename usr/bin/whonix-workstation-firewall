@@ -74,7 +74,6 @@ nft_script_header() {
 }
 
 variables_defaults() {
-  #[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
   [ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
 
   ## Legacy.

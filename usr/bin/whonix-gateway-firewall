@@ -72,7 +72,6 @@ nft_script_header() {
 }
 
 variables_defaults() {
-  #[ -n "$iptables_cmd" ] || iptables_cmd="iptables --wait"
   [ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
 
   [ -n "$WORKSTATION_TRANSPARENT_TCP" ] || WORKSTATION_TRANSPARENT_TCP=1
@@ -471,7 +470,6 @@ nft_input_rules() {
     ## - untested, should work
     ## - Replace 22,9050,9051,9150,9151 with any ports you like to be open, example: 9050,9051
     ##   or just 9050
-    ## - $iptables_cmd v1.4.14: multiport needs -p tcp, -p udp, -p udplite, -p sctp or -p dccp
     #$nftables_cmd add rule inet filter input iifname "$ext_if_item" th dport { 22, 9050, 9051, 9150, 9151 } counter accept
 
     ## OPTIONAL Allow incoming OpenVPN connections on the external interface.
