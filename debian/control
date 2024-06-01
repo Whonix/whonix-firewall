@@ -15,11 +15,11 @@ Rules-Requires-Root: no
 Package: whonix-firewall
 Architecture: all
 Replaces: whonix-gw-firewall, whonix-ws-firewall
-Depends: systemd, iptables, sudo, helper-scripts, adduser,
+Depends: systemd, nftables, sudo, helper-scripts, adduser,
  anon-gw-base-files | anon-ws-base-files, ${misc:Depends}
 Conflicts: ufw
 Description: Firewall for Whonix-Gateway and Whonix-Workstation
- iptables rules script and firewall configuration file for Whonix-Gateway and
+ nftables rules script and firewall configuration file for Whonix-Gateway and
  Whonix-Workstation.
  .
  Whonix-Gateway Firewall Features:
