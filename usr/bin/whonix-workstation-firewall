@@ -120,8 +120,6 @@ variables_defaults() {
   ## Control Port Filter Proxy Port
   [ -n "$CONTROL_PORT_FILTER_PROXY_PORT" ] || CONTROL_PORT_FILTER_PROXY_PORT="9051"
 
-  [ -n "$qubes_updates_proxy_port" ] || qubes_updates_proxy_port="8082"
-
   [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
 
   ## Destinations you do not routed through VPN.
