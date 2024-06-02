@@ -1,3 +1,17 @@
+commit 5bf203b69f626c2ec3f35300b99825093922be2c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 2 13:02:45 2024 -0400
+
+    - fix nftables for Non-Qubes-Whonix
+    - localize loop variables
+    - refactoring
+
+commit 50f0e2e3ee3ff327002ea029c7cff5408377f038
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 2 12:26:23 2024 +0000
+
+    bumped changelog version
+
 commit 2bf57895090b6b9a18bf89db723b1d2f7a0994c7
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 2 08:25:00 2024 -0400
