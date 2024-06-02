@@ -1,3 +1,17 @@
+commit 2bf57895090b6b9a18bf89db723b1d2f7a0994c7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 2 08:25:00 2024 -0400
+
+    aa-logprof
+    
+    https://forums.whonix.org/t/consider-nftables-berkeley-packet-filter-bpf-as-a-replacement-for-iptables/18896
+
+commit 5a09deb1d7a9a4e110b14b84a66652f4ec83c2b8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 2 12:07:49 2024 +0000
+
+    bumped changelog version
+
 commit 779b1a47e09bdef2a6c60b8983c5365f973f3b17
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 2 08:06:58 2024 -0400
