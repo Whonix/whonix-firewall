@@ -309,7 +309,7 @@ nft_drop_invalid_incoming_packages() {
 
 qubes() {
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    true "timesync-fail-closed mode, skipping rest of function $FUNCNAME"
+    true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
     return 0
   fi
 
@@ -400,7 +400,7 @@ nft_input_rules() {
   done
 
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    true "timesync-fail-closed mode, skipping rest of function $FUNCNAME"
+    true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
     return 0
   fi
 
@@ -707,7 +707,7 @@ date_cmd() {
 }
 
 output_cmd() {
-  echo "$(date_cmd) - $0 - $@"
+  echo "$(date_cmd) - $0 - $*"
 }
 
 firewall_mode_detection() {
@@ -783,6 +783,7 @@ print_variables() {
   local item
   for item in ${variable_list}; do
     eval value='$'"${item}"
+    # shellcheck disable=SC2154
     output_cmd "INFO: ${item}=${value}"
   done
 }

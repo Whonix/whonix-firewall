@@ -32,6 +32,8 @@ variables_defaults() {
     TUNNEL_FIREWALL_ENABLE="true"
   fi
 
+  outgoing_allow_ip_list=""
+
   ## Not in use/defined yet.
   ## INT_IF could be the internal network.
   ## EXT_IF could be an additional virtual network adapter,
@@ -451,7 +453,7 @@ nft_output() {
     ##     0 packets transmitted, 0 received, +100 errors
     ##
     ## The next rule ensures, that only tcp can leave and achieves the desired result from (2).
-    if [ "$firewall_allow_udp" = "true" ]; then
+    if [ "${firewall_allow_udp:-}" = "true" ]; then
       true "Allowing UDP."
     else
       $nftables_cmd add rule inet filter output ip protocol != tcp counter reject
@@ -527,7 +529,7 @@ date_cmd() {
 }
 
 output_cmd() {
-  echo "$(date_cmd) - $0 - $@"
+  echo "$(date_cmd) - $0 - $*"
 }
 
 firewall_mode_detection() {
@@ -583,8 +585,10 @@ print_variables() {
     return 0
   fi
   local item
+  ## TODO: add variables to list
   for item in ${variable_list}; do
     eval value='$'"${item}"
+    # shellcheck disable=SC2154
     output_cmd "INFO: ${item}=${value}"
   done
 }
