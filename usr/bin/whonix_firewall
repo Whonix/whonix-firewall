@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## Copyright (C) 2017 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## Copyright (C) 2024 - 2024 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## See the file COPYING for copying conditions.
 
 #### meta start
@@ -10,7 +11,7 @@
 ## firewall starter wrapper
 #### meta end
 
-set -e
+set -eu -o pipefail -o errtrace
 
 if [ -f "/run/qubes/this-is-templatevm" ]; then
   whonix-workstation-firewall "$@"

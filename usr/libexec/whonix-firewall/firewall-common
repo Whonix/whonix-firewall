@@ -1,0 +1,55 @@
+#!/bin/bash
+
+## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## Copyright (C) 2014 - 2015 Jason Mehring <nrgaway@gmail.com>
+## Copyright (C) 2024 - 2024 Benjamin Grande M. S. <ben.grande.b@gmail.com>
+## See the file COPYING for copying conditions.
+
+set -eu -o pipefail -o errtrace
+
+error_handler() {
+  echo "$0 ##################################################"
+  echo "$0 ERROR: Whonix firewall script failed!"
+  echo "$0 ##################################################"
+  exit 1
+}
+
+trap "error_handler" ERR
+
+init() {
+  output_cmd "OK: Loading Whonix firewall..."
+  mkdir --parents /var/lib/whonix-firewall
+  rm -f /var/lib/whonix-firewall/firewall.nft
+}
+
+write_nft_script() {
+  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
+}
+[ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
+
+source_config_folder() {
+  shopt -s nullglob
+  local i
+  for i in \
+    /etc/whonix_firewall.d/*.conf \
+    /usr/local/etc/whonix_firewall.d/*.conf; do
+    bash_n_exit_code="0"
+    bash_n_output="$(bash -n "$i" 2>&1)" || {
+      bash_n_exit_code="$?"
+      true
+    }
+    if [ ! "$bash_n_exit_code" = "0" ]; then
+      output_cmd "ERROR: Invalid config file: $i
+   bash_n_exit_code: $bash_n_exit_code
+   bash_n_output:
+   $bash_n_output" >&2
+      exit 1
+    fi
+    source "$i"
+  done
+  shopt -u nullglob
+}
+
+nft_script_header() {
+  $nftables_cmd "#!/usr/sbin/nft -f"
+}
