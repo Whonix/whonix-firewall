@@ -171,26 +171,6 @@ nft_defaults() {
   $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 }
 
-nft_drop_invalid_incoming_packages() {
-  ## DROP INVALID
-  $nftables_cmd add rule inet filter input ct state invalid counter drop
-
-  ## DROP INVALID SYN PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|ack" counter drop
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn)" == "fin|syn" counter drop
-  $nftables_cmd add rule inet filter input tcp flags "&" "(syn|rst)" == "syn|rst" counter drop
-
-  ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-  ## TODO: IPv6?
-  $nftables_cmd add rule inet filter input ip frag-off "&" 0x1fff != 0 counter drop
-
-  ## DROP INCOMING MALFORMED XMAS PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|psh|ack|urg" counter drop
-
-  ## DROP INCOMING MALFORMED NULL PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
-}
-
 qubes() {
   ## Not yet required. Just so Whonix-Workstation firewall can be more similar
   ## to Whonix-Gateway firewall.
@@ -280,33 +260,6 @@ nft_forward() {
   #$nftables_cmd add rule inet filter forward counter log prefix \"Whonix_blocked_forward4:\"
 
   $nftables_cmd add rule inet filter forward counter drop
-}
-
-nft_reject_invalid_outgoing_packages() {
-  ## Drop invalid outgoing packages,
-  ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
-  if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
-    ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
-    $nftables_cmd add rule inet filter output ct state invalid counter reject
-    #$nftables_cmd add rule inet filter output ct state invalid counter reject
-    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject
-    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(rst|ack)" == "rst|ack" counter reject
-
-    ## DROP INVALID SYN PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject
-    $nftables_cmd add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject
-
-    ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-    ## TODO: IPv6?
-    $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject
-
-    ## DROP INCOMING MALFORMED XMAS PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject
-
-    ## DROP INCOMING MALFORMED NULL PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject
-  fi
 }
 
 nft_output() {
@@ -507,79 +460,6 @@ nft_output() {
   fi
 }
 
-nft_check() {
-  nft --check --file /var/lib/whonix-firewall/firewall.nft
-}
-
-nft_load() {
-  nft --file /var/lib/whonix-firewall/firewall.nft
-}
-
-status_files() {
-  mkdir --parents /run/whonix_firewall
-  if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
-    touch /run/whonix_firewall/consecutive_run.status
-    return 0
-  fi
-  touch /run/whonix_firewall/first_run_current_boot.status
-}
-
-date_cmd() {
-  date -u +"%Y-%m-%d %T"
-}
-
-output_cmd() {
-  echo "$(date_cmd) - $0 - $*"
-}
-
-firewall_mode_detection() {
-  if [ ! "$firewall_mode" = "" ]; then
-    output_cmd "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
-    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
-      return 0
-    elif [ "$firewall_mode" = "full" ]; then
-      output_cmd "OK: (Full torified network access allowed.)"
-      return 0
-    else
-      output_cmd "ERROR: firewall_mode must be set to either 'full' or 'timesync-fail-closed'."
-      error_handler
-    fi
-  fi
-
-  ## Run Whonix firewall in full mode if sdwdate already succeeded.
-  if [ -e /run/sdwdate/first_success ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/sdwdate/first_success exists.)"
-  elif [ -e /run/sdwdate/success ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/sdwdate/success exists.)"
-  ## /run/whonix_firewall/first_run_current_boot.status already exists,
-  ## therefore have Whonix firewall run in full mode.
-  elif [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
-  else
-    ## /run/whonix_firewall/first_run_current_boot.status does not yet exist,
-    ## therefore return 'yes, timesync-fail-closed'.
-    firewall_mode=timesync-fail-closed
-  fi
-
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    output_cmd "OK: First run during current boot, therefore running in timesync-fail-closed mode."
-    output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
-  else
-    output_cmd "OK: Consecutive run during current boot, therefore running in full mode."
-    output_cmd "OK: (Full torified network access allowed.)"
-  fi
-}
-
-end() {
-  output_cmd "OK: Whonix firewall loaded."
-
-  exit 0
-}
-
 print_variables() {
   if [ ! "${info_enabled}" = "1" ]; then
     return 0
@@ -613,12 +493,6 @@ main() {
   nft_load
   status_files
   end
-}
-
-usage() {
-  echo "usage: ${0##*/} [options]
-    -i, --info           print informational messages
-    -h, --help           print this help message"
 }
 
 while true; do
