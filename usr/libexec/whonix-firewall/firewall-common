@@ -7,27 +7,22 @@
 
 set -eu -o pipefail -o errtrace
 
+## Function to use shellcheck on all the variables inside the function.
 # shellcheck disable=SC2034
-source_only=""
-# shellcheck disable=SC2034
-info_enabled=""
-firewall_mode=""
-# shellcheck disable=SC2034
-firewall_allow_udp=""
-# shellcheck disable=SC2034
-outgoing_allow_ip_list=""
-# shellcheck disable=SC2034
-TUNNEL_FIREWALL_ENABLE=""
-# shellcheck disable=SC2034
-VPN_FIREWALL=""
-# shellcheck disable=SC2034
-EXTERNAL_OPEN_ALL=""
-# shellcheck disable=SC2034
-EXTERNAL_UDP_OPEN_PORTS=""
-# shellcheck disable=SC2034
-EXTERNAL_OPEN_PORTS=""
-NO_REJECT_INVALID_OUTGOING_PACKAGES=""
-
+common_variables_defaults(){
+  source_only=""
+  info_enabled=""
+  firewall_mode=""
+  firewall_allow_udp=""
+  outgoing_allow_ip_list=""
+  TUNNEL_FIREWALL_ENABLE=""
+  VPN_FIREWALL=""
+  EXTERNAL_OPEN_ALL=""
+  EXTERNAL_UDP_OPEN_PORTS=""
+  EXTERNAL_OPEN_PORTS=""
+  NO_REJECT_INVALID_OUTGOING_PACKAGES=""
+}
+common_variables_defaults
 
 error_handler() {
   echo "$0 ##################################################"
@@ -97,12 +92,11 @@ date_cmd() {
 }
 
 output_cmd() {
-  echo "$(date_cmd) - $0 - $*"
+  echo "$(date_cmd) - ${0##*/} - $*"
 }
 
 end() {
   output_cmd "OK: Whonix firewall loaded."
-
   exit 0
 }
 
