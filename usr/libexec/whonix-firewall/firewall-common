@@ -24,6 +24,19 @@ common_variables_defaults(){
 }
 common_variables_defaults
 
+print_variables() {
+  if [ ! "${info_enabled}" = "1" ]; then
+    return 0
+  fi
+  local item
+  # shellcheck disable=SC2154
+  for item in ${variable_list}; do
+    eval value='$'"${item}"
+    # shellcheck disable=SC2154
+    output_cmd "INFO: ${item}=${value}"
+  done
+}
+
 error_handler() {
   echo "$0 ##################################################"
   echo "$0 ERROR: Whonix firewall script failed!"

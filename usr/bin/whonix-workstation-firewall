@@ -496,19 +496,6 @@ outgoing_allow_ip_list
 source_only
 "
 
-print_variables() {
-  if [ ! "${info_enabled}" = "1" ]; then
-    return 0
-  fi
-  local item
-  ## TODO: add variables to list
-  for item in ${variable_list}; do
-    eval value='$'"${item}"
-    # shellcheck disable=SC2154
-    output_cmd "INFO: ${item}=${value}"
-  done
-}
-
 main() {
   init
   source_config_folder
@@ -533,7 +520,7 @@ main() {
 
 while true; do
   case ${1-} in
-      -s | --source)
+    -s | --source)
       source_only=1
       shift 1
       ;;
