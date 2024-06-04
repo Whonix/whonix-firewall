@@ -541,9 +541,7 @@ nft_output() {
     if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
       $nftables_cmd add rule inet nat output udp dport 53 counter redirect to :"$DNS_PORT_GATEWAY"
     fi
-  fi
 
-  if [ "$firewall_mode" = "full" ]; then
     ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor,
     ## unless VPN_FIREWALL mode is enabled.
     ## ENABLED BY DEFAULT.
@@ -554,9 +552,7 @@ nft_output() {
         ## TODO: IPv6 missing
       done
     fi
-  fi
 
-  if [ "$firewall_mode" = "full" ]; then
     ## Redirect all Gateway TCP traffic to TRANS_PORT_GATEWAY.
     ## DISABLED BY DEFAULT. Using SocksPort instead.
     if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then

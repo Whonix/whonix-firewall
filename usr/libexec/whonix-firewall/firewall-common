@@ -113,7 +113,6 @@ end() {
   exit 0
 }
 
-
 firewall_mode_detection() {
   if [ -n "${firewall_mode}" ]; then
     output_cmd "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
@@ -158,9 +157,9 @@ firewall_mode_detection() {
 
 usage() {
   echo "usage: ${0##*/} [options]
-    -s, --source         only source the script
-    -i, --info           print informational messages
-    -h, --help           print this help message"
+ -s, --source         only source the script
+ -i, --info           print informational messages
+ -h, --help           print this help message"
 }
 
 
