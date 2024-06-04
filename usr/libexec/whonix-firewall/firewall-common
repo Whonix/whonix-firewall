@@ -7,13 +7,34 @@
 
 set -eu -o pipefail -o errtrace
 
+# shellcheck disable=SC2034
+source_only=""
+# shellcheck disable=SC2034
+info_enabled=""
+firewall_mode=""
+# shellcheck disable=SC2034
+firewall_allow_udp=""
+# shellcheck disable=SC2034
+outgoing_allow_ip_list=""
+# shellcheck disable=SC2034
+TUNNEL_FIREWALL_ENABLE=""
+# shellcheck disable=SC2034
+VPN_FIREWALL=""
+# shellcheck disable=SC2034
+EXTERNAL_OPEN_ALL=""
+# shellcheck disable=SC2034
+EXTERNAL_UDP_OPEN_PORTS=""
+# shellcheck disable=SC2034
+EXTERNAL_OPEN_PORTS=""
+NO_REJECT_INVALID_OUTGOING_PACKAGES=""
+
+
 error_handler() {
   echo "$0 ##################################################"
   echo "$0 ERROR: Whonix firewall script failed!"
   echo "$0 ##################################################"
   exit 1
 }
-
 trap "error_handler" ERR
 
 init() {
@@ -25,7 +46,7 @@ init() {
 write_nft_script() {
   echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
 }
-[ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
+[ -n "${nftables_cmd:-}" ] || nftables_cmd="write_nft_script"
 
 source_config_folder() {
   shopt -s nullglob
@@ -87,7 +108,7 @@ end() {
 
 
 firewall_mode_detection() {
-  if [ ! "$firewall_mode" = "" ]; then
+  if [ -n "${firewall_mode}" ]; then
     output_cmd "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
     if [ "$firewall_mode" = "timesync-fail-closed" ]; then
       output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
