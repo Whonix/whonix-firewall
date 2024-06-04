@@ -377,7 +377,9 @@ nft_input_rules() {
     done
 
     if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: EXTERNAL_OPEN_ALL='true', opening all External ports"
+      if [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: EXTERNAL_OPEN_ALL='true', opening all External ports"
+      fi
       $nftables_cmd add rule inet filter input counter accept
     fi
   done
@@ -447,7 +449,9 @@ nft_input_rules() {
 
       ## Accept ports 9152-9229 prepared for user custom applications.
       ## See /usr/share/tor/tor-service-defaults-torrc for more comments.
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: opening TCP port(s) 9152:9229 for user custom applications"
+      if [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: opening TCP port(s) 9152:9229 for user custom applications"
+      fi
       $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport 9152-9229 counter accept
     fi
   done

@@ -240,7 +240,9 @@ nft_input_rules() {
     done
 
     if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: EXTERNAL_OPEN_ALL='true', all external ports will be opened"
+      if [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: EXTERNAL_OPEN_ALL='true', all external ports will be opened"
+      fi
       $nftables_cmd add rule inet filter input counter accept
     fi
   fi
