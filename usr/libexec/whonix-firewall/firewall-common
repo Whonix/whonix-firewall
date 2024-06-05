@@ -9,20 +9,51 @@ set -eu -o pipefail -o errtrace
 
 ## Function to use shellcheck on all the variables inside the function.
 # shellcheck disable=SC2034
-common_variables_defaults(){
+common_variables_defaults_pre(){
   source_only=""
   info_enabled=""
-  firewall_mode=""
-  firewall_allow_udp=""
-  outgoing_allow_ip_list=""
-  TUNNEL_FIREWALL_ENABLE=""
-  VPN_FIREWALL=""
-  EXTERNAL_OPEN_ALL=""
-  EXTERNAL_UDP_OPEN_PORTS=""
-  EXTERNAL_OPEN_PORTS=""
-  NO_REJECT_INVALID_OUTGOING_PACKAGES=""
 }
-common_variables_defaults
+common_variables_defaults_pre
+
+common_variables_defaults_post(){
+
+  ## Legacy.
+  ## Whonix-Gateway firewall does not support TUNNEL_FIREWALL_ENABLE=true yet.
+  ## It only supports VPN_FIREWALL="1".
+  ## In case someone confused this setting, i.e. using TUNNEL_FIREWALL_ENABLE=true
+  ## since this is how it is done on Whonix-Workstation, then gracefully enable
+  ## VPN_FIREWALL="1" to prevent users shooting their own feet.
+  [ -n "${TUNNEL_FIREWALL_ENABLE:-}" ] || TUNNEL_FIREWALL_ENABLE=""
+  [ -n "${VPN_FIREWALL:-}" ] || VPN_FIREWALL=""
+  if [ "${TUNNEL_FIREWALL_ENABLE}" = "true" ]; then
+    VPN_FIREWALL="1"
+  fi
+  if [ "${VPN_FIREWALL}" = "1" ]; then
+    TUNNEL_FIREWALL_ENABLE="true"
+  fi
+
+  [ -n "${CLEARNET_USER:-}" ] || CLEARNET_USER="$(id -u clearnet)"
+  [ -n "${NOTUNNEL_USER:-}" ] || NOTUNNEL_USER="$(id -u notunnel)"
+  [ -n "${ROOT_USER:-}" ] || ROOT_USER="$(id -u root)"
+  [ -n "${SDWDATE_USER:-}" ] || SDWDATE_USER="$(id -u sdwdate)"
+  [ -n "${SYSTEMCHECK_USER:-}" ] || SYSTEMCHECK_USER="$(id -u systemcheck)"
+  [ -n "${TOR_USER:-}" ] || TOR_USER="$(id -u debian-tor)" || true # distro specific
+  [ -n "${TUNNEL_USER:-}" ] || TUNNEL_USER="$(id -u tunnel)"
+  [ -n "${UPDATESPROXYCHECK_USER:-}" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)"
+  [ -n "${USER_USER:-}" ] || USER_USER="$(id -u user)" || true # user choice
+
+  [ -n "${CONTROL_PORT_FILTER_PROXY_PORT:-}" ] || CONTROL_PORT_FILTER_PROXY_PORT="9051"
+  [ -n "${EXTERNAL_OPEN_ALL:-}" ] || EXTERNAL_OPEN_ALL=""
+  [ -n "${EXTERNAL_OPEN_PORTS:-}" ] || EXTERNAL_OPEN_PORTS=""
+  [ -n "${EXTERNAL_UDP_OPEN_PORTS:-}" ] || EXTERNAL_UDP_OPEN_PORTS=""
+  [ -n "${EXT_IF:-}" ] || EXT_IF="eth0"
+  [ -n "${NO_REJECT_INVALID_OUTGOING_PACKAGES:-}" ] || NO_REJECT_INVALID_OUTGOING_PACKAGES=""
+  [ -n "${VPN_INTERFACE:-}" ] || VPN_INTERFACE="tun0"
+  [ -n "${firewall_allow_udp:-}" ] || firewall_allow_udp=""
+  [ -n "${firewall_mode:-}" ] || firewall_mode=""
+  [ -n "${outgoing_allow_ip_list:-}" ] || outgoing_allow_ip_list=""
+
+}
 
 print_variables() {
   if [ ! "${info_enabled}" = "1" ]; then

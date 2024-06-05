@@ -28,18 +28,10 @@ set -eu -o pipefail -o errtrace
 source /usr/libexec/whonix-firewall/firewall-common
 
 variables_defaults() {
-  ## Legacy.
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    TUNNEL_FIREWALL_ENABLE="true"
-  fi
+  common_variables_defaults_post
 
   ## Not in use/defined yet.
   ## INT_IF could be the internal network.
-  ## EXT_IF could be an additional virtual network adapter,
-  ##        such as OnionCat or OpenVPN.
-
-  ## External interface
-  [ -n "${EXT_IF:-}" ] || EXT_IF="eth0"
   ## Internal interface
   [ -n "${INT_IF:-}" ] || INT_IF="eth1"
 
@@ -60,24 +52,12 @@ variables_defaults() {
   ## configuration folder instead.
   [ -n "${GATEWAY_IP_HARDCODED:-}" ] || GATEWAY_IP_HARDCODED="10.152.152.10"
 
-  [ -n "${TUNNEL_USER:-}" ] || TUNNEL_USER="$(id -u tunnel)"
-  [ -n "${NOTUNNEL_USER:-}" ] || NOTUNNEL_USER="$(id -u notunnel)"
-  [ -n "${UPDATESPROXYCHECK_USER:-}" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)"
-
-  [ -n "${SDWDATE_USER:-}" ] || SDWDATE_USER="$(id -u sdwdate)" || true
-  [ -n "${SYSTEMCHECK_USER:-}" ] || SYSTEMCHECK_USER="$(id -u systemcheck)" || true
-
+  [ -n "${TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY:-}" ] || TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY=""
+  [ -n "${TUNNEL_FIREWALL_ALLOW_LOCAL_NET:-}" ] || TUNNEL_FIREWALL_ALLOW_LOCAL_NET=""
   [ -n "${TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER:-}" ] || TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER=""
   [ -n "${TUNNEL_FIREWALL_ALLOW_SDWDATE_USER:-}" ] || TUNNEL_FIREWALL_ALLOW_SDWDATE_USER=""
-  [ -n "${TUNNEL_FIREWALL_ALLOW_LOCAL_NET:-}" ] || TUNNEL_FIREWALL_ALLOW_LOCAL_NET=""
-  [ -n "${TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY:-}" ] || TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY=""
-  [ -n "${TUNNEL_FIREWALL_ALLOW_TB_UPDATER:-}" ] || TUNNEL_FIREWALL_ALLOW_TB_UPDATER=""
   [ -n "${TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK:-}" ] || TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK=""
-
-  ## Control Port Filter Proxy Port
-  [ -n "${CONTROL_PORT_FILTER_PROXY_PORT:-}" ] || CONTROL_PORT_FILTER_PROXY_PORT="9051"
-
-  [ -n "${VPN_INTERFACE:-}" ] || VPN_INTERFACE="tun0"
+  [ -n "${TUNNEL_FIREWALL_ALLOW_TB_UPDATER:-}" ] || TUNNEL_FIREWALL_ALLOW_TB_UPDATER=""
 
   ## Destinations you do not routed through VPN.
   if [ -z "${LOCAL_NET:-}" ]; then

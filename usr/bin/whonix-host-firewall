@@ -10,15 +10,13 @@ set -eu -o pipefail -o errtrace
 source /usr/libexec/whonix-firewall/firewall-common
 
 variables_defaults(){
-  ## External interface
-  [ -n "${EXT_IF:-}" ] || EXT_IF="eth0"
+  common_variables_defaults_post
+
   ## 10.0.2.2/24: VirtualBox DHCP
   [ -n "${NON_TOR_GATEWAY:-}" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
 
-  ## Space separated list of VPN servers,
-  ## which Whonix-Gateway is allowed to connect to.
+  ## Space separated list of VPN servers, which Whonix-Gateway is allowed to connect to.
   [ -n "${VPN_SERVERS:-}" ] || VPN_SERVERS="198.252.153.26"
-  [ -n "${VPN_INTERFACE:-}" ] || VPN_INTERFACE="tun0"
 
   ## Destinations you do not routed through VPN, only for Whonix-Gateway.
   ## 10.0.2.2/24: VirtualBox DHCP
