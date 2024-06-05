@@ -66,7 +66,7 @@ variables_defaults() {
     NO_NAT_USERS+=" $TOR_USER"
   fi
 
-  if command -v "qubesdb-read" > /dev/null 2>&1; then
+  if test -f /usr/share/qubes/marker-vm; then
     #[ -n "$INT_IF" ] || INT_IF="vif+"
     [ -n "${INT_IF:-}" ] || INT_IF="vif*"
     #[ -n "${INT_TIF:-}" ] || INT_TIF="vif+"
@@ -81,7 +81,7 @@ variables_defaults() {
   [ -n "${INT_TIF:-}" ] || INT_TIF="eth1"
 
   if [ -z "${NON_TOR_GATEWAY:-}" ]; then
-    if command -v "qubesdb-read" > /dev/null 2>&1; then
+    if test -f /usr/share/qubes/marker-vm; then
       NON_TOR_GATEWAY=""
     else
       ## 10.0.2.2/24: VirtualBox DHCP
@@ -100,7 +100,7 @@ variables_defaults() {
 
   ## Destinations you do not routed through VPN, only for Whonix-Gateway.
   if [ -z "${LOCAL_NET:-}" ]; then
-    if command -v "qubesdb-read" > /dev/null 2>&1; then
+    if test -f /usr/share/qubes/marker-vm; then
       LOCAL_NET="\
             127.0.0.0/24 \
             10.137.0.0/16 \
@@ -127,7 +127,7 @@ variables_defaults() {
     ##
     ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
     ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
-    if command -v "qubesdb-read" > /dev/null 2>&1; then
+    if test -f /usr/share/qubes/marker-vm; then
       ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
       ## Qubes-Whonix:
       ## IP HARDCODED. IP 10.152.152.10 is hardcoded in some places.
