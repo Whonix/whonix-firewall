@@ -10,6 +10,7 @@ set -eu -o pipefail -o errtrace
 ## Function to use shellcheck on all the variables inside the function.
 # shellcheck disable=SC2034
 common_variables_defaults_pre(){
+  [ -n "${nftables_cmd:-}" ] || nftables_cmd="write_nft_script"
   source_only=""
   info_enabled=""
 }
@@ -120,16 +121,39 @@ error_handler() {
 }
 trap "error_handler" ERR
 
+usage() {
+  echo "usage: ${0##*/} [options]
+ -s, --source         only source the script
+ -i, --info           print informational messages
+ -h, --help           print this help message"
+}
+
+# shellcheck disable=SC2034
+get_options(){
+  while true; do
+    case ${1-} in
+      -s | --source)
+        source_only=1
+        shift 1
+        ;;
+      -i | --info)
+        info_enabled=1
+        shift 1
+        ;;
+      "") break ;;
+      -h | --help | *)
+        usage
+        exit 1
+        ;;
+    esac
+  done
+}
+
 init() {
   output_cmd "OK: Loading Whonix firewall..."
   mkdir --parents /var/lib/whonix-firewall
   rm -f /var/lib/whonix-firewall/firewall.nft
 }
-
-write_nft_script() {
-  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
-}
-[ -n "${nftables_cmd:-}" ] || nftables_cmd="write_nft_script"
 
 source_config_folder() {
   shopt -s nullglob
@@ -149,9 +173,14 @@ source_config_folder() {
    $bash_n_output" >&2
       exit 1
     fi
+    # shellcheck disable=SC1090
     source "$i"
   done
   shopt -u nullglob
+}
+
+write_nft_script() {
+  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
 }
 
 nft_script_header() {
@@ -229,14 +258,6 @@ firewall_mode_detection() {
     output_cmd "OK: (Full torified network access allowed.)"
   fi
 }
-
-usage() {
-  echo "usage: ${0##*/} [options]
- -s, --source         only source the script
- -i, --info           print informational messages
- -h, --help           print this help message"
-}
-
 
 nft_reject_invalid_outgoing_packages() {
   ## Drop invalid outgoing packages,

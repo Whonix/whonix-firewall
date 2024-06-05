@@ -39,6 +39,29 @@ variables_defaults() {
   [ -n "${WORKSTATION_TRANSPARENT_TCP:-}" ] || WORKSTATION_TRANSPARENT_TCP=1
   [ -n "${WORKSTATION_TRANSPARENT_UDP:-}" ] || WORKSTATION_TRANSPARENT_UDP=0
 
+  ## The following ports are used
+  ## - here in /usr/bin/whonix_firewall (package: whonix-gw-firewall)
+  ## - by Tor in /usr/share/tor/tor-service-defaults-torrc (package: anon-gw-anonymizer-config)
+  ##
+  ## The following applications will be separated, preventing identity
+  ## correlation through circuit sharing.
+
+  ## Transparent Proxy Ports for Whonix-Workstation
+  [ -n "${TRANS_PORT_WORKSTATION:-}" ] || TRANS_PORT_WORKSTATION="9040"
+  [ -n "${DNS_PORT_WORKSTATION:-}" ] || DNS_PORT_WORKSTATION="5300"
+
+  ## Transparent Proxy Ports for Whonix-Gateway
+  [ -n "${TRANS_PORT_GATEWAY:-}" ] || TRANS_PORT_GATEWAY="9041"
+  [ -n "${DNS_PORT_GATEWAY:-}" ] || DNS_PORT_GATEWAY="5400"
+
+  [ -n "${GATEWAY_ALLOW_INCOMING_FLASHPROXY:-}" ] || GATEWAY_ALLOW_INCOMING_FLASHPROXY="0"
+  [ -n "${FLASHPROXY_PORT:-}" ] || FLASHPROXY_PORT="9000"
+
+  if [ ! "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+    output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='${WORKSTATION_ALLOW_SOCKSIFIED}', Socks Ports will not be opened"
+    return 0
+  fi
+
   NO_NAT_USERS+=" $CLEARNET_USER"
   NO_NAT_USERS+=" $TUNNEL_USER"
 
@@ -60,24 +83,19 @@ variables_defaults() {
 
   ## No NAT for Tor itself,
   ## unless VPN_FIREWALL mode is enabled.
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    true
-  else
+  if [ "$VPN_FIREWALL" != "1" ]; then
     NO_NAT_USERS+=" $TOR_USER"
   fi
 
   if test -f /usr/share/qubes/marker-vm; then
-    #[ -n "$INT_IF" ] || INT_IF="vif+"
     [ -n "${INT_IF:-}" ] || INT_IF="vif*"
-    #[ -n "${INT_TIF:-}" ] || INT_TIF="vif+"
     [ -n "${INT_TIF:-}" ] || INT_TIF="vif*"
   fi
 
   ## Internal interface
   [ -n "${INT_IF:-}" ] || INT_IF="eth1"
-  ## Internal "tunnel" interface, usually the same as
-  ## the Internal interface unless using vpn tunnels
-  ## between workstations and gateway
+  ## Internal "tunnel" interface, usually the same as the Internal interface
+  ## unless using vpn tunnels # between workstations and gateway
   [ -n "${INT_TIF:-}" ] || INT_TIF="eth1"
 
   if [ -z "${NON_TOR_GATEWAY:-}" ]; then
@@ -143,32 +161,6 @@ variables_defaults() {
       ## configuration folder instead.
       WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
     fi
-  fi
-
-  ## The following ports are used
-  ## - here in /usr/bin/whonix_firewall (package: whonix-gw-firewall)
-  ## - by Tor in /usr/share/tor/tor-service-defaults-torrc (package: anon-gw-anonymizer-config)
-  ##
-  ## The following applications will be separated, preventing identity
-  ## correlation through circuit sharing.
-
-  ## Transparent Proxy Ports for Whonix-Workstation
-  [ -n "${TRANS_PORT_WORKSTATION:-}" ] || TRANS_PORT_WORKSTATION="9040"
-  [ -n "${DNS_PORT_WORKSTATION:-}" ] || DNS_PORT_WORKSTATION="5300"
-
-  ## Transparent Proxy Ports for Whonix-Gateway
-  [ -n "${TRANS_PORT_GATEWAY:-}" ] || TRANS_PORT_GATEWAY="9041"
-  [ -n "${DNS_PORT_GATEWAY:-}" ] || DNS_PORT_GATEWAY="5400"
-
-  ## Control Port Filter Proxy Port
-  [ -n "${CONTROL_PORT_FILTER_PROXY_PORT:-}" ] || CONTROL_PORT_FILTER_PROXY_PORT="9051"
-
-  [ -n "${GATEWAY_ALLOW_INCOMING_FLASHPROXY:-}" ] || GATEWAY_ALLOW_INCOMING_FLASHPROXY="0"
-  [ -n "${FLASHPROXY_PORT:-}" ] || FLASHPROXY_PORT="9000"
-
-  if [ ! "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
-    output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='${WORKSTATION_ALLOW_SOCKSIFIED}', Socks Ports will not be opened"
-    return 0
   fi
 }
 
@@ -406,6 +398,10 @@ source_only
 "
 
 main() {
+  get_options "${@}"
+  if [ "$source_only" = "1" ]; then
+    return 0
+  fi
   init
   source_config_folder
   variables_defaults
@@ -427,26 +423,4 @@ main() {
   end
 }
 
-while true; do
-  case ${1:-} in
-    -s | --source)
-      source_only=1
-      shift 1
-      ;;
-    -i | --info)
-      info_enabled=1
-      shift 1
-      ;;
-    "") break ;;
-    -h | --help | *)
-      usage
-      exit 1
-      ;;
-  esac
-done
-
-if [ "$source_only" = "1" ]; then
-   return 0
-fi
-
-main
+main "${@}"

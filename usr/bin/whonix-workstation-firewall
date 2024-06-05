@@ -374,7 +374,7 @@ nft_output() {
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
       ## TODO: IPv6 missing
     else
-      if [ "$outgoing_allow_ip_list" = "" ]; then
+      if [ -z "$outgoing_allow_ip_list" ]; then
         true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
         $nftables_cmd add rule inet filter output counter accept
       else
@@ -429,6 +429,10 @@ source_only
 "
 
 main() {
+  get_options "${@}"
+  if [ "$source_only" = "1" ]; then
+    return 0
+  fi
   init
   source_config_folder
   variables_defaults
@@ -450,26 +454,4 @@ main() {
   end
 }
 
-while true; do
-  case ${1-} in
-    -s | --source)
-      source_only=1
-      shift 1
-      ;;
-    -i | --info)
-      info_enabled=1
-      shift 1
-      ;;
-    "") break ;;
-    -h | --help | *)
-      usage
-      exit 1
-      ;;
-  esac
-done
-
-if [ "$source_only" = "1" ]; then
-   return 0
-fi
-
-main
+main "${@}"

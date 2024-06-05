@@ -99,6 +99,10 @@ nft_output(){
 }
 
 main() {
+  get_options "${@}"
+  if [ "$source_only" = "1" ]; then
+    return 0
+  fi
   init
   source_config_folder
   variables_defaults
@@ -120,26 +124,4 @@ main() {
   end
 }
 
-while true; do
-  case ${1-} in
-    -s | --source)
-      source_only=1
-      shift 1
-      ;;
-    -i | --info)
-      info_enabled=1
-      shift 1
-      ;;
-    "") break ;;
-    -h | --help | *)
-      usage
-      exit 1
-      ;;
-  esac
-done
-
-if [ "$source_only" = "1" ]; then
-   return 0
-fi
-
-main
+main "${@}"
