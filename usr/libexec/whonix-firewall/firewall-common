@@ -53,6 +53,50 @@ common_variables_defaults_post(){
   [ -n "${firewall_mode:-}" ] || firewall_mode=""
   [ -n "${outgoing_allow_ip_list:-}" ] || outgoing_allow_ip_list=""
 
+  ## Socks Ports for per application circuits.
+  ## SOCKS_PORT_TOR_DEFAULT: 9050
+  INTERNAL_OPEN_PORTS+=" 9050 "
+  ## SOCKS_PORT_TB: 9100
+  ## SOCKS_PORT_IRC: 9101
+  ## SOCKS_PORT_TORBIRDY: 9102
+  ## SOCKS_PORT_IM: 9103
+  ## SOCKS_PORT_APT_GET: 9104
+  ## SOCKS_PORT_GPG: 9105
+  ## SOCKS_PORT_SSH: 9106
+  ## SOCKS_PORT_GIT: 9107
+  ## SOCKS_PORT_SDWDATE: 9108
+  ## SOCKS_PORT_WGET: 9108
+  ## SOCKS_PORT_SYSTEMCHECK: 9110
+  ## SOCKS_PORT_BITCOIN: 9111
+  INTERNAL_OPEN_PORTS+=" $(seq 9100 9111) "
+  ## 9112
+  ## 9113
+  ## SOCKS_PORT_WHONIX_NEWS: 9114
+  ## SOCKS_PORT_TBB_DOWNLOAD: 9115
+  INTERNAL_OPEN_PORTS+=" $(seq 9114 9115) "
+  ## 9116
+  ## SOCKS_PORT_CURL: 9117
+  ## SOCKS_PORT_RSS: 9118
+  INTERNAL_OPEN_PORTS+=" $(seq 9117 9118) "
+  ## 9119
+  ## 9120
+  ## 9121
+  ## SOCKS_PORT_KDE: 9122
+  ## SOCKS_PORT_GNOME: 9123
+  ## SOCKS_PORT_APTITUDE: 9124
+  ## SOCKS_PORT_YUM: 9125
+  INTERNAL_OPEN_PORTS+=" $(seq 9122 9125) "
+  ## SOCKS_PORT_TBB_DEFAULT: 9150
+  INTERNAL_OPEN_PORTS+=" 9150 "
+
+  ## For Gateway testing purposes only.
+  ## To test if prerouting redirection rules for socksified interfere with
+  ## transparent torification.
+  ## https://phabricator.whonix.org/T462
+  ## SOCKS_PORT_HTTP
+  #INTERNAL_OPEN_PORTS+=" 80 "
+  ## SOCKS_PORT_SSL
+  #INTERNAL_OPEN_PORTS+=" 443 "
 }
 
 print_variables() {
