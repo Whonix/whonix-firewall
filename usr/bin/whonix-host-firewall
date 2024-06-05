@@ -75,21 +75,19 @@ nft_output(){
   ## Existing connections are accepted.
   $nftables_cmd add rule inet filter output ct state established counter accept
 
-  ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
-  ## unless VPN_FIREWALL mode is enabled.
-  ## ENABLED BY DEFAULT.
-  if [ ! "$VPN_FIREWALL" = "1" ]; then
-    for NET in $NON_TOR_GATEWAY; do
-      $nftables_cmd add rule inet filter output ip daddr "$NET" counter jump accept
-    done
-  fi
-
-  ## Connections to VPN servers are allowed,
-  ## when VPN_FIREWALL mode is enabled.
-  ## DISABLED BY DEFAULT.
   if [ "$VPN_FIREWALL" = "1" ]; then
+    ## Connections to VPN servers are allowed,
+    ## when VPN_FIREWALL mode is enabled.
+    ## DISABLED BY DEFAULT.
     for SERVER in $VPN_SERVERS; do
       $nftables_cmd add rule inet filter output ip daddr "$SERVER" counter jump accept
+    done
+  else
+    ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
+    ## unless VPN_FIREWALL mode is enabled.
+    ## ENABLED BY DEFAULT.
+    for NET in $NON_TOR_GATEWAY; do
+      $nftables_cmd add rule inet filter output ip daddr "$NET" counter jump accept
     done
   fi
 
