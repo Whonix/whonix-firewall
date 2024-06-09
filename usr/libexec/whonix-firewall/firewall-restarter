@@ -38,7 +38,7 @@ if [ -f "/run/sdwdate/first_success" ] || [ -f "/run/updatesproxycheck/whonix-se
   fi
 fi
 
-while read file_name; do
+while read -r file_name; do
   if [ "$file_name" = "/run/sdwdate/first_success" ] || [ "$file_name" = "/run/updatesproxycheck/whonix-secure-proxy" ]; then
     if systemctl --no-pager --no-block status whonix-firewall; then
       systemctl --no-pager --no-block restart whonix-firewall || true

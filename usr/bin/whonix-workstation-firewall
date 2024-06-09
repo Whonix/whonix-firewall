@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## Copyright (C) 2024 - 2024 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## See the file COPYING for copying conditions.
 
 #### meta start
@@ -12,7 +13,8 @@
 
 ## NOTE: If you make changes to this firewall, think about, if it would
 ##       make sense to add the changes to Whonix-Gateway script as well.
-##       Some things like dropping invalid packages, should be shared.
+##       Some things like dropping invalid packages, should be shared in
+##       /usr/libexec/whonix-firewall/firewall-common
 
 ## TODO:
 ## - Should allow unlimited TCP/UDP/IPv6 traffic on the virtual external interface (OnionCat / OpenVPN).
@@ -20,111 +22,46 @@
 ## source for some rules:
 ## http://www.cyberciti.biz/faq/ip6tables-ipv6-firewall-for-linux/
 
-set -e
+set -eu -o pipefail -o errtrace
 
-error_handler() {
-  echo "$0 ##################################################"
-  echo "$0 ERROR: Whonix firewall script failed!"
-  echo "$0 ##################################################"
-
-  exit 1
-}
-
-trap "error_handler" ERR
-
-init() {
-  output_cmd "OK: Loading Whonix firewall..."
-
-  set -o pipefail
-  set -o errtrace
-
-  mkdir --parents /var/lib/whonix-firewall
-  rm -f /var/lib/whonix-firewall/firewall.nft
-}
-
-write_nft_script() {
-  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
-}
-
-source_config_folder() {
-  shopt -s nullglob
-  local i
-  for i in \
-    /etc/whonix_firewall.d/*.conf \
-    /usr/local/etc/whonix_firewall.d/*.conf; do
-    bash_n_exit_code="0"
-    bash_n_output="$(bash -n "$i" 2>&1)" || {
-      bash_n_exit_code="$?"
-      true
-    }
-    if [ ! "$bash_n_exit_code" = "0" ]; then
-      output_cmd "ERROR: Invalid config file: $i
-   bash_n_exit_code: $bash_n_exit_code
-   bash_n_output:
-   $bash_n_output" >&2
-      exit 1
-    fi
-    source "$i"
-  done
-  shopt -u nullglob
-}
-
-nft_script_header() {
-  $nftables_cmd "#!/usr/sbin/nft -f"
-}
+# shellcheck source=../libexec/whonix-firewall/firewall-common
+source /usr/libexec/whonix-firewall/firewall-common
 
 variables_defaults() {
-  [ -n "$nftables_cmd" ] || nftables_cmd="write_nft_script"
-
-  ## Legacy.
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    TUNNEL_FIREWALL_ENABLE="true"
-  fi
+  common_variables_defaults_post
 
   ## Not in use/defined yet.
   ## INT_IF could be the internal network.
-  ## EXT_IF could be an additional virtual network adapter,
-  ##        such as OnionCat or OpenVPN.
-
-  ## External interface
-  [ -n "$EXT_IF" ] || EXT_IF="eth0"
   ## Internal interface
-  [ -n "$INT_IF" ] || INT_IF="eth1"
+  [ -n "${INT_IF:-}" ] || INT_IF="eth1"
 
-  if command -v "qubesdb-read" > /dev/null 2>&1; then
+  if test -f /usr/share/qubes/marker-vm; then
     ## Would fail if netvm is set to 'none',
     ## which is the case in Qubes R4 TemplateVMs.
-    [ -n "$GATEWAY_IP" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2> /dev/null)" || GATEWAY_IP="127.0.0.1"
+    [ -n "${GATEWAY_IP:-}" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2> /dev/null)" || GATEWAY_IP="127.0.0.1"
   else
     ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
     ## drop-in configuration snippet in /etc/whonix_firewall.d
     ## configuration folder instead.
-    [ -n "$GATEWAY_IP" ] || GATEWAY_IP="10.152.152.10"
+    [ -n "${GATEWAY_IP:-}" ] || GATEWAY_IP="10.152.152.10"
   fi
 
   ## Since hardcoded in anon-ws-disable-stacked-tor.
   ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
   ## drop-in configuration snippet in /etc/whonix_firewall.d
   ## configuration folder instead.
-  [ -n "$GATEWAY_IP_HARDCODED" ] || GATEWAY_IP_HARDCODED="10.152.152.10"
+  [ -n "${GATEWAY_IP_HARDCODED:-}" ] || GATEWAY_IP_HARDCODED="10.152.152.10"
 
-  [ -n "$TUNNEL_USER" ] || TUNNEL_USER="$(id -u tunnel)"
-  [ -n "$NOTUNNEL_USER" ] || NOTUNNEL_USER="$(id -u notunnel)"
-  [ -n "$UPDATESPROXYCHECK_USER" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)"
-
-  [ -n "$SDWDATE_USER" ] || SDWDATE_USER="$(id -u sdwdate)" || true
-  [ -n "$SYSTEMCHECK_USER" ] || SYSTEMCHECK_USER="$(id -u systemcheck)" || true
-
-  [ -n "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" ] || TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER="true"
-
-  ## Control Port Filter Proxy Port
-  [ -n "$CONTROL_PORT_FILTER_PROXY_PORT" ] || CONTROL_PORT_FILTER_PROXY_PORT="9051"
-
-  [ -n "$VPN_INTERFACE" ] || VPN_INTERFACE="tun0"
+  [ -n "${TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY:-}" ] || TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY=""
+  [ -n "${TUNNEL_FIREWALL_ALLOW_LOCAL_NET:-}" ] || TUNNEL_FIREWALL_ALLOW_LOCAL_NET=""
+  [ -n "${TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER:-}" ] || TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER=""
+  [ -n "${TUNNEL_FIREWALL_ALLOW_SDWDATE_USER:-}" ] || TUNNEL_FIREWALL_ALLOW_SDWDATE_USER=""
+  [ -n "${TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK:-}" ] || TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK=""
+  [ -n "${TUNNEL_FIREWALL_ALLOW_TB_UPDATER:-}" ] || TUNNEL_FIREWALL_ALLOW_TB_UPDATER=""
 
   ## Destinations you do not routed through VPN.
-  if [ "$LOCAL_NET" = "" ]; then
-    if command -v "qubesdb-read" > /dev/null 2>&1; then
+  if [ -z "${LOCAL_NET:-}" ]; then
+    if test -f /usr/share/qubes/marker-vm; then
       LOCAL_NET="\
             127.0.0.0/24 \
             10.137.0.0/16 \
@@ -143,57 +80,6 @@ variables_defaults() {
     fi
   fi
 
-  ## Socks Ports for per application circuits.
-  ## SOCKS_PORT_TOR_DEFAULT
-  INTERNAL_OPEN_PORTS+=" 9050 "
-  ## SOCKS_PORT_TB
-  INTERNAL_OPEN_PORTS+=" 9100 "
-  ## SOCKS_PORT_IRC
-  INTERNAL_OPEN_PORTS+=" 9101 "
-  ## SOCKS_PORT_TORBIRDY
-  INTERNAL_OPEN_PORTS+=" 9102 "
-  ## SOCKS_PORT_IM
-  INTERNAL_OPEN_PORTS+=" 9103 "
-  ## SOCKS_PORT_APT_GET
-  INTERNAL_OPEN_PORTS+=" 9104 "
-  ## SOCKS_PORT_GPG
-  INTERNAL_OPEN_PORTS+=" 9105 "
-  ## SOCKS_PORT_SSH
-  INTERNAL_OPEN_PORTS+=" 9106 "
-  ## SOCKS_PORT_GIT
-  INTERNAL_OPEN_PORTS+=" 9107 "
-  ## SOCKS_PORT_SDWDATE
-  INTERNAL_OPEN_PORTS+=" 9108 "
-  ## SOCKS_PORT_WGET
-  INTERNAL_OPEN_PORTS+=" 9109 "
-  ## SOCKS_PORT_SYSTEMCHECK
-  INTERNAL_OPEN_PORTS+=" 9110 "
-  ## SOCKS_PORT_BITCOIN
-  INTERNAL_OPEN_PORTS+=" 9111 "
-  ## 9112
-  ## 9113
-  ## SOCKS_PORT_WHONIX_NEWS
-  INTERNAL_OPEN_PORTS+=" 9114 "
-  ## SOCKS_PORT_TBB_DOWNLOAD
-  INTERNAL_OPEN_PORTS+=" 9115 "
-  ## 9116
-  ## SOCKS_PORT_CURL
-  INTERNAL_OPEN_PORTS+=" 9117 "
-  ## SOCKS_PORT_RSS
-  INTERNAL_OPEN_PORTS+=" 9118 "
-  ## 9119
-  ## 9120
-  ## 9121
-  ## SOCKS_PORT_KDE
-  INTERNAL_OPEN_PORTS+=" 9122 "
-  ## SOCKS_PORT_GNOME
-  INTERNAL_OPEN_PORTS+=" 9123 "
-  ## SOCKS_PORT_APTITUDE
-  INTERNAL_OPEN_PORTS+=" 9124 "
-  ## SOCKS_PORT_YUM
-  INTERNAL_OPEN_PORTS+=" 9125 "
-  ## SOCKS_PORT_TBB_DEFAULT
-  INTERNAL_OPEN_PORTS+=" 9150 "
 }
 
 nft_defaults() {
@@ -216,26 +102,6 @@ nft_defaults() {
 
   ## Will be lifted below.
   $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
-}
-
-nft_drop_invalid_incoming_packages() {
-  ## DROP INVALID
-  $nftables_cmd add rule inet filter input ct state invalid counter drop
-
-  ## DROP INVALID SYN PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|ack" counter drop
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn)" == "fin|syn" counter drop
-  $nftables_cmd add rule inet filter input tcp flags "&" "(syn|rst)" == "syn|rst" counter drop
-
-  ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-  ## TODO: IPv6?
-  $nftables_cmd add rule inet filter input ip frag-off "&" 0x1fff != 0 counter drop
-
-  ## DROP INCOMING MALFORMED XMAS PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|psh|ack|urg" counter drop
-
-  ## DROP INCOMING MALFORMED NULL PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
 }
 
 qubes() {
@@ -263,7 +129,7 @@ qubes_dns() {
     ## TODO: IPv6 missing
   fi
 
-  if [ "$counter" -ge "2" ]; then
+  if [ "${counter:-}" -ge "2" ]; then
     output_cmd "OK: Qubes DNS firewall rules ok."
   else
     $nftables_cmd add rule inet filter output udp dport 53 counter accept
@@ -304,7 +170,9 @@ nft_input_rules() {
     done
 
     if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
-      [ "${info_enabled}" = "1" ] && output_cmd "INFO: EXTERNAL_OPEN_ALL='true', all external ports will be opened"
+      if [ "${info_enabled}" = "1" ]; then
+        output_cmd "INFO: EXTERNAL_OPEN_ALL='true', all external ports will be opened"
+      fi
       $nftables_cmd add rule inet filter input counter accept
     fi
   fi
@@ -327,33 +195,6 @@ nft_forward() {
   #$nftables_cmd add rule inet filter forward counter log prefix \"Whonix_blocked_forward4:\"
 
   $nftables_cmd add rule inet filter forward counter drop
-}
-
-nft_reject_invalid_outgoing_packages() {
-  ## Drop invalid outgoing packages,
-  ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
-  if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
-    ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
-    $nftables_cmd add rule inet filter output ct state invalid counter reject
-    #$nftables_cmd add rule inet filter output ct state invalid counter reject
-    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject
-    #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(rst|ack)" == "rst|ack" counter reject
-
-    ## DROP INVALID SYN PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject
-    $nftables_cmd add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject
-
-    ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-    ## TODO: IPv6?
-    $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject
-
-    ## DROP INCOMING MALFORMED XMAS PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject
-
-    ## DROP INCOMING MALFORMED NULL PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject
-  fi
 }
 
 nft_output() {
@@ -476,7 +317,7 @@ nft_output() {
       ## TODO: IPv6 missing
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" udp dport 53 counter accept
       ## TODO: IPv6 missing
-      if command -v "qubesdb-read" > /dev/null 2>&1; then
+      if test -f /usr/share/qubes/marker-vm; then
         qubes_dns
       fi
     fi
@@ -533,7 +374,7 @@ nft_output() {
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
       ## TODO: IPv6 missing
     else
-      if [ "$outgoing_allow_ip_list" = "" ]; then
+      if [ -z "$outgoing_allow_ip_list" ]; then
         true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
         $nftables_cmd add rule inet filter output counter accept
       else
@@ -554,91 +395,44 @@ nft_output() {
   fi
 }
 
-nft_check() {
-  nft --check --file /var/lib/whonix-firewall/firewall.nft
-}
-
-nft_load() {
-  nft --file /var/lib/whonix-firewall/firewall.nft
-}
-
-status_files() {
-  mkdir --parents /run/whonix_firewall
-  if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
-    touch /run/whonix_firewall/consecutive_run.status
-    return 0
-  fi
-  touch /run/whonix_firewall/first_run_current_boot.status
-}
-
-date_cmd() {
-  date -u +"%Y-%m-%d %T"
-}
-
-output_cmd() {
-  echo "$(date_cmd) - $0 - $@"
-}
-
-firewall_mode_detection() {
-  if [ ! "$firewall_mode" = "" ]; then
-    output_cmd "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
-    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
-      return 0
-    elif [ "$firewall_mode" = "full" ]; then
-      output_cmd "OK: (Full torified network access allowed.)"
-      return 0
-    else
-      output_cmd "ERROR: firewall_mode must be set to either 'full' or 'timesync-fail-closed'."
-      error_handler
-    fi
-  fi
-
-  ## Run Whonix firewall in full mode if sdwdate already succeeded.
-  if [ -e /run/sdwdate/first_success ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/sdwdate/first_success exists.)"
-  elif [ -e /run/sdwdate/success ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/sdwdate/success exists.)"
-  ## /run/whonix_firewall/first_run_current_boot.status already exists,
-  ## therefore have Whonix firewall run in full mode.
-  elif [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
-  else
-    ## /run/whonix_firewall/first_run_current_boot.status does not yet exist,
-    ## therefore return 'yes, timesync-fail-closed'.
-    firewall_mode=timesync-fail-closed
-  fi
-
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    output_cmd "OK: First run during current boot, therefore running in timesync-fail-closed mode."
-    output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
-  else
-    output_cmd "OK: Consecutive run during current boot, therefore running in full mode."
-    output_cmd "OK: (Full torified network access allowed.)"
-  fi
-}
-
-end() {
-  output_cmd "OK: Whonix firewall loaded."
-
-  exit 0
-}
-
-print_variables() {
-  if [ ! "${info_enabled}" = "1" ]; then
-    return 0
-  fi
-  local item
-  for item in ${variable_list}; do
-    eval value='$'"${item}"
-    output_cmd "INFO: ${item}=${value}"
-  done
-}
+variable_list="
+CONTROL_PORT_FILTER_PROXY_PORT
+EXTERNAL_OPEN_ALL
+EXTERNAL_OPEN_PORTS
+EXTERNAL_UDP_OPEN_PORTS
+EXT_IF
+GATEWAY_IP
+GATEWAY_IP_HARDCODED
+INTERNAL_OPEN_PORTS
+INT_IF
+LOCAL_NET
+NOTUNNEL_USER
+NO_REJECT_INVALID_OUTGOING_PACKAGES
+SDWDATE_USER
+SYSTEMCHECK_USER
+TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY
+TUNNEL_FIREWALL_ALLOW_LOCAL_NET
+TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER
+TUNNEL_FIREWALL_ALLOW_SDWDATE_USER
+TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK
+TUNNEL_FIREWALL_ALLOW_TB_UPDATER
+TUNNEL_FIREWALL_ENABLE
+TUNNEL_USER
+UPDATESPROXYCHECK_USER
+VPN_FIREWALL
+VPN_INTERFACE
+firewall_allow_udp
+firewall_mode
+info_enabled
+outgoing_allow_ip_list
+source_only
+"
 
 main() {
+  get_options "${@}"
+  if [ "$source_only" = "1" ]; then
+    return 0
+  fi
   init
   source_config_folder
   variables_defaults
@@ -660,32 +454,4 @@ main() {
   end
 }
 
-usage() {
-  echo "usage: ${0##*/} [options]
-    -i, --info           print informational messages
-    -h, --help           print this help message"
-}
-
-while true; do
-  case $1 in
-      -s | --source)
-      source_only=1
-      shift 1
-      ;;
-    -i | --info)
-      info_enabled=1
-      shift 1
-      ;;
-    "") break ;;
-    -h | --help | *)
-      usage
-      exit 1
-      ;;
-  esac
-done
-
-if [ "$source_only" = "1" ]; then
-   return 0
-fi
-
-main
+main "${@}"
