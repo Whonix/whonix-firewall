@@ -119,14 +119,16 @@ qubes_dns() {
 
   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns 2> /dev/null)"; then
     $nftables_cmd add rule inet filter output ip daddr "$qubes_primary_dns" udp dport 53 counter accept
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$qubes_primary_dns" udp dport 53 counter accept
     counter=$((counter + 1))
-    ## TODO: IPv6 missing
   fi
 
   if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns 2> /dev/null)"; then
     $nftables_cmd add rule inet filter output ip daddr "$qubes_secondary_dns" udp dport 53 counter accept
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$qubes_secondary_dns" udp dport 53 counter accept
     counter=$((counter + 1))
-    ## TODO: IPv6 missing
   fi
 
   if [ "${counter:-}" -ge "2" ]; then
