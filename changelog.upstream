@@ -1,3 +1,111 @@
+commit f179db6b20891bb32412a0934ff61ccd029d9bf8
+Merge: 97978d4 c952984
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 11:49:26 2024 -0400
+
+    Merge remote-tracking branch 'ben/descomplicate'
+
+commit c95298419e6eab537db29f4248b8bb2317e29166
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jun 5 17:15:02 2024 +0200
+
+    Move duplicated functions to libexec
+    
+    Some variables were reordered for clarity.
+
+commit edaf04b8bf53511cf9ee0928c4d4877cca775dd9
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jun 5 12:21:20 2024 +0200
+
+    Simplify sequential ports to open
+    
+    Maintain comments with port number for easy grepping.
+
+commit d16db2b5434e6b9336373668488972ae086167c9
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jun 5 12:02:02 2024 +0200
+
+    Canonical way to detect Qubes VM
+    
+    https://www.qubes-os.org/faq/#what-is-the-canonical-way-to-detect-qubes-vm
+
+commit 777428faaa9f97878b1f7d60cfec372621e6b8f3
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jun 5 11:58:22 2024 +0200
+
+    Move shared variables to libexec
+
+commit 5e4e248e4cb7dfc3a8412458ae2f3929f743987a
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jun 5 10:59:19 2024 +0200
+
+    Styling
+
+commit 4db7a564d992942d7f5c67e03dfdb44d86749d6e
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Wed Jun 5 10:53:16 2024 +0200
+
+    Translate host firewall to nftables
+
+commit 5c012f89991e67951587d25a6baf1176156a6a49
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 4 21:56:44 2024 +0200
+
+    Remove unnecessary lines
+
+commit 076ea2cefefc0d6facd9747895aa4d30c0ccba6a
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 4 21:49:54 2024 +0200
+
+    Deal with shell option errexit
+    
+    Use if statements else if the test result is false, it can fail the
+    whole script.
+
+commit d0de0a9f46a6dd19f24b8355f63e3692d26fffc2
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 4 21:47:23 2024 +0200
+
+    Move duplicated function to libexec
+
+commit 7d705f9c84506c662ee1f93603dd0c28b01eb0b8
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 4 21:37:23 2024 +0200
+
+    Print used variables
+    
+    At least the ones I could identify.
+
+commit 0eb6317197e51e2544c8a10d53c3297aa3b1d8a4
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 4 21:08:38 2024 +0200
+
+    Deal with shell option nounset
+
+commit 1f5392ab98875261864640f0de08f6705edfac97
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 3 16:56:42 2024 +0200
+
+    Move more duplicated functions to libexec
+
+commit 0ae20686bbaeb6fc6f26e6a8e3d455675446b04f
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 3 16:33:41 2024 +0200
+
+    Shellcheck firewall
+
+commit fe698d73df60fec969f63d980bdaff9d55b12e3e
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 3 16:18:47 2024 +0200
+
+    Move duplicated functions to libexec
+
+commit 97978d4006581babfad316c9ba1ec7ad048099bc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 2 17:05:33 2024 +0000
+
+    bumped changelog version
+
 commit 5bf203b69f626c2ec3f35300b99825093922be2c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 2 13:02:45 2024 -0400
