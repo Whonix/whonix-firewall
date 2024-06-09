@@ -459,7 +459,8 @@ nft_input_rules_gateway() {
       local workstation_dest_socksified_item
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
         $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
-        ## TODO: IPv6 missing
+        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "::ffff:$workstation_dest_socksified_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+        ## TODO: IPv6 test
       done
     fi
 
@@ -471,7 +472,8 @@ nft_input_rules_gateway() {
           true "socks_port_item: $socks_port_item"
           ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
           $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$socks_port_item" counter redirect to :"$socks_port_item"
-          ## TODO: IPv6 missing
+          $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "::ffff:$workstation_dest_socksified_item" tcp dport "$socks_port_item" counter redirect to :"$socks_port_item"
+          ## TODO: IPv6 test
         done
       done
 
@@ -479,7 +481,8 @@ nft_input_rules_gateway() {
       local workstation_dest_socksified_item
       for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
         $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9229 counter redirect
-        ## TODO: IPv6 missing
+        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "::ffff:$workstation_dest_socksified_item" tcp dport 9152-9229 counter redirect
+        ## TODO: IPv6 test
       done
     fi
 

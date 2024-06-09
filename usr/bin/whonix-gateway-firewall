@@ -124,7 +124,6 @@ variables_defaults() {
             10.137.0.0/16 \
             10.138.0.0/16 \
          "
-      ## TODO: IPv6 missing
     else
       ## 10.0.2.2/24: VirtualBox DHCP
       ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
@@ -200,9 +199,10 @@ qubes() {
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
     if getent passwd vm-updates > /dev/null; then
       $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
-      ## TODO: IPv6: missing rule
+      $nftables_cmd add rule inet nat output ip6 protocol udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
       $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-      ## TODO: IPv6: missing
+      $nftables_cmd add rule inet nat output ip6 protocol tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
+      ## TODO: IPv6: test
     fi
   fi
 }
@@ -250,7 +250,8 @@ nft_output() {
       local non_tor_gateway_item
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         $nftables_cmd add rule inet nat output ip daddr "$non_tor_gateway_item" counter return
-        ## TODO: IPv6 missing
+        $nftables_cmd add rule inet nat output ip6 daddr "::ffff:$non_tor_gateway_item" counter return
+        ## TODO: IPv6 test
       done
     fi
 
@@ -272,7 +273,8 @@ nft_output() {
       local non_tor_gateway_item
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         $nftables_cmd add rule inet filter output ip daddr "$non_tor_gateway_item" counter accept
-        ## TODO: IPv6 missing
+        $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$non_tor_gateway_item" counter accept
+        ## TODO: IPv6 test
       done
     fi
   fi
@@ -285,7 +287,8 @@ nft_output() {
       local local_net_item
       for local_net_item in $LOCAL_NET; do
         $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
-        ## TODO: IPv6 missing
+        $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$local_net_item" counter accept
+        ## TODO: IPv6 test
       done
     fi
   fi
