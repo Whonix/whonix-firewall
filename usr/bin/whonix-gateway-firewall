@@ -153,12 +153,18 @@ variables_defaults() {
         10.138.0.0/16 \
         10.152.152.10 \
       "
+      WORKSTATION_DEST_SOCKSIFIED_IPV6="\
+        ::ffff:10.137.0.0/112 \
+        ::ffff:10.139.0.0/112 \
+        ::ffff:10.152.152.10 \
+      "
     else
       ## Non-Qubes-Whonix:
       ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
       ## drop-in configuration snippet in /etc/whonix_firewall.d
       ## configuration folder instead.
       WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
+      WORKSTATION_DEST_SOCKSIFIED_IPV6="::ffff:10.152.152.10"
     fi
   fi
 }
@@ -390,6 +396,7 @@ VPN_FIREWALL
 VPN_INTERFACE
 WORKSTATION_ALLOW_SOCKSIFIED
 WORKSTATION_DEST_SOCKSIFIED
+WORKSTATION_DEST_SOCKSIFIED_IPV6
 WORKSTATION_TRANSPARENT_DNS
 WORKSTATION_TRANSPARENT_TCP
 WORKSTATION_TRANSPARENT_UDP
