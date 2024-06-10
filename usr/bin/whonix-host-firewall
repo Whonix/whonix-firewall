@@ -21,6 +21,14 @@ variables_defaults(){
   ## Destinations you do not routed through VPN, only for Whonix-Gateway.
   ## 10.0.2.2/24: VirtualBox DHCP
   [ -n "${LOCAL_NET:-}" ] || LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+
+  [ -n "${GATEWAY_ALLOW_INCOMING_RELATED_STATE:-}" ] || GATEWAY_ALLOW_INCOMING_RELATED_STATE=""
+  [ -n "${GATEWAY_ALLOW_INCOMING_ICMP:-}" ] || GATEWAY_ALLOW_INCOMING_ICMP=0
+  [ -n "${GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED:-}" ] || GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED=1
+  [ -n "${GATEWAY_ALLOW_INCOMING_SSH:-}" ] || GATEWAY_ALLOW_INCOMING_SSH=0
+
+  [ -n "${GATEWAY_ALLOW_INCOMING_FLASHPROXY:-}" ] || GATEWAY_ALLOW_INCOMING_FLASHPROXY="0"
+  [ -n "${FLASHPROXY_PORT:-}" ] || FLASHPROXY_PORT="9000"
 }
 
 nft_defaults(){
@@ -46,6 +54,10 @@ nft_defaults(){
   $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
 
   $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"
+}
+
+qubes() {
+  qubes_gateway
 }
 
 nft_input_rules(){
@@ -90,7 +102,9 @@ nft_output(){
   fi
 
   ## clearnet user is allowed to connect any outside target.
-  $nftables_cmd add rule inet nat output skuid "$CLEARNET_USER" counter accept
+  if [ -n "$CLEARNET_USER" ]; then
+    $nftables_cmd add rule inet nat output skuid "$CLEARNET_USER" counter accept
+  fi
 
   if [ "$VPN_FIREWALL" = "1" ]; then
     ## Reject all other outgoing traffic.
