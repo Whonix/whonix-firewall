@@ -10,8 +10,11 @@ set -eu -o pipefail -o errtrace
 ## Function to use shellcheck on all the variables inside the function.
 # shellcheck disable=SC2034
 common_variables_defaults_pre(){
+  firewall_dir="/var/lib/whonix-firewall"
+  firewall_script="${firewall_dir}/firewall.nft"
   [ -n "${nftables_cmd:-}" ] || nftables_cmd="write_nft_script"
   source_only=""
+  dry_run=""
   info_enabled=""
 }
 common_variables_defaults_pre
@@ -33,14 +36,14 @@ common_variables_defaults_post(){
     TUNNEL_FIREWALL_ENABLE="true"
   fi
 
-  [ -n "${CLEARNET_USER:-}" ] || CLEARNET_USER="$(id -u clearnet)"
-  [ -n "${NOTUNNEL_USER:-}" ] || NOTUNNEL_USER="$(id -u notunnel)"
+  [ -n "${CLEARNET_USER:-}" ] || CLEARNET_USER="$(id -u clearnet)" || true
+  [ -n "${NOTUNNEL_USER:-}" ] || NOTUNNEL_USER="$(id -u notunnel)" || true
   [ -n "${ROOT_USER:-}" ] || ROOT_USER="$(id -u root)"
-  [ -n "${SDWDATE_USER:-}" ] || SDWDATE_USER="$(id -u sdwdate)"
-  [ -n "${SYSTEMCHECK_USER:-}" ] || SYSTEMCHECK_USER="$(id -u systemcheck)"
+  [ -n "${SDWDATE_USER:-}" ] || SDWDATE_USER="$(id -u sdwdate)" || true
+  [ -n "${SYSTEMCHECK_USER:-}" ] || SYSTEMCHECK_USER="$(id -u systemcheck)" || true
   [ -n "${TOR_USER:-}" ] || TOR_USER="$(id -u debian-tor)" || true # distro specific
-  [ -n "${TUNNEL_USER:-}" ] || TUNNEL_USER="$(id -u tunnel)"
-  [ -n "${UPDATESPROXYCHECK_USER:-}" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)"
+  [ -n "${TUNNEL_USER:-}" ] || TUNNEL_USER="$(id -u tunnel)" || true
+  [ -n "${UPDATESPROXYCHECK_USER:-}" ] || UPDATESPROXYCHECK_USER="$(id -u updatesproxycheck)" || true
   [ -n "${USER_USER:-}" ] || USER_USER="$(id -u user)" || true # user choice
 
   [ -n "${CONTROL_PORT_FILTER_PROXY_PORT:-}" ] || CONTROL_PORT_FILTER_PROXY_PORT="9051"
@@ -124,6 +127,7 @@ trap "error_handler" ERR
 usage() {
   echo "usage: ${0##*/} [options]
  -s, --source         only source the script
+ -n, --dry-run        dry-run, do not load new script
  -i, --info           print informational messages
  -h, --help           print this help message"
 }
@@ -134,6 +138,10 @@ get_options(){
     case ${1-} in
       -s | --source)
         source_only=1
+        shift 1
+        ;;
+      -n | --dry-run)
+        dry_run=1
         shift 1
         ;;
       -i | --info)
@@ -150,9 +158,12 @@ get_options(){
 }
 
 init() {
-  output_cmd "OK: Loading Whonix firewall..."
-  mkdir --parents /var/lib/whonix-firewall
-  rm -f /var/lib/whonix-firewall/firewall.nft
+  output_cmd "OK: Initialize Whonix firewall procedures..."
+  if [ "${dry_run}" = "1" ]; then
+    output_cmd "OK: Firewall will not be loaded because dry-run is set"
+  fi
+  mkdir --parents "${firewall_dir}"
+  rm -f "${firewall_script}"
 }
 
 source_config_folder() {
@@ -180,7 +191,7 @@ source_config_folder() {
 }
 
 write_nft_script() {
-  echo "$@" | tee -a /var/lib/whonix-firewall/firewall.nft >/dev/null
+  echo "$@" | tee -a "${firewall_script}" >/dev/null
 }
 
 nft_script_header() {
@@ -188,14 +199,17 @@ nft_script_header() {
 }
 
 nft_check() {
-  nft --check --file /var/lib/whonix-firewall/firewall.nft
+  nft --check --file "${firewall_script}"
 }
 
 nft_load() {
-  nft --file /var/lib/whonix-firewall/firewall.nft
+  nft --file "${firewall_script}"
 }
 
 status_files() {
+  if [ "${dry_run}" = "1" ]; then
+    return 0
+  fi
   mkdir --parents /run/whonix_firewall
   if [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
     touch /run/whonix_firewall/consecutive_run.status
@@ -205,7 +219,11 @@ status_files() {
 }
 
 end() {
-  output_cmd "OK: Whonix firewall loaded."
+  if [ "${dry_run}" = "1" ]; then
+    output_cmd "OK: Firewall will not be loaded because dry-run is set"
+  else
+    output_cmd "OK: Whonix firewall loaded."
+  fi
   exit 0
 }
 
@@ -218,7 +236,7 @@ output_cmd() {
 }
 
 output_trim() {
-  echo "${1}" | tr -s "\n" " " | sed "s/^ //"
+  echo "${1}" | tr -s "\n" " " | sed -e "s/^ //" -e "s/ $//"
 }
 
 firewall_mode_detection() {
@@ -521,4 +539,21 @@ nft_forward_gateway() {
 
   ## Reject everything.
   $nftables_cmd add rule inet filter forward counter reject
+}
+
+qubes_gateway() {
+  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+    true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
+    return 0
+  fi
+
+  if [ -e /run/qubes/this-is-netvm ] || [ -e /run/qubes/this-is-proxyvm ]; then
+    ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
+    if getent passwd vm-updates > /dev/null; then
+      $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
+      ## TODO: IPv6: missing rule
+      $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
+      ## TODO: IPv6: missing
+    fi
+  fi
 }

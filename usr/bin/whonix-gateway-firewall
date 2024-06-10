@@ -191,20 +191,7 @@ nft_defaults() {
 }
 
 qubes() {
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
-    return 0
-  fi
-
-  if [ -e /run/qubes/this-is-netvm ] || [ -e /run/qubes/this-is-proxyvm ]; then
-    ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
-    if getent passwd vm-updates > /dev/null; then
-      $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
-      ## TODO: IPv6: missing rule
-      $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-      ## TODO: IPv6: missing
-    fi
-  fi
+  qubes_gateway
 }
 
 nft_input_rules(){
@@ -322,13 +309,17 @@ nft_output() {
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
     ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
     ## Otherwise in Whonix firewall full mode this rule is redundant.
-    $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
-    ## TODO: IPV6 test
-    $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+    if [ -n "$SDWDATE_USER" ]; then
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+      ## TODO: IPV6 test
+      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+    fi
 
-    $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
-    ## TODO: IPV6 test
-    $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
+    if [ -n "$SYSTEMCHECK_USER" ]; then
+      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
+      ## TODO: IPV6 test
+      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
+    fi
 
     $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept#
     ## TODO: IPV6 test

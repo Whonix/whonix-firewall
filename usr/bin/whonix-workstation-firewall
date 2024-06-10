@@ -234,31 +234,35 @@ nft_output() {
       true "firewall_mode is $firewall_mode, therefore allowing user $TUNNEL_USER traffic."
       ## Connections to VPN servers are allowed,
       $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
-      $nftables_cmd add rule inet filter output skuid "$TUNNEL_USER" counter accept
+      if [ -n "$TUNNEL_USER" ]; then
+        $nftables_cmd add rule inet filter output skuid "$TUNNEL_USER" counter accept
+      fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_SDWDATE_USER" = "true" ]; then
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
-      ## TODO: IPv6 test
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
-
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
-      ## TODO: IPv6 missing
-
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-      ## TODO: IPv6 missing
+      if [ -n "$SDWDATE_USER" ]; then
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+        ## TODO: IPv6 test
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
+        ## TODO: IPv6 missing
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
+        ## TODO: IPv6 missing
+      fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" = "true" ]; then
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
-      ## TODO: IPv6 test
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr ::1 counter accept
+      if [ -n "$NOTUNNEL_USER" ]; then
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
+        ## TODO: IPv6 test
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr ::1 counter accept
 
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP" counter accept
-      ## TODO: IPv6 missing
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP" counter accept
+        ## TODO: IPv6 missing
 
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-      ## TODO: IPv6 missing
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
+        ## TODO: IPv6 missing
+      fi
     fi
 
     ## Accept outgoing connections to local network.
@@ -302,9 +306,11 @@ nft_output() {
       if [ "$firewall_mode" = "timesync-fail-closed" ]; then
         true
       else
-        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr 127.0.0.1 counter accept
-        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP" counter accept
-        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP_HARDCODED" counter accept
+        if [ -n "$SYSTEMCHECK_USER" ]; then
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr 127.0.0.1 counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP_HARDCODED" counter accept
+        fi
       fi
     fi
   else
@@ -354,7 +360,7 @@ nft_output() {
       ## Otherwise in Whonix firewall full mode this rule is redundant.
 
       local allowed_user_list_item
-      for allowed_user_list_item in "$SDWDATE_USER" "$SYSTEMCHECK_USER" ; do
+      for allowed_user_list_item in $SDWDATE_USER $SYSTEMCHECK_USER; do
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip daddr 127.0.0.1 counter accept
         ## TODO: IPv6 test
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr ::1 counter accept
