@@ -155,7 +155,7 @@ nft_input_rules() {
   else
     local local_port_to_open
     if [ "${info_enabled}" = "1" ]; then
-      output_cmd "INFO: Opening External TCP port(s): ${EXTERNAL_OPEN_PORTS:-"NONE"}"
+      output_cmd "INFO: Opening External TCP port(s): $(output_trim "${EXTERNAL_OPEN_PORTS:-"NONE"}")"
     fi
     for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
       $nftables_cmd add rule inet filter input tcp dport "$local_port_to_open" counter accept
@@ -163,7 +163,7 @@ nft_input_rules() {
 
     local local_udp_port_to_open
     if [ "${info_enabled}" = "1" ]; then
-      output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}"
+      output_cmd "INFO: Opening External UDP port(s): $(output_trim "${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}")"
     fi
     for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
       $nftables_cmd add rule inet filter input udp dport "$local_udp_port_to_open" counter accept
@@ -202,7 +202,7 @@ nft_output() {
   ## https://phabricator.whonix.org/T533#11025
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
     local socks_port_item
-    output_cmd "INFO: not opening Internal TCP ports ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate, because firewall_mode=$firewall_mode"
+    output_cmd "INFO: not opening Internal TCP ports $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode=$firewall_mode"
     for socks_port_item in $INTERNAL_OPEN_PORTS; do
       true "socks_port_item: $socks_port_item"
       ## SOCKS_PORT_SDWDATE

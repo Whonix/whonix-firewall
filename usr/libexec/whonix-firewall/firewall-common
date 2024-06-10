@@ -109,14 +109,14 @@ print_variables() {
   for item in ${variable_list}; do
     eval value='$'"${item}"
     # shellcheck disable=SC2154
-    output_cmd "INFO: ${item}=${value}"
+    output_cmd "INFO: ${item}=$(output_trim "${value}")"
   done
 }
 
 error_handler() {
-  echo "$0 ##################################################"
-  echo "$0 ERROR: Whonix firewall script failed!"
-  echo "$0 ##################################################"
+  echo "${0##*/} ##################################################"
+  echo "${0##*/} ERROR: Whonix firewall script failed!"
+  echo "${0##*/} ##################################################"
   exit 1
 }
 trap "error_handler" ERR
@@ -204,6 +204,11 @@ status_files() {
   touch /run/whonix_firewall/first_run_current_boot.status
 }
 
+end() {
+  output_cmd "OK: Whonix firewall loaded."
+  exit 0
+}
+
 date_cmd() {
   date -u +"%Y-%m-%d %T"
 }
@@ -212,9 +217,8 @@ output_cmd() {
   echo "$(date_cmd) - ${0##*/} - $*"
 }
 
-end() {
-  output_cmd "OK: Whonix firewall loaded."
-  exit 0
+output_trim() {
+  echo "${1}" | tr -s "\n" " " | sed "s/^ //"
 }
 
 firewall_mode_detection() {
@@ -359,7 +363,7 @@ nft_input_rules_gateway() {
 
     local local_port_to_open
     if [ "${info_enabled}" = "1" ]; then
-      output_cmd "INFO: Opening External TCP port(s): ${EXTERNAL_OPEN_PORTS:-"NONE"}"
+      output_cmd "INFO: Opening External TCP port(s): $(output_trim "${EXTERNAL_OPEN_PORTS:-"NONE"}")"
     fi
     for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
       $nftables_cmd add rule inet filter input iifname "$ext_if_item" tcp dport "$local_port_to_open" counter accept
@@ -367,7 +371,7 @@ nft_input_rules_gateway() {
 
     local local_udp_port_to_open
     if [ "${info_enabled}" = "1" ]; then
-      output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}"
+      output_cmd "INFO: Opening External UDP port(s): $(output_trim "${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}")"
     fi
     for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
       $nftables_cmd add rule inet filter input udp dport "$local_udp_port_to_open" counter accept
@@ -436,7 +440,7 @@ nft_input_rules_gateway() {
     if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
       if [ "${info_enabled}" = "1" ]; then
         output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='1', Socks Ports will be reacheable from the Workstation"
-        output_cmd "INFO: opening Internal TCP port(s): ${INTERNAL_OPEN_PORTS}"
+        output_cmd "INFO: opening Internal TCP port(s): $(output_trim "${INTERNAL_OPEN_PORTS}")"
       fi
       local socks_port_item
       for socks_port_item in $INTERNAL_OPEN_PORTS; do
