@@ -50,7 +50,9 @@ nft_defaults(){
   ## Will be lifted below.
   $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 
+  $nftables_cmd "delete chain inet nat prerouting"
   $nftables_cmd "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
+  $nftables_cmd "delete chain inet nat output"
   $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
 
   $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"

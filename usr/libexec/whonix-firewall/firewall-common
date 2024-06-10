@@ -203,6 +203,9 @@ nft_check() {
 }
 
 nft_load() {
+  if [ "${dry_run}" = "1" ]; then
+    return 0
+  fi
   nft --file "${firewall_script}"
 }
 
@@ -221,9 +224,9 @@ status_files() {
 end() {
   if [ "${dry_run}" = "1" ]; then
     output_cmd "OK: Firewall will not be loaded because dry-run is set"
-  else
-    output_cmd "OK: Whonix firewall loaded."
+    exit 0
   fi
+  output_cmd "OK: Whonix firewall loaded."
   exit 0
 }
 

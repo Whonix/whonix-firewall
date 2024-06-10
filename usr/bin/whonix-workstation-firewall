@@ -91,8 +91,10 @@ nft_defaults() {
   $nftables_cmd flush table inet filter
   $nftables_cmd flush table inet nat
 
-  $nftables_cmd add chain inet nat output
-  $nftables_cmd add chain inet nat prerouting
+  $nftables_cmd delete chain inet nat output
+  $nftables_cmd add    chain inet nat output
+  $nftables_cmd delete chain inet nat prerouting
+  $nftables_cmd add    chain inet nat prerouting
 
   ## Set secure defaults.
   $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
