@@ -199,6 +199,10 @@ nft_script_header() {
 }
 
 nft_check() {
+  ## Check is broken when modifying policy of existing chain.
+  if [ "${dry_run}" = "1" ]; then
+    return 0
+  fi
   nft --check --file "${firewall_script}"
 }
 
