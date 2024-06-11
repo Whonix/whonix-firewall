@@ -1,3 +1,73 @@
+commit 9f83b6578bd69ed12975c97c7c2f6fef896e95e3
+Merge: 00fa198 cbbed03
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 11 08:56:34 2024 -0400
+
+    Merge remote-tracking branch 'ben/info-trim'
+
+commit cbbed0367ac891b74edb38c08529ae8c2979c9be
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Tue Jun 11 14:08:18 2024 +0200
+
+    Do not delete chains
+    
+    NFTables syntax check fails, it needs to be skipped if editing policy of
+    existing chain.
+
+commit 905db632b9bfe1fc203f5d54ac3ffa51db63baa1
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 10 10:37:14 2024 +0200
+
+    Fix dry-run mode and policy of existing chain
+    
+    If adding a policy to an existing chain, it fails on dry-run mode with
+    the message that the "File exists", which means that the chain already
+    exists.
+
+commit d8eca530f348473597c7502426a68dc9ce9436b6
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 10 10:23:21 2024 +0200
+
+    Add missing functions to host firewall
+
+commit d425035fff503d324dafa2c1fb4d4cf646da3742
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 10 10:22:05 2024 +0200
+
+    Add dry-run to test firewall on non-Whonix
+    
+    Workstation firewall works, Gateway and Host doesn't.
+
+commit c4b1357667e77530e3318130cc7c1ba0abc07edc
+Author: Ben Grande <ben.grande.b@gmail.com>
+Date:   Mon Jun 10 09:36:10 2024 +0200
+
+    Prettify informational output
+
+commit 00fa198d780daabcd8894369e61a5d49a6096fa8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 13:56:32 2024 -0400
+
+    towards IPv6 support
+
+commit bbf2c07260a1a98389ee74992a14af84524c4eda
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 13:23:41 2024 -0400
+
+    towards IPv6 support
+
+commit d8efd478a235e8d4ed998a69dd2e6dbe1df2c213
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 12:40:07 2024 -0400
+
+    towards IPv6
+
+commit ca8e4e9fccc4d8470f682ca74b90d6d778dcf76b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jun 9 16:00:41 2024 +0000
+
+    bumped changelog version
+
 commit f179db6b20891bb32412a0934ff61ccd029d9bf8
 Merge: 97978d4 c952984
 Author: Patrick Schleizer <adrelanos@whonix.org>
