@@ -157,7 +157,7 @@ nft_input_rules() {
   else
     local local_port_to_open
     if [ "${info_enabled}" = "1" ]; then
-      output_cmd "INFO: Opening External TCP port(s): ${EXTERNAL_OPEN_PORTS:-"NONE"}"
+      output_cmd "INFO: Opening External TCP port(s): $(output_trim "${EXTERNAL_OPEN_PORTS:-"NONE"}")"
     fi
     for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
       $nftables_cmd add rule inet filter input tcp dport "$local_port_to_open" counter accept
@@ -165,7 +165,7 @@ nft_input_rules() {
 
     local local_udp_port_to_open
     if [ "${info_enabled}" = "1" ]; then
-      output_cmd "INFO: Opening External UDP port(s): ${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}"
+      output_cmd "INFO: Opening External UDP port(s): $(output_trim "${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}")"
     fi
     for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
       $nftables_cmd add rule inet filter input udp dport "$local_udp_port_to_open" counter accept
@@ -204,7 +204,7 @@ nft_output() {
   ## https://phabricator.whonix.org/T533#11025
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
     local socks_port_item
-    output_cmd "INFO: not opening Internal TCP ports ${INTERNAL_OPEN_PORTS}, except 9108 for sdwdate, because firewall_mode=$firewall_mode"
+    output_cmd "INFO: not opening Internal TCP ports $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode=$firewall_mode"
     for socks_port_item in $INTERNAL_OPEN_PORTS; do
       true "socks_port_item: $socks_port_item"
       ## SOCKS_PORT_SDWDATE
@@ -236,27 +236,33 @@ nft_output() {
       true "firewall_mode is $firewall_mode, therefore allowing user $TUNNEL_USER traffic."
       ## Connections to VPN servers are allowed,
       $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
-      $nftables_cmd add rule inet filter output skuid "$TUNNEL_USER" counter accept
+      if [ -n "$TUNNEL_USER" ]; then
+        $nftables_cmd add rule inet filter output skuid "$TUNNEL_USER" counter accept
+      fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_SDWDATE_USER" = "true" ]; then
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "::ffff:$GATEWAY_IP" counter accept
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "::ffff:$GATEWAY_IP_HARDCODED" counter accept
-      ## TODO: IPv6 test
+      if [ -n "$SDWDATE_USER" ]; then
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "::ffff:$GATEWAY_IP" counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "::ffff:$GATEWAY_IP_HARDCODED" counter accept
+        ## TODO: IPv6 test
+      fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" = "true" ]; then
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr ::1 counter accept
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP" counter accept
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "::ffff:$GATEWAY_IP" counter accept
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-      $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "::ffff:$GATEWAY_IP_HARDCODED" counter accept
-      ## TODO: IPv6 test
+      if [ -n "$NOTUNNEL_USER" ]; then
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr ::1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP" counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "::ffff:$GATEWAY_IP" counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "::ffff:$GATEWAY_IP_HARDCODED" counter accept
+        ## TODO: IPv6 test
+      fi
     fi
 
     ## Accept outgoing connections to local network.
@@ -300,9 +306,11 @@ nft_output() {
       if [ "$firewall_mode" = "timesync-fail-closed" ]; then
         true
       else
-        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr 127.0.0.1 counter accept
-        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP" counter accept
-        $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP_HARDCODED" counter accept
+        if [ -n "$SYSTEMCHECK_USER" ]; then
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr 127.0.0.1 counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP_HARDCODED" counter accept
+        fi
       fi
     fi
   else
@@ -353,7 +361,7 @@ nft_output() {
       ## Otherwise in Whonix firewall full mode this rule is redundant.
 
       local allowed_user_list_item
-      for allowed_user_list_item in "$SDWDATE_USER" "$SYSTEMCHECK_USER" ; do
+      for allowed_user_list_item in $SDWDATE_USER $SYSTEMCHECK_USER; do
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip daddr 127.0.0.1 counter accept
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr ::1 counter accept
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip daddr "$GATEWAY_IP" counter accept
