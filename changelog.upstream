@@ -1,3 +1,15 @@
+commit 9a61709b8cebb9023d6a005e8855ee8be482e7bd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 18 12:11:14 2024 -0400
+
+    apparmor
+
+commit d0d2e0890a16ef46258d8e14ebd272392cb62455
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 11 12:57:24 2024 +0000
+
+    bumped changelog version
+
 commit 9f83b6578bd69ed12975c97c7c2f6fef896e95e3
 Merge: 00fa198 cbbed03
 Author: Patrick Schleizer <adrelanos@whonix.org>
