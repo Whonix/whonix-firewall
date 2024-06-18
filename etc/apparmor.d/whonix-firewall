@@ -1,4 +1,4 @@
-# Last Modified: Sun Jun  2 12:23:29 2024
+# Last Modified: Tue Jun 18 16:10:36 2024
 include <tunables/global>
 
 ## Copyright (C) 2012 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
@@ -20,6 +20,7 @@ include <tunables/global>
   include <abstractions/whonix-firewall>
   include <local/whonix-firewall>
 
+  /usr/bin/seq mrix,
   /usr/sbin/nft mrix,
   owner /etc/iproute2/group r,
   owner /etc/iproute2/rt_realms r,
