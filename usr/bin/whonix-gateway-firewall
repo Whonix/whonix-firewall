@@ -116,6 +116,26 @@ variables_defaults() {
     fi
   fi
 
+  if [ -z "${NON_TOR_GATEWAY_IP6:-}" ]; then
+    if test -f /usr/share/qubes/marker-vm; then
+      NON_TOR_GATEWAY_IP6=""
+    else
+      ## 10.0.2.2/24: VirtualBox DHCP
+      ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
+      ## drop-in configuration snippet in /etc/whonix_firewall.d
+      ## configuration folder instead.
+      NON_TOR_GATEWAY_IP6="\
+            ::1/128 \
+            fd19:c33d:88bc::0/96 \
+            ::ffff:127.0.0.0/120 \
+            ::ffff:192.168.0.0/120 \
+            ::ffff:192.168.1.0/120 \
+            ::ffff:10.152.152.0/120 \
+            ::ffff:10.0.2.2/120 \
+         "
+    fi
+  fi
+
   ## Destinations you do not routed through VPN, only for Whonix-Gateway.
   if [ -z "${LOCAL_NET:-}" ]; then
     if test -f /usr/share/qubes/marker-vm; then
@@ -139,6 +159,33 @@ variables_defaults() {
     fi
   fi
 
+
+  ## Destinations you do not routed through VPN, only for Whonix-Gateway.
+  if [ -z "${LOCAL_NET_IP6:-}" ]; then
+    if test -f /usr/share/qubes/marker-vm; then
+      LOCAL_NET_IP6="\
+            ::1/128 \
+            ::ffff:127.0.0.0/120 \
+            ::ffff:10.137.0.0/112 \
+            ::ffff:10.138.0.0/112 \
+         "
+    else
+      ## 10.0.2.2/24: VirtualBox DHCP
+      ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
+      ## drop-in configuration snippet in /etc/whonix_firewall.d
+      ## configuration folder instead.
+      LOCAL_NET_IP6="\
+            ::1/128 \
+            fd19:c33d:88bc::0/96 \
+            ::ffff:127.0.0.0/120 \
+            ::ffff:192.168.0.0/120 \
+            ::ffff:192.168.1.0/120 \
+            ::ffff:10.152.152.0/120 \
+            ::ffff:10.0.2.2/120 \
+         "
+    fi
+  fi
+
   if [ -z "${WORKSTATION_DEST_SOCKSIFIED:-}" ]; then
     ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
     ##
@@ -153,6 +200,24 @@ variables_defaults() {
         10.138.0.0/16 \
         10.152.152.10 \
       "
+    else
+      ## Non-Qubes-Whonix:
+      ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
+      ## drop-in configuration snippet in /etc/whonix_firewall.d
+      ## configuration folder instead.
+      WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
+    fi
+  fi
+
+  if [ -z "${WORKSTATION_DEST_SOCKSIFIED_IPV6:-}" ]; then
+    ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
+    ##
+    ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
+    ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
+    if test -f /usr/share/qubes/marker-vm; then
+      ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
+      ## Qubes-Whonix:
+      ## IP HARDCODED. IP 10.152.152.10 is hardcoded in some places.
       WORKSTATION_DEST_SOCKSIFIED_IPV6="\
         ::ffff:10.137.0.0/112 \
         ::ffff:10.139.0.0/112 \
@@ -163,8 +228,7 @@ variables_defaults() {
       ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
       ## drop-in configuration snippet in /etc/whonix_firewall.d
       ## configuration folder instead.
-      WORKSTATION_DEST_SOCKSIFIED="10.152.152.10"
-      WORKSTATION_DEST_SOCKSIFIED_IPV6="::ffff:10.152.152.10"
+      WORKSTATION_DEST_SOCKSIFIED_IPV6="fd19:c33d:88bc::10"
     fi
   fi
 }
@@ -242,8 +306,9 @@ nft_output() {
       local non_tor_gateway_item
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         $nftables_cmd add rule inet nat output ip daddr "$non_tor_gateway_item" counter return
-        $nftables_cmd add rule inet nat output ip6 daddr "::ffff:$non_tor_gateway_item" counter return
-        ## TODO: IPv6 test
+      done
+      for non_tor_gateway_item in $NON_TOR_GATEWAY_IP6; do
+        $nftables_cmd add rule inet nat output ip6 daddr "$non_tor_gateway_item" counter return
       done
     fi
 
@@ -257,6 +322,9 @@ nft_output() {
   ## Existing connections are accepted.
   $nftables_cmd add rule inet filter output ct state established counter accept
 
+  # Accept ICMPv6 neighbor discovery.
+  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-neighbor-solicit, nd-neighbor-advert }" counter accept
+
   if [ "$firewall_mode" = "full" ]; then
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
     ## unless VPN_FIREWALL mode is enabled.
@@ -265,8 +333,9 @@ nft_output() {
       local non_tor_gateway_item
       for non_tor_gateway_item in $NON_TOR_GATEWAY; do
         $nftables_cmd add rule inet filter output ip daddr "$non_tor_gateway_item" counter accept
-        $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$non_tor_gateway_item" counter accept
-        ## TODO: IPv6 test
+      done
+      for non_tor_gateway_item in $NON_TOR_GATEWAY_IP6; do
+        $nftables_cmd add rule inet filter output ip6 daddr "$non_tor_gateway_item" counter accept
       done
     fi
   fi
@@ -279,8 +348,9 @@ nft_output() {
       local local_net_item
       for local_net_item in $LOCAL_NET; do
         $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
-        $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$local_net_item" counter accept
-        ## TODO: IPv6 test
+      done
+      for local_net_item in $LOCAL_NET_IP6; do
+        $nftables_cmd add rule inet filter output ip6 daddr "$local_net_item" counter accept
       done
     fi
   fi
@@ -369,7 +439,9 @@ INTERNAL_OPEN_PORTS
 INT_IF
 INT_TIF
 LOCAL_NET
+LOCAL_NET_IP6
 NON_TOR_GATEWAY
+NON_TOR_GATEWAY_IP6
 NO_NAT_USERS
 NO_REJECT_INVALID_OUTGOING_PACKAGES
 OR_PORT
