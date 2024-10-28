@@ -165,6 +165,8 @@ variables_defaults() {
     if test -f /usr/share/qubes/marker-vm; then
       LOCAL_NET_IP6="\
             ::1/128 \
+            fd09:24ef:4179::a8a:/112 \
+            fd09:24ef:4179::a89:/112 \
             ::ffff:127.0.0.0/120 \
             ::ffff:10.137.0.0/112 \
             ::ffff:10.138.0.0/112 \
@@ -212,13 +214,15 @@ variables_defaults() {
   if [ -z "${WORKSTATION_DEST_SOCKSIFIED_IPV6:-}" ]; then
     ## 10.152.152.10 - Non-Qubes-Whonix-Gateway IP
     ##
-    ## 10.137.0.0/8  - persistent Qubes-Whonix-Gateway IP range
-    ## 10.138.0.0/8  - DispVM Qubes-Whonix-Gateway IP range
+    ## fd09:24ef:4179::a89/112  - persistent Qubes-Whonix-Gateway IP range
+    ## fd09:24ef:4179::a8a/112  - DispVM Qubes-Whonix-Gateway IP range
     if test -f /usr/share/qubes/marker-vm; then
       ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
       ## Qubes-Whonix:
       ## IP HARDCODED. IP 10.152.152.10 is hardcoded in some places.
       WORKSTATION_DEST_SOCKSIFIED_IPV6="\
+        fd09:24ef:4179::a8a:/112 \
+        fd09:24ef:4179::a89:/112 \
         ::ffff:10.137.0.0/112 \
         ::ffff:10.139.0.0/112 \
         ::ffff:10.152.152.10 \

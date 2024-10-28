@@ -39,7 +39,7 @@ variables_defaults() {
     ## Would fail if netvm is set to 'none',
     ## which is the case in Qubes R4 TemplateVMs.
     [ -n "${GATEWAY_IP:-}" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2> /dev/null)" || GATEWAY_IP="127.0.0.1"
-    [ -n "${GATEWAY_IP6:-}" ] || GATEWAY_IP6="::ffff:$(qubesdb-read /qubes-gateway 2> /dev/null)" || GATEWAY_IP6="::1"
+    [ -n "${GATEWAY_IP6:-}" ] || GATEWAY_IP6="::ffff:$(qubesdb-read /qubes-gateway6 2> /dev/null)" || GATEWAY_IP6="::1"
   else
     ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
     ## drop-in configuration snippet in /etc/whonix_firewall.d
@@ -87,6 +87,8 @@ variables_defaults() {
     if test -f /usr/share/qubes/marker-vm; then
       LOCAL_NET_IP6="\
             ::1/128 \
+            fd09:24ef:4179::a8a:/112 \
+            fd09:24ef:4179::a89:/112 \
             ::ffff:127.0.0.0/120 \
             ::ffff:10.137.0.0/112 \
             ::ffff:10.138.0.0/112 \
