@@ -98,6 +98,7 @@ variables_defaults() {
       ## IP HARDCODED unfortunately. Use a /etc/whonix_firewall.d configuration folder drop-in if you want to change it.
       LOCAL_NET_IP6="\
             ::1/128 \
+            fd19:c33d:88bc::0/96 \
             ::ffff:127.0.0.0/104 \
             ::ffff:192.168.0.0/120 \
             ::ffff:192.168.1.0/120 \
