@@ -107,7 +107,7 @@ variables_defaults() {
       ## drop-in configuration snippet in /etc/whonix_firewall.d
       ## configuration folder instead.
       NON_TOR_GATEWAY="\
-            127.0.0.0/24 \
+            127.0.0.0/8 \
             192.168.0.0/24 \
             192.168.1.0/24 \
             10.152.152.0/24 \
@@ -127,7 +127,7 @@ variables_defaults() {
       NON_TOR_GATEWAY_IP6="\
             ::1/128 \
             fd19:c33d:88bc::0/96 \
-            ::ffff:127.0.0.0/120 \
+            ::ffff:127.0.0.0/104 \
             ::ffff:192.168.0.0/120 \
             ::ffff:192.168.1.0/120 \
             ::ffff:10.152.152.0/120 \
@@ -140,7 +140,7 @@ variables_defaults() {
   if [ -z "${LOCAL_NET:-}" ]; then
     if test -f /usr/share/qubes/marker-vm; then
       LOCAL_NET="\
-            127.0.0.0/24 \
+            127.0.0.0/8 \
             10.137.0.0/16 \
             10.138.0.0/16 \
          "
@@ -150,7 +150,7 @@ variables_defaults() {
       ## drop-in configuration snippet in /etc/whonix_firewall.d
       ## configuration folder instead.
       LOCAL_NET="\
-            127.0.0.0/24 \
+            127.0.0.0/8 \
             192.168.0.0/24 \
             192.168.1.0/24 \
             10.152.152.0/24 \
@@ -167,7 +167,7 @@ variables_defaults() {
             ::1/128 \
             fd09:24ef:4179::a8a:/112 \
             fd09:24ef:4179::a89:/112 \
-            ::ffff:127.0.0.0/120 \
+            ::ffff:127.0.0.0/104 \
             ::ffff:10.137.0.0/112 \
             ::ffff:10.138.0.0/112 \
          "
@@ -179,7 +179,7 @@ variables_defaults() {
       LOCAL_NET_IP6="\
             ::1/128 \
             fd19:c33d:88bc::0/96 \
-            ::ffff:127.0.0.0/120 \
+            ::ffff:127.0.0.0/104 \
             ::ffff:192.168.0.0/120 \
             ::ffff:192.168.1.0/120 \
             ::ffff:10.152.152.0/120 \
