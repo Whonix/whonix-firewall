@@ -1,6 +1,6 @@
 # Firewall for Whonix-Gateway and Whonix-Workstation #
 
-iptables rules script and firewall configuration file for Whonix-Gateway and
+nftables rules script and firewall configuration file for Whonix-Gateway and
 Whonix-Workstation.
 
 Whonix-Gateway Firewall Features:
