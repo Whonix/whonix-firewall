@@ -14,6 +14,7 @@ variables_defaults(){
 
   ## 10.0.2.2/24: VirtualBox DHCP
   [ -n "${NON_TOR_GATEWAY:-}" ] || NON_TOR_GATEWAY="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+  [ -n "${NON_TOR_GATEWAY_IP6:-}" ] || NON_TOR_GATEWAY_IP6="::1/128 fd19:c33d:88bc::0/96 ::ffff:192.168.1.0/120 ::ffff:192.168.0.0/120 ::ffff:127.0.0.0/104 ::ffff:10.152.152.0/120 ::ffff:10.0.2.2/120"
 
   ## Space separated list of VPN servers, which Whonix-Gateway is allowed to connect to.
   [ -n "${VPN_SERVERS:-}" ] || VPN_SERVERS="198.252.153.26"
@@ -21,6 +22,7 @@ variables_defaults(){
   ## Destinations you do not routed through VPN, only for Whonix-Gateway.
   ## 10.0.2.2/24: VirtualBox DHCP
   [ -n "${LOCAL_NET:-}" ] || LOCAL_NET="192.168.1.0/24 192.168.0.0/24 127.0.0.0/8 10.152.152.0/24 10.0.2.2/24"
+  [ -n "${LOCAL_NET_IP6:-}" ] || LOCAL_NET_IP6="::1/128 fd19:c33d:88bc::0/96 ::ffff:192.168.1.0/120 ::ffff:192.168.0.0/120 ::ffff:127.0.0.0/104 ::ffff:10.152.152.0/120 ::ffff:10.0.2.2/120"
 
   [ -n "${GATEWAY_ALLOW_INCOMING_RELATED_STATE:-}" ] || GATEWAY_ALLOW_INCOMING_RELATED_STATE=""
   [ -n "${GATEWAY_ALLOW_INCOMING_ICMP:-}" ] || GATEWAY_ALLOW_INCOMING_ICMP=0
@@ -90,7 +92,7 @@ nft_output(){
     ## when VPN_FIREWALL mode is enabled.
     ## DISABLED BY DEFAULT.
     for SERVER in $VPN_SERVERS; do
-      $nftables_cmd add rule inet filter output ip daddr "$SERVER" counter jump accept
+      $nftables_cmd add rule inet filter output inet daddr "$SERVER" counter jump accept
     done
   else
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
@@ -98,6 +100,9 @@ nft_output(){
     ## ENABLED BY DEFAULT.
     for NET in $NON_TOR_GATEWAY; do
       $nftables_cmd add rule inet filter output ip daddr "$NET" counter jump accept
+    done
+    for NET in $NON_TOR_GATEWAY_IP6; do
+      $nftables_cmd add rule inet filter output ip6 daddr "$NET" counter jump accept
     done
   fi
 
