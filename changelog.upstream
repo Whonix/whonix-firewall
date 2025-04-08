@@ -1,3 +1,33 @@
+commit cf1fc8dc2f6cc415858f6d878bcff56a0fb5646e
+Merge: ffce315 d7d4faf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 4 09:53:51 2025 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit d7d4faff6aa1dfe58b5b136aef6cd8439a0cd771
+Merge: ffce315 12d34f2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 4 09:52:41 2025 -0400
+
+    Merge pull request #11 from douglasrdv/patch-1
+    
+    Update 30_whonix_gateway_default.conf
+
+commit 12d34f285c947669c4e7085383e02c0f30ca0518
+Author: Douglas <142635021+douglasrdv@users.noreply.github.com>
+Date:   Thu Apr 3 14:14:10 2025 -0300
+
+    Update 30_whonix_gateway_default.conf
+    
+    Correct the word "DISABELD" to "DISABLED"
+
+commit ffce31581531530d935ac7f29ecd20f1237a4ec3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 22 12:49:19 2025 +0000
+
+    bumped changelog version
+
 commit 7643b69b87a11bcc0ca01f9b112e10b22ea2a0a8
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 22 08:46:15 2025 -0400
