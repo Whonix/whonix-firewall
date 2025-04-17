@@ -1,3 +1,19 @@
+commit a0bfbe539bb6b46190a8d6f8e16e87261369cb71
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 17 08:08:57 2025 -0400
+
+    deleted symlinks:
+    
+    * `man/whonix-gateway-firewall.8.ronn`
+    * `man/whonix-host-firewall.8.ronn`
+    * `man/whonix-workstation-firewall.8.ronn`
+
+commit af13bb1600c0dae662e29fc9f88442daf44f0716
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 8 14:09:47 2025 +0000
+
+    bumped changelog version
+
 commit cf1fc8dc2f6cc415858f6d878bcff56a0fb5646e
 Merge: ffce315 d7d4faf
 Author: Patrick Schleizer <adrelanos@whonix.org>
