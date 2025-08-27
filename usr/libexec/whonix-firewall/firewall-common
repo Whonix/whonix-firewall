@@ -353,13 +353,15 @@ nft_input_rules_gateway() {
     $nftables_cmd add rule inet filter input icmp type destination-unreachable icmp code frag-needed ct state related counter accept
   fi
 
+  # Accept ICMPv6 neighbor discovery.
+  $nftables_cmd add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+
   ## Drop all incoming ICMP traffic by default.
   ## All incoming connections are dropped by default anyway, but should a user
   ## allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should
   ## still be dropped to filter for example ICMP time stamp requests.
   if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
     $nftables_cmd add rule inet filter input ip protocol icmp counter drop
-    ## TODO: IPv6 test
     $nftables_cmd add rule inet filter input ip6 nexthdr icmpv6 counter drop
   fi
 
