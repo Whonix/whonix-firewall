@@ -1,3 +1,25 @@
+commit 06392272710e1d81fa96bc8ccdd4436628afb5af
+Merge: f298042 1c92145
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 06:45:36 2025 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 1c92145b6041cae6a0364c156442f50138e51d10
+Merge: f298042 b74c956
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 05:04:15 2025 -0400
+
+    Merge pull request #10 from DanWin/ip6
+    
+    Add IPv6 support
+
+commit f298042481b44d9d1a3723df980ab552c8860865
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 9 15:59:57 2025 +0000
+
+    bumped changelog version
+
 commit faf0e511e578b2f79c7e2321db260708f16e1a1a
 Merge: ac6c0eb a694cfe
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -122,6 +144,42 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Dec 31 13:26:26 2024 -0500
 
     copyright
+
+commit b74c956d994b3cced6497ab09a62e88692d36518
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Sun Dec 8 18:16:02 2024 +0100
+
+    Fix systemcheck_user rule
+
+commit 1183916aed8295d73143dbec1f5694ee0e82cff7
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Sun Dec 8 18:07:02 2024 +0100
+
+    Add missing network to LOCAL_NET_IP6
+
+commit 2d7f21f6a00246862f889e9fcd363a8214daf105
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Sun Dec 8 18:03:08 2024 +0100
+
+    Add Non-Qubes-Whonix-Gateway IP to qubes destinations
+
+commit aa02720167a9aac367313c6a475da5f5111255db
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Sun Dec 8 17:51:29 2024 +0100
+
+    Switch 127.0.0.0/24 to 127.0.0.0/8
+
+commit 4e202b11e84168d3415a4637768df6a692de6841
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Mon Oct 28 21:47:53 2024 +0100
+
+    Add qubes IPs
+
+commit e7de2a00f00a7e99a7fc9c089edc738434a5ed9d
+Author: Daniel Winzen <daniel@danwin1210.de>
+Date:   Fri Oct 11 18:56:02 2024 +0200
+
+    Add IPv6 support
 
 commit 1563e2eb5f7ce6739a55a62e9f36c5a0e05c1518
 Author: Patrick Schleizer <adrelanos@whonix.org>
