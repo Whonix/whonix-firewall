@@ -39,7 +39,7 @@ variables_defaults() {
     ## Would fail if netvm is set to 'none',
     ## which is the case in Qubes R4 TemplateVMs.
     [ -n "${GATEWAY_IP:-}" ] || GATEWAY_IP="$(qubesdb-read /qubes-gateway 2> /dev/null)" || GATEWAY_IP="127.0.0.1"
-    [ -n "${GATEWAY_IP6:-}" ] || GATEWAY_IP6="::ffff:$(qubesdb-read /qubes-gateway6 2> /dev/null)" || GATEWAY_IP6="::1"
+    [ -n "${GATEWAY_IP6:-}" ] || GATEWAY_IP6="$(qubesdb-read /qubes-gateway6 2> /dev/null)" || GATEWAY_IP6="::1"
   else
     ## IP HARDCODED. If you want to change IP, set variable GATEWAY_IP through a
     ## drop-in configuration snippet in /etc/whonix_firewall.d
@@ -337,10 +337,10 @@ nft_output() {
         if [ -n "$SYSTEMCHECK_USER" ]; then
           $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
           $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
-          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP" counter accept
-          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP6" counter accept
-          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP_HARDCODED" counter accept
-          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" inet daddr "$GATEWAY_IP6_HARDCODED" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr "$GATEWAY_IP6" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
         fi
       fi
     fi
