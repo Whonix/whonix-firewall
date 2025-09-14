@@ -214,8 +214,8 @@ variables_defaults() {
   if [ -z "${WORKSTATION_DEST_SOCKSIFIED_IPV6:-}" ]; then
     ## fd19:c33d:88bc::10 - Non-Qubes-Whonix-Gateway IP
     ##
-    ## fd09:24ef:4179::a89/112  - persistent Qubes-Whonix-Gateway IP range
-    ## fd09:24ef:4179::a8a/112  - DispVM Qubes-Whonix-Gateway IP range
+    ## fd09:24ef:4179::a89:/112  - persistent Qubes-Whonix-Gateway IP range
+    ## fd09:24ef:4179::a8a:/112  - DispVM Qubes-Whonix-Gateway IP range
     if test -f /usr/share/qubes/marker-vm; then
       ## https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
       ## Qubes-Whonix:
