@@ -328,7 +328,7 @@ nft_output() {
   $nftables_cmd add rule inet filter output ct state established counter accept
 
   # Accept ICMPv6 neighbor discovery.
-  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-neighbor-solicit, nd-neighbor-advert }" counter accept
+  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
   if [ "$firewall_mode" = "full" ]; then
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
