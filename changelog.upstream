@@ -1,3 +1,35 @@
+commit 92cc542b6e8e0cb44b72b4f6ee01147f384661cd
+Merge: f9015b9 3cbc053
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 15 05:13:28 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3cbc0536a7f56277cef4e7d1e20d2e3a07eb8a15
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Sep 14 18:30:47 2025 -0500
+
+    Fix IPv6 autoconfiguration
+
+commit f9015b99664d99220f761bb5d68798093a294973
+Merge: 235c37a db568ea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Sep 14 03:15:55 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit db568ea70cecf140486ab60b852a8b244c0f8af2
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Sep 13 23:34:21 2025 -0500
+
+    IPv6 fixes
+
+commit 235c37ad9b27fc5bb66a39526541ab91085e84ef
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 13 10:51:50 2025 +0000
+
+    bumped changelog version
+
 commit 06392272710e1d81fa96bc8ccdd4436628afb5af
 Merge: f298042 1c92145
 Author: Patrick Schleizer <adrelanos@whonix.org>
