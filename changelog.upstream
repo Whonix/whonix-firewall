@@ -1,3 +1,22 @@
+commit b9760efb7ee223bc3538123e84670a7ff5fb2a08
+Merge: e5ee9f3 1ac9f77
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 16 01:01:13 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 1ac9f77507f5bf38b27e273d80f74db3f3aad62f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Sep 15 22:14:23 2025 -0500
+
+    Fix Qubes IPv6 addresses
+
+commit e5ee9f3a037fdc2828f13a4cc125d8dbe7c08b71
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 15 11:51:58 2025 +0000
+
+    bumped changelog version
+
 commit 92cc542b6e8e0cb44b72b4f6ee01147f384661cd
 Merge: f9015b9 3cbc053
 Author: Patrick Schleizer <adrelanos@whonix.org>
