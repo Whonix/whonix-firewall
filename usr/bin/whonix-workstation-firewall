@@ -87,8 +87,8 @@ variables_defaults() {
     if test -f /usr/share/qubes/marker-vm; then
       LOCAL_NET_IP6="\
             ::1/128 \
-            fd09:24ef:4179::a8a:/112 \
-            fd09:24ef:4179::a89:/112 \
+            fd09:24ef:4179::a8a:0/112 \
+            fd09:24ef:4179::a89:0/112 \
             ::ffff:127.0.0.0/104 \
             ::ffff:10.137.0.0/112 \
             ::ffff:10.138.0.0/112 \
