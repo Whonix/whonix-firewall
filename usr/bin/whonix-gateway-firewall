@@ -65,7 +65,7 @@ variables_defaults() {
   NO_NAT_USERS+=" $CLEARNET_USER"
   NO_NAT_USERS+=" $TUNNEL_USER"
 
-  ## No NAT for user user.
+  ## No NAT for account "user".
   ## DISABLED BY DEFAULT. For testing/debugging only.
   if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
     if [ -z "$USER_USER" ]; then
@@ -75,7 +75,7 @@ variables_defaults() {
     fi
   fi
 
-  ## No NAT for root user.
+  ## No NAT for account "root".
   ## DISABLED BY DEFAULT. For testing/debugging only.
   if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
     NO_NAT_USERS+=" $ROOT_USER"
