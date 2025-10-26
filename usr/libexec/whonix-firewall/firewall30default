@@ -12,6 +12,9 @@
 
 set -x
 
+source /usr/libexec/helper-scripts/use_sudo.sh
+sudo_error_exit_if_unavailable
+
 ## https://bugzilla.xfce.org/show_bug.cgi?id=15282
 ## https://github.com/lxqt/lxqt-sudo/issues/114
 ## https://forums.whonix.org/t/use-sudoedit-in-whonix-documentation-and-whonix-software/7599/30

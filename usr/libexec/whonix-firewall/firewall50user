@@ -10,6 +10,9 @@
 ## wrapper to open /etc/whonix_firewall.d/50_user.conf with sudoedit
 #### meta end
 
+source /usr/libexec/helper-scripts/use_sudo.sh
+sudo_error_exit_if_unavailable
+
 set -x
 
 ## https://bugzilla.xfce.org/show_bug.cgi?id=15282
