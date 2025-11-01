@@ -15,7 +15,7 @@ Rules-Requires-Root: no
 Package: whonix-firewall
 Architecture: all
 Replaces: whonix-gw-firewall, whonix-ws-firewall
-Depends: systemd, nftables, sudo, helper-scripts, adduser,
+Depends: systemd, nftables, helper-scripts, adduser,
  ${misc:Depends}
 Conflicts: ufw
 Description: Firewall for Whonix-Gateway and Whonix-Workstation
