@@ -1,4 +1,4 @@
-# Last Modified: Tue Jun 18 16:10:36 2024
+# Last Modified: Sun Nov  9 06:31:40 2025
 include <tunables/global>
 
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
@@ -26,6 +26,7 @@ include <tunables/global>
   owner /etc/iproute2/rt_realms r,
   owner /etc/ld.so.cache r,
   owner /etc/ld.so.preload r,
+  owner /usr/share/iproute2/rt_realms r,
   owner /var/lib/whonix-firewall/ w,
   owner /var/lib/whonix-firewall/firewall.nft r,
   owner /var/lib/whonix-firewall/firewall.nft w,
