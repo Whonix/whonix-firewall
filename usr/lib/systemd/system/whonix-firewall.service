@@ -30,9 +30,9 @@ Wants=network-pre.target
 
 ## Preventing race condition with
 ## /etc/xdg/autostart/qubes-whonixsetup.desktop.
-## TODO:
+## TODO: performance
 ## Not the most efficient / clean solution.
-## https://phabricator.whonix.org/T424
+## https://forums.whonix.org/t/fix-etc-xdg-autostart-vs-systemd-race-condition/18979
 Before=qubes-gui-agent.service
 
 ## For /etc/whonix_firewall.d and Qubes /rw/whonix_firewall.d.

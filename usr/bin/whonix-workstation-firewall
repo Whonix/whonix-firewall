@@ -216,7 +216,7 @@ nft_input_defaults() {
   #$nftables_cmd add rule inet filter input counter log prefix \"Whonix_blocked_input4:\"
 
   ## Required for Control Port Filter Proxy Connection.
-  ## https://phabricator.whonix.org/T112
+  ## https://forums.whonix.org/t/fix-whonix-ws-firewall/19285
   $nftables_cmd add rule inet filter input ip protocol tcp counter reject with tcp reset
 
   ## Reject anything not explicitly allowed above.
@@ -232,7 +232,7 @@ nft_forward() {
 
 nft_output() {
   ## Prevent connections to Tor SocksPorts.
-  ## https://phabricator.whonix.org/T533#11025
+  ## https://forums.whonix.org/t/iptables-block-network-access-until-sdwdate-succeeded/18872
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
     local socks_port_item
     output_cmd "INFO: not opening Internal TCP ports $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode=$firewall_mode"

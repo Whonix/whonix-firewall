@@ -96,7 +96,7 @@ common_variables_defaults_post(){
   ## For Gateway testing purposes only.
   ## To test if prerouting redirection rules for socksified interfere with
   ## transparent torification.
-  ## https://phabricator.whonix.org/T462
+  ## https://forums.whonix.org/t/gateway-prerouting-rules-for-socks-ports-may-interfere-with-trans-port-traffic/18941
   ## SOCKS_PORT_HTTP
   #INTERNAL_OPEN_PORTS+=" 80 "
   ## SOCKS_PORT_SSL

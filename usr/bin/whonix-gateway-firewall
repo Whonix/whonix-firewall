@@ -361,7 +361,7 @@ nft_output() {
   fi
 
   ## Prevent connections to Tor SocksPorts.
-  ## https://phabricator.whonix.org/T533#11025
+  ## https://forums.whonix.org/t/iptables-block-network-access-until-sdwdate-succeeded/18872
   if [ "$firewall_mode" = "timesync-fail-closed" ]; then
     output_cmd "INFO: not opening Internal TCP port(s): $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode=${firewall_mode}"
     local socks_port_item
