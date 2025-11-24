@@ -404,7 +404,7 @@ nft_output() {
       $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
     fi
 
-    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept#
+    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     ## TODO: IPV6 test
     $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
   fi
