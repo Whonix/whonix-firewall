@@ -245,9 +245,13 @@ nft_defaults() {
   $nftables_cmd add table inet filter
   $nftables_cmd add table ip6 nat
 
-  $nftables_cmd flush table inet nat
-  $nftables_cmd flush table inet filter
-  $nftables_cmd flush table ip6 nat
+  $nftables_cmd delete table inet nat
+  $nftables_cmd delete table inet filter
+  $nftables_cmd delete table ip6 nat
+
+  $nftables_cmd add table inet nat
+  $nftables_cmd add table inet filter
+  $nftables_cmd add table ip6 nat
 
   ## Set secure defaults.
   $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
