@@ -116,8 +116,11 @@ nft_defaults() {
   $nftables_cmd add table inet filter
   $nftables_cmd add table inet nat
 
-  $nftables_cmd flush table inet filter
-  $nftables_cmd flush table inet nat
+  $nftables_cmd delete table inet filter 2>/dev/null || true
+  $nftables_cmd delete table inet nat 2>/dev/null || true
+
+  $nftables_cmd add table inet filter
+  $nftables_cmd add table inet nat
 
   $nftables_cmd add chain inet nat output
   $nftables_cmd add chain inet nat prerouting

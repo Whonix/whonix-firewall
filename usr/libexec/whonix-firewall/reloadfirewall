@@ -15,9 +15,15 @@ set -x
 cat /etc/motd
 
 sudo /usr/bin/whonix_firewall
-
-true "$?"
+firewall_status="$?"
+if (( firewall_status == 0 )); then
+  printf '%s\n' "OK: Whonix firewall reload completed successfully."
+else
+  printf '%s\n' "ERROR: Whonix firewall reload failed with exit code '$firewall_status'!" >&2
+fi
 
 true "Feel free to close this window."
 
 sleep 86400
+
+exit "$firewall_status"

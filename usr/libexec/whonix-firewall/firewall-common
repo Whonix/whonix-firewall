@@ -13,6 +13,7 @@ common_variables_defaults_pre(){
   firewall_dir="/var/lib/whonix-firewall"
   firewall_script="${firewall_dir}/firewall.nft"
   [ -n "${nftables_cmd:-}" ] || nftables_cmd="write_nft_script"
+  [ -n "${INTERNAL_OPEN_PORTS:-}" ] || INTERNAL_OPEN_PORTS=""
   source_only=""
   dry_run=""
   info_enabled=""

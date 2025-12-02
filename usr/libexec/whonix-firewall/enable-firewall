@@ -45,12 +45,16 @@ failed_status_file_create() {
 }
 
 firewall_lockdown() {
+  ## Flush old rules.
+
   $nftables_cmd add table inet nat
   $nftables_cmd add table inet filter
 
-  ## Flush old rules.
-  $nftables_cmd flush table inet nat
-  $nftables_cmd flush table inet filter
+  $nftables_cmd delete table inet nat 2>/dev/null || true
+  $nftables_cmd delete table inet filter 2>/dev/null || true
+
+  $nftables_cmd add table inet nat
+  $nftables_cmd add table inet filter
 
   ## Set secure defaults.
   $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"

@@ -75,6 +75,8 @@ nft_forward(){
 }
 
 nft_output(){
+  local addr_family
+
   ## NO OUTPUT FILTERING YET!
 
   ## Allow outgoing traffic on VPN interface,
@@ -92,17 +94,23 @@ nft_output(){
     ## when VPN_FIREWALL mode is enabled.
     ## DISABLED BY DEFAULT.
     for SERVER in $VPN_SERVERS; do
-      $nftables_cmd add rule inet filter output inet daddr "$SERVER" counter jump accept
+      if [[ "$SERVER" = *:* ]]; then
+        addr_family="ip6"
+      else
+        addr_family="ip"
+      fi
+
+      $nftables_cmd add rule inet filter output "$addr_family" daddr "$SERVER" counter accept
     done
   else
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
     ## unless VPN_FIREWALL mode is enabled.
     ## ENABLED BY DEFAULT.
     for NET in $NON_TOR_GATEWAY; do
-      $nftables_cmd add rule inet filter output ip daddr "$NET" counter jump accept
+      $nftables_cmd add rule inet filter output ip daddr "$NET" counter accept
     done
     for NET in $NON_TOR_GATEWAY_IP6; do
-      $nftables_cmd add rule inet filter output ip6 daddr "$NET" counter jump accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$NET" counter accept
     done
   fi
 
