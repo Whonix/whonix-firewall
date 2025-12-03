@@ -1,3 +1,22 @@
+commit 4e09b1e4191b53cc6d7543ad9d531add894185c2
+Merge: 0e4e2ea e1cb601
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 2 07:10:55 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit e1cb6017002bc1c7b7a6c48dc67e801e9a37e746
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Nov 24 20:27:43 2025 -0600
+
+    Integrate suggested fixes and enhancements from ChatGPT Codex
+
+commit 0e4e2ea3924a815cf082822e5b74f10549f98734
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 12:00:51 2025 +0000
+
+    bumped changelog version
+
 commit 9ffc092c351b98662c4c02fb78144f54499e951a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 24 06:20:08 2025 -0500
