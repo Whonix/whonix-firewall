@@ -10,6 +10,10 @@
 ## restart firewall when sdwdate succeeded
 #### meta end
 
+## NOTE: No cleanup exit trap needed.
+##       - No need to clean up inotifywait_subshell_fifo thanks to systemd 'PrivateTmp=true'.
+##         No need to kill subshell thanks to systemd 'KillMode=control-group'.
+
 #set -x
 set -e
 
