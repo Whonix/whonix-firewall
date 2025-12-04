@@ -1,3 +1,28 @@
+commit 7e2fcf22c9cd26792b42842524649559be593e2e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 02:53:54 2025 -0500
+
+    comments
+
+commit 2abbd78810c2a4c4503c901ed8598b42475b2985
+Merge: 8190f71 6881bda
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 4 02:51:12 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 6881bdabf340394ea937fb3e5ef0ddd574900d61
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Dec 3 20:58:49 2025 -0600
+
+    Revert overcomplicated firewall-restarter code, rely on systemd to clean up during a restart
+
+commit 8190f71942cd7a315b0aee1477eb201d10a86b88
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 3 08:37:24 2025 +0000
+
+    bumped changelog version
+
 commit 4e09b1e4191b53cc6d7543ad9d531add894185c2
 Merge: 0e4e2ea e1cb601
 Author: Patrick Schleizer <adrelanos@whonix.org>
