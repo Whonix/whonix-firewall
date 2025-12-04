@@ -26,6 +26,7 @@ Type=simple
 
 SuccessExitStatus=143
 KillMode=control-group
+PrivateTmp=true
 
 ExecStart=/usr/libexec/whonix-firewall/firewall-restarter
 
