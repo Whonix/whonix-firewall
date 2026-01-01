@@ -243,15 +243,15 @@ nft_defaults() {
 
   $nftables_cmd add table inet nat
   $nftables_cmd add table inet filter
-  $nftables_cmd add table ip6 nat
+  $nftables_cmd_ipv6 add table ip6 nat
 
   $nftables_cmd delete table inet nat
   $nftables_cmd delete table inet filter
-  $nftables_cmd delete table ip6 nat
+  $nftables_cmd_ipv6 delete table ip6 nat
 
   $nftables_cmd add table inet nat
   $nftables_cmd add table inet filter
-  $nftables_cmd add table ip6 nat
+  $nftables_cmd_ipv6 add table ip6 nat
 
   ## Set secure defaults.
   $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
@@ -265,7 +265,7 @@ nft_defaults() {
   $nftables_cmd "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
   $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
 
-  $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"
+  $nftables_cmd_ipv6 "add chain ip6 nat output { type nat hook output priority -100; }"
 }
 
 qubes() {
@@ -317,7 +317,7 @@ nft_output() {
         $nftables_cmd add rule inet nat output ip daddr "$non_tor_gateway_item" counter return
       done
       for non_tor_gateway_item in $NON_TOR_GATEWAY_IP6; do
-        $nftables_cmd add rule inet nat output ip6 daddr "$non_tor_gateway_item" counter return
+        $nftables_cmd_ipv6 add rule inet nat output ip6 daddr "$non_tor_gateway_item" counter return
       done
     fi
 
@@ -332,7 +332,7 @@ nft_output() {
   $nftables_cmd add rule inet filter output ct state established counter accept
 
   # Accept ICMPv6 neighbor discovery.
-  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+  $nftables_cmd_ipv6 add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
   if [ "$firewall_mode" = "full" ]; then
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
@@ -344,7 +344,7 @@ nft_output() {
         $nftables_cmd add rule inet filter output ip daddr "$non_tor_gateway_item" counter accept
       done
       for non_tor_gateway_item in $NON_TOR_GATEWAY_IP6; do
-        $nftables_cmd add rule inet filter output ip6 daddr "$non_tor_gateway_item" counter accept
+        $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$non_tor_gateway_item" counter accept
       done
     fi
   fi
@@ -359,7 +359,7 @@ nft_output() {
         $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
       done
       for local_net_item in $LOCAL_NET_IP6; do
-        $nftables_cmd add rule inet filter output ip6 daddr "$local_net_item" counter accept
+        $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$local_net_item" counter accept
       done
     fi
   fi
@@ -379,8 +379,7 @@ nft_output() {
         continue
       fi
       $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
-      ## TODO: IPv6 test
-      $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$socks_port_item" counter reject
+      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr ::1 tcp dport "$socks_port_item" counter reject
     done
   fi
 
@@ -398,19 +397,16 @@ nft_output() {
     ## Otherwise in Whonix firewall full mode this rule is redundant.
     if [ -n "$SDWDATE_USER" ]; then
       $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
-      ## TODO: IPV6 test
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+      $nftables_cmd_ipv6 add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
     fi
 
     if [ -n "$SYSTEMCHECK_USER" ]; then
       $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
-      ## TODO: IPV6 test
-      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
+      $nftables_cmd_ipv6 add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
     fi
 
     $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-    ## TODO: IPV6 test
-    $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+    $nftables_cmd_ipv6 add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
   fi
 
   ## Log.

@@ -32,7 +32,13 @@
 #### meta end
 
 [ -n "$nftables_cmd" ] || nftables_cmd="nft"
-
+if [ -z "${nftables_cmd_ipv6:-}" ]; then
+  if [ -f '/run/helper-scripts/ipv6-is-enabled' ]; then
+    nftables_cmd_ipv6="nft"
+  else
+    nftables_cmd_ipv6="true"
+  fi
+fi
 failed_status_file_create() {
   mkdir -p /run/anon-firewall || true
   touch /run/anon-firewall/failed.status || true
