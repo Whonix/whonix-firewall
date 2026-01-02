@@ -37,11 +37,11 @@ nft_defaults(){
   ## Flush old rules.
   $nftables_cmd add table inet nat
   $nftables_cmd add table inet filter
-  $nftables_cmd_ipv6 add table ip6 nat
+  $nftables_cmd add table ip6 nat
 
   $nftables_cmd flush table inet nat
   $nftables_cmd flush table inet filter
-  $nftables_cmd_ipv6 flush table ip6 nat
+  $nftables_cmd flush table ip6 nat
 
   ## Set secure defaults.
   $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
@@ -55,7 +55,7 @@ nft_defaults(){
   $nftables_cmd "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
   $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
 
-  $nftables_cmd_ipv6 "add chain ip6 nat output { type nat hook output priority -100; }"
+  $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"
 }
 
 qubes() {
@@ -95,10 +95,12 @@ nft_output(){
     ## DISABLED BY DEFAULT.
     for SERVER in $VPN_SERVERS; do
       if [[ "$SERVER" = *:* ]]; then
-        $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$SERVER" counter accept
+        addr_family="ip6"
       else
-        $nftables_cmd add rule inet filter output ip daddr "$SERVER" counter accept
+        addr_family="ip"
       fi
+
+      $nftables_cmd add rule inet filter output "$addr_family" daddr "$SERVER" counter accept
     done
   else
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
@@ -108,7 +110,7 @@ nft_output(){
       $nftables_cmd add rule inet filter output ip daddr "$NET" counter accept
     done
     for NET in $NON_TOR_GATEWAY_IP6; do
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$NET" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$NET" counter accept
     done
   fi
 

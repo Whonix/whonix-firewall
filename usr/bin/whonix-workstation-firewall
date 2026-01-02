@@ -150,13 +150,15 @@ qubes_dns() {
 
   if qubes_primary_dns="$(qubesdb-read /qubes-primary-dns 2> /dev/null)"; then
     $nftables_cmd add rule inet filter output ip daddr "$qubes_primary_dns" udp dport 53 counter accept
-    $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "::ffff:$qubes_primary_dns" udp dport 53 counter accept
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$qubes_primary_dns" udp dport 53 counter accept
     counter=$((counter + 1))
   fi
 
   if qubes_secondary_dns="$(qubesdb-read /qubes-secondary-dns 2> /dev/null)"; then
     $nftables_cmd add rule inet filter output ip daddr "$qubes_secondary_dns" udp dport 53 counter accept
-    $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "::ffff:$qubes_secondary_dns" udp dport 53 counter accept
+    ## TODO: IPv6 test
+    $nftables_cmd add rule inet filter output ip6 daddr "::ffff:$qubes_secondary_dns" udp dport 53 counter accept
     counter=$((counter + 1))
   fi
 
@@ -174,8 +176,8 @@ nft_input_rules() {
   ## Established incoming connections are accepted.
   $nftables_cmd add rule inet filter input ct state established counter accept
 
-  # Accept ICMPv6 neighbor discovery if IPv6 is enabled.
-  $nftables_cmd_ipv6 add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+  # Accept ICMPv6 neighbor discovery.
+  $nftables_cmd add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
   ## Allow all incoming connections on the virtual VPN network interface,
   ## when TUNNEL_FIREWALL_ENABLE mode is enabled.
@@ -247,7 +249,8 @@ nft_output() {
         continue
       fi
       $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr ::1 tcp dport "$socks_port_item" counter reject
+      ## TODO: IPv6 test
+      $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$socks_port_item" counter reject
     done
   fi
 
@@ -275,22 +278,22 @@ nft_output() {
     if [ "$TUNNEL_FIREWALL_ALLOW_SDWDATE_USER" = "true" ]; then
       if [ -n "$SDWDATE_USER" ]; then
         $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
         $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP" counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "$GATEWAY_IP6" counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "$GATEWAY_IP6" counter accept
         $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
+        $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
       fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_NOTUNNEL_USER" = "true" ]; then
       if [ -n "$NOTUNNEL_USER" ]; then
         $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr 127.0.0.1 counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr ::1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr ::1 counter accept
         $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP" counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "$GATEWAY_IP6" counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "$GATEWAY_IP6" counter accept
         $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
+        $nftables_cmd add rule inet filter output skuid "$NOTUNNEL_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
       fi
     fi
 
@@ -304,18 +307,18 @@ nft_output() {
           $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
         done
         for local_net_item in $LOCAL_NET_IP6; do
-          $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$local_net_item" counter accept
+          $nftables_cmd add rule inet filter output ip6 daddr "$local_net_item" counter accept
         done
       fi
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_CONTROL_PORT_FILTER_PROXY" = "true" ]; then
       $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_TB_UPDATER" = "true" ]; then
@@ -324,9 +327,9 @@ nft_output() {
       else
         ## SOCKS_PORT_TBB_DOWNLOAD
         $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" tcp dport 9115 counter accept
-        $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6" tcp dport 9115 counter accept
+        $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6" tcp dport 9115 counter accept
         $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport 9115 counter accept
-        $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport 9115 counter accept
+        $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport 9115 counter accept
       fi
     fi
 
@@ -336,11 +339,11 @@ nft_output() {
       else
         if [ -n "$SYSTEMCHECK_USER" ]; then
           $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
-          $nftables_cmd_ipv6 add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
           $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP" counter accept
-          $nftables_cmd_ipv6 add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr "$GATEWAY_IP6" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr "$GATEWAY_IP6" counter accept
           $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-          $nftables_cmd_ipv6 add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
+          $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
         fi
       fi
     fi
@@ -351,9 +354,9 @@ nft_output() {
       true "firewall_mode is $firewall_mode, therefore allowing DNS traffic."
       ## Allow Whonix-Workstation to query Whonix-Gateway for DNS.
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" udp dport 53 counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6" udp dport 53 counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6" udp dport 53 counter accept
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" udp dport 53 counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" udp dport 53 counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" udp dport 53 counter accept
       if test -f /usr/share/qubes/marker-vm; then
         qubes_dns
       fi
@@ -393,19 +396,19 @@ nft_output() {
       local allowed_user_list_item
       for allowed_user_list_item in $SDWDATE_USER $SYSTEMCHECK_USER; do
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip daddr 127.0.0.1 counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr ::1 counter accept
+        $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr ::1 counter accept
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip daddr "$GATEWAY_IP" counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr "$GATEWAY_IP6" counter accept
+        $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr "$GATEWAY_IP6" counter accept
         $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip daddr "$GATEWAY_IP_HARDCODED" counter accept
-        $nftables_cmd_ipv6 add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
+        $nftables_cmd add rule inet filter output skuid "$allowed_user_list_item" ip6 daddr "$GATEWAY_IP6_HARDCODED" counter accept
       done
 
       $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
-      $nftables_cmd_ipv6 add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+      $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     else
       if [ -z "$outgoing_allow_ip_list" ]; then
         true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
@@ -415,7 +418,8 @@ nft_output() {
         for outgoing_allow_ip_item in $outgoing_allow_ip_list; do
           true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is set, allowing IP: $outgoing_allow_ip_list"
           $nftables_cmd add rule inet filter output ip protocol tcp ip daddr "$outgoing_allow_ip_item" counter accept
-          $nftables_cmd_ipv6 add rule inet filter output ip6 protocol tcp ip6 daddr "::ffff:$outgoing_allow_ip_item" counter accept
+          $nftables_cmd add rule inet filter output ip6 protocol tcp ip6 daddr "::ffff:$outgoing_allow_ip_item" counter accept
+          ## TODO: IPv6 test
         done
       fi
     fi

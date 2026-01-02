@@ -13,13 +13,6 @@ common_variables_defaults_pre(){
   firewall_dir="/var/lib/whonix-firewall"
   firewall_script="${firewall_dir}/firewall.nft"
   [ -n "${nftables_cmd:-}" ] || nftables_cmd="write_nft_script"
-  if [ -z "${nftables_cmd_ipv6:-}" ]; then
-    if [ -f '/run/helper-scripts/ipv6-is-enabled' ]; then
-      nftables_cmd_ipv6="write_nft_script"
-    else
-      nftables_cmd_ipv6="true"
-    fi
-  fi
   [ -n "${INTERNAL_OPEN_PORTS:-}" ] || INTERNAL_OPEN_PORTS=""
   source_only=""
   dry_run=""
@@ -362,7 +355,7 @@ nft_input_rules_gateway() {
   fi
 
   # Accept ICMPv6 neighbor discovery.
-  $nftables_cmd_ipv6 add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+  $nftables_cmd add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
   ## Drop all incoming ICMP traffic by default.
   ## All incoming connections are dropped by default anyway, but should a user
@@ -370,7 +363,7 @@ nft_input_rules_gateway() {
   ## still be dropped to filter for example ICMP time stamp requests.
   if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
     $nftables_cmd add rule inet filter input ip protocol icmp counter drop
-    $nftables_cmd_ipv6 add rule inet filter input ip6 nexthdr icmpv6 counter drop
+    $nftables_cmd add rule inet filter input ip6 nexthdr icmpv6 counter drop
   fi
 
   ## Allow all incoming connections on the virtual VPN network interface,
@@ -501,7 +494,8 @@ nft_input_rules_gateway() {
       done
       local workstation_dest_socksified_ipv6_item
       for workstation_dest_socksified_ipv6_item in $WORKSTATION_DEST_SOCKSIFIED_IPV6; do
-        $nftables_cmd_ipv6 add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+        ## TODO: IPv6 test
       done
     fi
 
@@ -517,7 +511,8 @@ nft_input_rules_gateway() {
         local workstation_dest_socksified_ipv6_item
         for workstation_dest_socksified_ipv6_item in $WORKSTATION_DEST_SOCKSIFIED_IPV6; do
           true "socks_port_item: $socks_port_item"
-          $nftables_cmd_ipv6 add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport "$socks_port_item" counter redirect to :"$socks_port_item"
+          $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport "$socks_port_item" counter redirect to :"$socks_port_item"
+          ## TODO: IPv6 test
         done
       done
       ## Redirect ports 9152-9229 prepared for user custom applications.
@@ -527,7 +522,7 @@ nft_input_rules_gateway() {
       done
       local workstation_dest_socksified_ipv6_item
       for workstation_dest_socksified_ipv6_item in $WORKSTATION_DEST_SOCKSIFIED_IPV6; do
-        $nftables_cmd_ipv6 add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport 9152-9229 counter redirect
+        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport 9152-9229 counter redirect
         ## TODO: IPv6 test
       done
     fi
@@ -578,9 +573,10 @@ qubes_gateway() {
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
     if getent passwd vm-updates > /dev/null; then
       $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
-      $nftables_cmd_ipv6 add rule inet nat output ip6 protocol udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
+      $nftables_cmd add rule inet nat output ip6 protocol udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
       $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-      $nftables_cmd_ipv6 add rule inet nat output ip6 protocol tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
+      $nftables_cmd add rule inet nat output ip6 protocol tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
+      ## TODO: IPv6: test
     fi
   fi
 }

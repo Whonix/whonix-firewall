@@ -50,9 +50,6 @@ After=qubes-sysinit.target
 ## LKRG.
 After=systemd-modules-load.service
 
-## Needed to detect IPv6 easily and at the right time.
-After=detect-ipv6-enabled-in-kernel.service
-
 Before=shutdown.target
 Conflicts=shutdown.target
 
