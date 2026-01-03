@@ -1,3 +1,9 @@
+whonix-firewall (3:17.2-1) unstable; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@whonix.org>  Sat, 03 Jan 2026 13:09:30 +0000
+
 whonix-firewall (3:17.1-1) unstable; urgency=medium
 
   * New upstream version (local package).

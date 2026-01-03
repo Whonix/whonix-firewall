@@ -1,3 +1,24 @@
+commit 0b3e1a6d4252c2ae9900a03ade6f7ef82e4b03d7
+Merge: 36a292d bdddd68
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 3 08:04:42 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit bdddd68033b976ae2dadeb882fe080a856dd4df9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 2 12:59:59 2026 -0600
+
+    Revert "Disable IPv6 rules when IPv6 is disabled"
+    
+    This reverts commit 3ff941cf04a8d271ccf0d0bc69ca86eb69bd901d.
+
+commit 36a292d52bc3c5f650cf43bf37c53a831b330dea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 17:30:10 2026 +0000
+
+    bumped changelog version
+
 commit 2baff674c2d0b48953346ef5f88e642635cf7159
 Merge: 099f26d 3ff941c
 Author: Patrick Schleizer <adrelanos@whonix.org>
