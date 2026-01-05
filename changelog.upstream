@@ -1,3 +1,61 @@
+commit 97896751d8aec9740820873e65c847e758c78b75
+Merge: 1ec8d81 558aad7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 5 03:45:20 2026 -0500
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 558aad76bef8ed9084e450b632ab91e38960bcb5
+Merge: c6f5101 ab54022
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 5 03:32:27 2026 -0500
+
+    Merge pull request #16 from Nurmagoz/patch-5
+    
+    Update whonix-firewall.postinst link
+
+commit c6f51014da653e08ed4359a37fda74f31d1c64ae
+Merge: 0641d13 4ae97d5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 5 03:31:12 2026 -0500
+
+    Merge pull request #15 from Nurmagoz/patch-4
+    
+    Update 30_whonix_gateway_default.conf links
+
+commit 0641d13ec85a9af4121823558fdd395245731dcf
+Merge: f0a7299 ab0e1bf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 5 03:30:45 2026 -0500
+
+    Merge pull request #14 from Nurmagoz/patch-3
+    
+    Update whonix-firewall.service Link
+
+commit f0a7299c68ff98ee6c60fae21c7e612a93a71966
+Merge: c1c8595 94e8147
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 5 03:30:23 2026 -0500
+
+    Merge pull request #13 from Nurmagoz/patch-2
+    
+    Update whonix-workstation-firewall link
+
+commit c1c8595f811d749aeb6a7ef08da1999ec0c9cea9
+Merge: 1ec8d81 2e03fc7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jan 5 03:30:01 2026 -0500
+
+    Merge pull request #12 from Nurmagoz/patch-1
+    
+    Update enable-firewall Link
+
+commit 1ec8d81f11007fafd7e526a608ec26b115be007f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 3 13:09:31 2026 +0000
+
+    bumped changelog version
+
 commit 0b3e1a6d4252c2ae9900a03ade6f7ef82e4b03d7
 Merge: 36a292d bdddd68
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -12,6 +70,36 @@ Date:   Fri Jan 2 12:59:59 2026 -0600
     Revert "Disable IPv6 rules when IPv6 is disabled"
     
     This reverts commit 3ff941cf04a8d271ccf0d0bc69ca86eb69bd901d.
+
+commit ab54022d042c3567db05abd5e41313d9e9304d6b
+Author: Nurmagoz <11895339+Nurmagoz@users.noreply.github.com>
+Date:   Thu Jan 1 21:24:01 2026 +0000
+
+    Update whonix-firewall.postinst link
+
+commit 4ae97d5ad29eecc8f93680c4fff3eed738b3b176
+Author: Nurmagoz <11895339+Nurmagoz@users.noreply.github.com>
+Date:   Thu Jan 1 21:19:03 2026 +0000
+
+    Update 30_whonix_gateway_default.conf links
+
+commit ab0e1bfc4e24a3e1e74943fbfc2fe96ceba7fc5d
+Author: Nurmagoz <11895339+Nurmagoz@users.noreply.github.com>
+Date:   Thu Jan 1 21:04:43 2026 +0000
+
+    Update whonix-firewall.service Link
+
+commit 94e8147c5e3facdb67f324711bc543925496fcaf
+Author: Nurmagoz <11895339+Nurmagoz@users.noreply.github.com>
+Date:   Thu Jan 1 20:50:43 2026 +0000
+
+    Update whonix-workstation-firewall link
+
+commit 2e03fc79bcfec404df35a3bca4437b258f2d82ab
+Author: Nurmagoz <11895339+Nurmagoz@users.noreply.github.com>
+Date:   Thu Jan 1 20:46:57 2026 +0000
+
+    Update enable-firewall Link
 
 commit 36a292d52bc3c5f650cf43bf37c53a831b330dea
 Author: Patrick Schleizer <adrelanos@whonix.org>
