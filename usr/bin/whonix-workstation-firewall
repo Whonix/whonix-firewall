@@ -20,7 +20,7 @@
 ## - Should allow unlimited TCP/UDP/IPv6 traffic on the virtual external interface (OnionCat / OpenVPN).
 
 ## source for some rules:
-## http://www.cyberciti.biz/faq/ip6tables-ipv6-firewall-for-linux/
+## https://www.cyberciti.biz/faq/ip6tables-ipv6-firewall-for-linux/
 
 set -eu -o pipefail -o errtrace
 

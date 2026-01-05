@@ -33,7 +33,7 @@ case "$1" in
     user_account_list="clearnet tunnel notunnel systemcheck sdwdate updatesproxycheck"
     for user_account in $user_account_list; do
       ## Create users so we do not have to depend on these packages.
-      ## https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
+      ## https://web.archive.org/web/20150908082420/https://lintian.debian.org/tags/maintainer-script-should-not-use-adduser-system-without-home.html
       adduser --home "/run/$user_account" --no-create-home --quiet --system --group --shell /bin/false "$user_account" || true
     done
 
