@@ -467,7 +467,7 @@ nft_input_rules_gateway() {
     ## Allow socksified applications.
     if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
       if [ "${info_enabled}" = "1" ]; then
-        output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='1', Socks Ports will be reacheable from the Workstation"
+        output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='1', Socks Ports will be reachable from the Workstation"
         output_cmd "INFO: opening Internal TCP port(s): $(output_trim "${INTERNAL_OPEN_PORTS}")"
       fi
       local socks_port_item
