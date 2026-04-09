@@ -37,6 +37,8 @@ mkfifo "$inotifywait_subshell_fifo"
 inotifywait_subshell_pid="$!"
 
 if [ -f "/run/sdwdate/first_success" ] || [ -f "/run/updatesproxycheck/whonix-secure-proxy" ]; then
+  ## Intentionally only restart if whonix-firewall is currently active.
+  ## If the firewall is in a failed or inactive state, do not restart it here.
   if systemctl --no-pager --no-block status whonix-firewall; then
     systemctl --no-pager --no-block restart whonix-firewall || true
   fi
@@ -44,6 +46,8 @@ fi
 
 while read -r file_name; do
   if [ "$file_name" = "/run/sdwdate/first_success" ] || [ "$file_name" = "/run/updatesproxycheck/whonix-secure-proxy" ]; then
+    ## Intentionally only restart if whonix-firewall is currently active.
+    ## If the firewall is in a failed or inactive state, do not restart it here.
     if systemctl --no-pager --no-block status whonix-firewall; then
       systemctl --no-pager --no-block restart whonix-firewall || true
     fi
