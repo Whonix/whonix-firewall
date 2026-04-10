@@ -1,5 +1,4 @@
 #!/bin/bash -e
-# vim: set ts=4 sw=4 sts=4 et :
 #
 # enable-firewall - Called by systemd to setup a proper firewall for
 #                   Whonix-Gateway or Whonix-Workstation.
