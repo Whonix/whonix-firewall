@@ -1,3 +1,22 @@
+commit a26ea0691431b46a094ed44a63cd9f83e3af5bf2
+Merge: 4ba0df4 ccde665
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 04:29:16 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit ccde6651846077c19b4a8eff5927139ece293512
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Apr 10 18:08:22 2026 -0400
+
+    Remove Vim modelines
+
+commit 4ba0df427fe036a66770323dd3be5405dfb4c5d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 28 10:00:25 2026 +0000
+
+    bumped changelog version
+
 commit c34954f290f2cfea7c28ac7e2cd8a9b5dd59dd18
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 28 05:31:37 2026 -0400
