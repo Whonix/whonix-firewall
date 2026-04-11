@@ -1,3 +1,16 @@
+commit a83076a72098487b5420e0e728956289373fe1b2
+Merge: 49ceb53 cc2c4fa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 05:54:06 2026 -0400
+
+    Merge remote-tracking branch 'github-whonix/master'
+
+commit 49ceb5390e17194396b7ba92a6b41e20f235fe80
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 08:41:15 2026 +0000
+
+    bumped changelog version
+
 commit a26ea0691431b46a094ed44a63cd9f83e3af5bf2
 Merge: 4ba0df4 ccde665
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -10,6 +23,27 @@ Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Fri Apr 10 18:08:22 2026 -0400
 
     Remove Vim modelines
+
+commit cc2c4fa85b5aa1314da1917e2e46d33f2045a4f7
+Merge: 4ba0df4 7edc2eb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 9 14:58:26 2026 -0400
+
+    Merge pull request #17 from assisted-by-ai/claude/fix-inotifywait-firewall-uJmyG
+    
+    Add clarifying comments to firewall restart logic
+
+commit 7edc2eb1e207111878ad16175db28eac9ec9714f
+Author: Claude <noreply@anthropic.com>
+Date:   Thu Apr 9 18:57:41 2026 +0000
+
+    Document intentional systemctl status check in firewall-restarter
+    
+    Clarify that the systemctl status gate before restarting whonix-firewall
+    is intentional: the firewall should only be restarted if it is currently
+    active, not if it is in a failed or inactive state.
+    
+    https://claude.ai/code/session_017by8Udk9uMM21QgxeibA5S
 
 commit 4ba0df427fe036a66770323dd3be5405dfb4c5d1
 Author: Patrick Schleizer <adrelanos@whonix.org>
