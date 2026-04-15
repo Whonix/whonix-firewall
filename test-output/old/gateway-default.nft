@@ -1,0 +1,146 @@
+#!/usr/sbin/nft -f
+add table inet nat
+add table inet filter
+add table ip6 nat
+delete table inet nat
+delete table inet filter
+delete table ip6 nat
+add table inet nat
+add table inet filter
+add table ip6 nat
+add chain inet filter input { type filter hook input priority 0; policy drop; }
+add chain inet filter forward { type filter hook forward priority 0; policy drop; }
+add chain inet filter output { type filter hook output priority 0; policy drop; }
+add chain inet nat prerouting { type nat hook prerouting priority -100; }
+add chain inet nat output { type nat hook output priority -100; }
+add chain ip6 nat output { type nat hook output priority -100; }
+add rule inet filter input ct state invalid counter drop
+add rule inet filter input tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter drop
+add rule inet filter input tcp flags & (fin|syn) == fin|syn counter drop
+add rule inet filter input tcp flags & (syn|rst) == syn|rst counter drop
+add rule inet filter input ip frag-off & 0x1fff != 0 counter drop
+add rule inet filter input tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter drop
+add rule inet filter input tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter drop
+add rule inet filter input iifname lo counter accept
+add rule inet filter input ct state established counter accept
+add rule inet filter input icmp type destination-unreachable icmp code frag-needed ct state related counter accept
+add rule inet filter input icmpv6 type { nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect } counter accept
+add rule inet filter input ip protocol icmp counter drop
+add rule inet filter input ip6 nexthdr icmpv6 counter drop
+add rule inet filter input iifname eth1 udp dport 5300 counter accept
+add rule inet filter input iifname eth1 tcp dport 9040 counter accept
+add rule inet filter input iifname eth1 tcp dport 9051 counter accept
+add rule inet filter input iifname eth1 tcp dport 9050 counter accept
+add rule inet filter input iifname eth1 tcp dport 9100 counter accept
+add rule inet filter input iifname eth1 tcp dport 9101 counter accept
+add rule inet filter input iifname eth1 tcp dport 9102 counter accept
+add rule inet filter input iifname eth1 tcp dport 9103 counter accept
+add rule inet filter input iifname eth1 tcp dport 9104 counter accept
+add rule inet filter input iifname eth1 tcp dport 9105 counter accept
+add rule inet filter input iifname eth1 tcp dport 9106 counter accept
+add rule inet filter input iifname eth1 tcp dport 9107 counter accept
+add rule inet filter input iifname eth1 tcp dport 9108 counter accept
+add rule inet filter input iifname eth1 tcp dport 9109 counter accept
+add rule inet filter input iifname eth1 tcp dport 9110 counter accept
+add rule inet filter input iifname eth1 tcp dport 9111 counter accept
+add rule inet filter input iifname eth1 tcp dport 9114 counter accept
+add rule inet filter input iifname eth1 tcp dport 9115 counter accept
+add rule inet filter input iifname eth1 tcp dport 9117 counter accept
+add rule inet filter input iifname eth1 tcp dport 9118 counter accept
+add rule inet filter input iifname eth1 tcp dport 9122 counter accept
+add rule inet filter input iifname eth1 tcp dport 9123 counter accept
+add rule inet filter input iifname eth1 tcp dport 9124 counter accept
+add rule inet filter input iifname eth1 tcp dport 9125 counter accept
+add rule inet filter input iifname eth1 tcp dport 9150 counter accept
+add rule inet filter input iifname eth1 tcp dport 9152-9229 counter accept
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9051 counter redirect to :9051
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9051 counter redirect to :9051
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9050 counter redirect to :9050
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9050 counter redirect to :9050
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9100 counter redirect to :9100
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9100 counter redirect to :9100
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9101 counter redirect to :9101
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9101 counter redirect to :9101
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9102 counter redirect to :9102
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9102 counter redirect to :9102
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9103 counter redirect to :9103
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9103 counter redirect to :9103
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9104 counter redirect to :9104
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9104 counter redirect to :9104
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9105 counter redirect to :9105
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9105 counter redirect to :9105
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9106 counter redirect to :9106
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9106 counter redirect to :9106
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9107 counter redirect to :9107
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9107 counter redirect to :9107
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9108 counter redirect to :9108
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9108 counter redirect to :9108
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9109 counter redirect to :9109
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9109 counter redirect to :9109
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9110 counter redirect to :9110
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9110 counter redirect to :9110
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9111 counter redirect to :9111
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9111 counter redirect to :9111
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9114 counter redirect to :9114
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9114 counter redirect to :9114
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9115 counter redirect to :9115
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9115 counter redirect to :9115
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9117 counter redirect to :9117
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9117 counter redirect to :9117
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9118 counter redirect to :9118
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9118 counter redirect to :9118
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9122 counter redirect to :9122
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9122 counter redirect to :9122
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9123 counter redirect to :9123
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9123 counter redirect to :9123
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9124 counter redirect to :9124
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9124 counter redirect to :9124
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9125 counter redirect to :9125
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9125 counter redirect to :9125
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9150 counter redirect to :9150
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9150 counter redirect to :9150
+add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9152-9229 counter redirect
+add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9152-9229 counter redirect
+add rule inet nat prerouting iifname eth1 udp dport 53 counter redirect to :5300
+add rule inet nat prerouting iifname eth1 tcp flags & (fin|syn|rst|ack) == syn counter redirect to :9040
+add rule inet filter input counter drop
+add rule inet filter forward counter reject
+add rule inet filter output ct state invalid counter reject
+add rule inet filter output tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter reject
+add rule inet filter output tcp flags & (fin|syn) == fin|syn counter reject
+add rule inet filter output tcp flags & (syn|rst) == syn|rst counter reject
+add rule inet filter output ip frag-off & 0x1fff != 0 counter reject
+add rule inet filter output tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter reject
+add rule inet filter output tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter reject
+add rule inet nat output skuid 103 counter return
+add rule inet nat output skuid 104 counter return
+add rule inet nat output ip daddr 127.0.0.0/8 counter return
+add rule inet nat output ip daddr 192.168.0.0/24 counter return
+add rule inet nat output ip daddr 192.168.1.0/24 counter return
+add rule inet nat output ip daddr 10.152.152.0/24 counter return
+add rule inet nat output ip daddr 10.0.2.2/24 counter return
+add rule inet nat output ip6 daddr ::1/128 counter return
+add rule inet nat output ip6 daddr fd19:c33d:88bc::0/96 counter return
+add rule inet nat output ip6 daddr ::ffff:127.0.0.0/104 counter return
+add rule inet nat output ip6 daddr ::ffff:192.168.0.0/120 counter return
+add rule inet nat output ip6 daddr ::ffff:192.168.1.0/120 counter return
+add rule inet nat output ip6 daddr ::ffff:10.152.152.0/120 counter return
+add rule inet nat output ip6 daddr ::ffff:10.0.2.2/120 counter return
+add rule inet filter output ct state established counter accept
+add rule inet filter output icmpv6 type { nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect } counter accept
+add rule inet filter output ip daddr 127.0.0.0/8 counter accept
+add rule inet filter output ip daddr 192.168.0.0/24 counter accept
+add rule inet filter output ip daddr 192.168.1.0/24 counter accept
+add rule inet filter output ip daddr 10.152.152.0/24 counter accept
+add rule inet filter output ip daddr 10.0.2.2/24 counter accept
+add rule inet filter output ip6 daddr ::1/128 counter accept
+add rule inet filter output ip6 daddr fd19:c33d:88bc::0/96 counter accept
+add rule inet filter output ip6 daddr ::ffff:127.0.0.0/104 counter accept
+add rule inet filter output ip6 daddr ::ffff:192.168.0.0/120 counter accept
+add rule inet filter output ip6 daddr ::ffff:192.168.1.0/120 counter accept
+add rule inet filter output ip6 daddr ::ffff:10.152.152.0/120 counter accept
+add rule inet filter output ip6 daddr ::ffff:10.0.2.2/120 counter accept
+add rule inet filter output oifname lo counter accept
+add rule inet filter output skuid 103 counter accept
+add rule inet filter output skuid 104 counter accept
+add rule inet filter output counter reject

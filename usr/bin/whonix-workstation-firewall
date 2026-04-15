@@ -186,8 +186,8 @@ nft_input_rules() {
     $nftables_cmd add rule inet filter input iifname "$VPN_INTERFACE" counter accept
   fi
 
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    true "firewall_mode is $firewall_mode, therefore not opening EXTERNAL_OPEN_PORTS."
+  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+    true "firewall_mode_detected is $firewall_mode_detected, therefore not opening EXTERNAL_OPEN_PORTS."
   else
     local local_port_to_open
     if [ "${info_enabled}" = "1" ]; then
@@ -236,16 +236,16 @@ nft_forward() {
 nft_output() {
   ## Prevent connections to Tor SocksPorts.
   ## https://forums.whonix.org/t/iptables-block-network-access-until-sdwdate-succeeded/18872
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
     local socks_port_item
-    output_cmd "INFO: not opening Internal TCP ports $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode=$firewall_mode"
+    output_cmd "INFO: not opening Internal TCP ports $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode_detected=$firewall_mode_detected"
     for socks_port_item in $INTERNAL_OPEN_PORTS; do
       true "socks_port_item: $socks_port_item"
       ## SOCKS_PORT_SDWDATE
       if [ "$socks_port_item" = "9108" ]; then
         ## Permit connections to SOCKS_PORT_SDWDATE 9108 even in
         ## 'timesync-fail-closed' mode. Otherwise, sdwdate could never
-        ## succeed and firewall_mode could never change to 'full'.
+        ## succeed and firewall_mode_detected could never change to 'full'.
         continue
       fi
       $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
@@ -264,10 +264,10 @@ nft_output() {
   ## if TUNNEL_FIREWALL_ENABLE mode is enabled.
   ## DISABLED BY DEFAULT.
   if [ "$TUNNEL_FIREWALL_ENABLE" = "true" ]; then
-    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      true "firewall_mode is $firewall_mode, therefore prohibiting user $TUNNEL_USER traffic."
+    if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+      true "firewall_mode_detected is $firewall_mode_detected, therefore prohibiting user $TUNNEL_USER traffic."
     else
-      true "firewall_mode is $firewall_mode, therefore allowing user $TUNNEL_USER traffic."
+      true "firewall_mode_detected is $firewall_mode_detected, therefore allowing user $TUNNEL_USER traffic."
       ## Connections to VPN servers are allowed,
       $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
       if [ -n "$TUNNEL_USER" ]; then
@@ -299,7 +299,7 @@ nft_output() {
 
     ## Accept outgoing connections to local network.
     if [ "$TUNNEL_FIREWALL_ALLOW_LOCAL_NET" = "true" ]; then
-      if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+      if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
         true
       else
         local local_net_item
@@ -322,7 +322,7 @@ nft_output() {
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_TB_UPDATER" = "true" ]; then
-      if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+      if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
         true
       else
         ## SOCKS_PORT_TBB_DOWNLOAD
@@ -334,7 +334,7 @@ nft_output() {
     fi
 
     if [ "$TUNNEL_FIREWALL_ALLOW_SYSTEMCHECK" = "true" ]; then
-      if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+      if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
         true
       else
         if [ -n "$SYSTEMCHECK_USER" ]; then
@@ -348,10 +348,10 @@ nft_output() {
       fi
     fi
   else
-    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      true "firewall_mode is $firewall_mode, therefore prohibiting DNS traffic."
+    if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+      true "firewall_mode_detected is $firewall_mode_detected, therefore prohibiting DNS traffic."
     else
-      true "firewall_mode is $firewall_mode, therefore allowing DNS traffic."
+      true "firewall_mode_detected is $firewall_mode_detected, therefore allowing DNS traffic."
       ## Allow Whonix-Workstation to query Whonix-Gateway for DNS.
       $nftables_cmd add rule inet filter output ip daddr "$GATEWAY_IP" udp dport 53 counter accept
       $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6" udp dport 53 counter accept
@@ -387,8 +387,8 @@ nft_output() {
       $nftables_cmd add rule inet filter output ip protocol != tcp counter reject
     fi
 
-    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      true "firewall_mode is $firewall_mode, therefore prohibiting all outgoing traffic."
+    if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+      true "firewall_mode_detected is $firewall_mode_detected, therefore prohibiting all outgoing traffic."
 
       ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
       ## Otherwise in Whonix firewall full mode this rule is redundant.
@@ -411,14 +411,14 @@ nft_output() {
       $nftables_cmd add rule inet filter output ip6 daddr "$GATEWAY_IP6_HARDCODED" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
     else
       if [ -z "$outgoing_allow_ip_list" ]; then
-        true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
+        true "firewall_mode_detected is $firewall_mode_detected and outgoing_allow_ip_list is empty, therefore allowing all outgoing traffic."
         $nftables_cmd add rule inet filter output counter accept
       else
         local outgoing_allow_ip_item
         for outgoing_allow_ip_item in $outgoing_allow_ip_list; do
-          true "firewall_mode is $firewall_mode and outgoing_allow_ip_list is set, allowing IP: $outgoing_allow_ip_list"
+          true "firewall_mode_detected is $firewall_mode_detected and outgoing_allow_ip_list is set, allowing IP: $outgoing_allow_ip_item"
           $nftables_cmd add rule inet filter output ip protocol tcp ip daddr "$outgoing_allow_ip_item" counter accept
-          $nftables_cmd add rule inet filter output ip6 protocol tcp ip6 daddr "::ffff:$outgoing_allow_ip_item" counter accept
+          $nftables_cmd add rule inet filter output ip6 nexthdr tcp ip6 daddr "::ffff:$outgoing_allow_ip_item" counter accept
           ## TODO: IPv6 test
         done
       fi
@@ -426,10 +426,10 @@ nft_output() {
 
     ## Log.
     #$nftables_cmd add rule inet filter output counter log prefix \"Whonix_blocked_output4:\"
-
-    ## Reject all other outgoing traffic.
-    $nftables_cmd add rule inet filter output counter reject
   fi
+
+  ## Reject all other outgoing traffic.
+  $nftables_cmd add rule inet filter output counter reject
 }
 
 variable_list="
@@ -463,6 +463,7 @@ VPN_FIREWALL
 VPN_INTERFACE
 firewall_allow_udp
 firewall_mode
+firewall_mode_detected
 info_enabled
 outgoing_allow_ip_list
 source_only

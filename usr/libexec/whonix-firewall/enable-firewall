@@ -67,7 +67,11 @@ on_failure() {
   exit 1
 }
 
-if [ -e /usr/share/anon-gw-base-files/gateway ] || [ -e /usr/share/anon-ws-base-files/workstation ]; then
+## /usr/bin/whonix_firewall handles gateway, workstation, and host.
+## Must check for all three markers here, otherwise host systems
+## would fall through to on_failure and lock down instead of
+## loading the host firewall.
+if [ -e /usr/share/anon-gw-base-files/gateway ] || [ -e /usr/share/anon-ws-base-files/workstation ] || [ -e /usr/share/libvirt-dist/marker ]; then
   /usr/bin/whonix_firewall || on_failure
 else
   on_failure

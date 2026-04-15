@@ -17,6 +17,7 @@ common_variables_defaults_pre(){
   source_only=""
   dry_run=""
   info_enabled=""
+  firewall_mode_cli=""
 }
 common_variables_defaults_pre
 
@@ -55,7 +56,7 @@ common_variables_defaults_post(){
   [ -n "${NO_REJECT_INVALID_OUTGOING_PACKAGES:-}" ] || NO_REJECT_INVALID_OUTGOING_PACKAGES=""
   [ -n "${VPN_INTERFACE:-}" ] || VPN_INTERFACE="tun0"
   [ -n "${firewall_allow_udp:-}" ] || firewall_allow_udp=""
-  [ -n "${firewall_mode:-}" ] || firewall_mode=""
+  [ -n "${firewall_mode:-}" ] || firewall_mode="full"
   [ -n "${outgoing_allow_ip_list:-}" ] || outgoing_allow_ip_list=""
 
   ## Socks Ports for per application circuits.
@@ -111,8 +112,12 @@ print_variables() {
   local item
   # shellcheck disable=SC2154
   for item in ${variable_list}; do
-    eval value='$'"${item}"
-    # shellcheck disable=SC2154
+    ## "${!item}" may evaluate code within the string, therefore strings must
+    ## be sanity-checked.
+    if ! [[ "$item" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+      continue;
+    fi
+    value="${!item}"
     output_cmd "INFO: ${item}=$(output_trim "${value}")"
   done
 }
@@ -127,10 +132,12 @@ trap "error_handler" ERR
 
 usage() {
   echo "usage: ${0##*/} [options]
- -s, --source         only source the script
- -n, --dry-run        dry-run, do not load new script
- -i, --info           print informational messages
- -h, --help           print this help message"
+ -s, --source              only source the script
+ -n, --dry-run             dry-run, do not load new script
+ -i, --info                print informational messages
+ -m, --mode full|timesync-fail-closed
+                           override firewall mode for this run
+ -h, --help                print this help message"
 }
 
 # shellcheck disable=SC2034
@@ -148,6 +155,16 @@ get_options(){
       -i | --info)
         info_enabled=1
         shift 1
+        ;;
+      -m | --mode)
+        if [ "${2-}" = "full" ] || [ "${2-}" = "timesync-fail-closed" ]; then
+          firewall_mode_cli="${2}"
+          shift 2
+        else
+          printf '%s\n' "ERROR: --mode requires 'full' or 'timesync-fail-closed'" >&2
+          usage
+          exit 1
+        fi
         ;;
       "") break ;;
       -h | --help | *)
@@ -248,43 +265,45 @@ output_trim() {
 }
 
 firewall_mode_detection() {
-  if [ -n "${firewall_mode}" ]; then
-    output_cmd "OK: Skipping firewall mode detection since already set to '$firewall_mode'."
-    if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-      output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
-      return 0
-    elif [ "$firewall_mode" = "full" ]; then
-      output_cmd "OK: (Full torified network access allowed.)"
-      return 0
+  ## firewall_mode: user configuration setting.
+  ##   "full" (default) - Full network access.
+  ##   "timesync-fail-closed" - Restrict network until sdwdate succeeds.
+  ##
+  ## firewall_mode_cli: --mode CLI override. Takes precedence over config.
+  ##
+  ## firewall_mode_detected: internal runtime state determined here.
+  ##   All firewall rules check this variable, not firewall_mode.
+
+  ## CLI --mode takes precedence over config file setting.
+  if [ -n "${firewall_mode_cli}" ]; then
+    firewall_mode="${firewall_mode_cli}"
+  fi
+
+  if [ "${firewall_mode}" = "timesync-fail-closed" ]; then
+    ## User opted in to timesync-fail-closed mode.
+    ## Detect actual runtime state based on sdwdate status files.
+    if [ -e /run/sdwdate/first_success ]; then
+      firewall_mode_detected=full
+      output_cmd "OK: (/run/sdwdate/first_success exists.)"
+    elif [ -e /run/sdwdate/success ]; then
+      firewall_mode_detected=full
+      output_cmd "OK: (/run/sdwdate/success exists.)"
     else
-      output_cmd "ERROR: firewall_mode must be set to either 'full' or 'timesync-fail-closed'."
-      error_handler
+      ## sdwdate has not yet succeeded.
+      firewall_mode_detected=timesync-fail-closed
     fi
-  fi
-
-  ## Run Whonix firewall in full mode if sdwdate already succeeded.
-  if [ -e /run/sdwdate/first_success ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/sdwdate/first_success exists.)"
-  elif [ -e /run/sdwdate/success ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/sdwdate/success exists.)"
-  ## /run/whonix_firewall/first_run_current_boot.status already exists,
-  ## therefore have Whonix firewall run in full mode.
-  elif [ -e /run/whonix_firewall/first_run_current_boot.status ]; then
-    firewall_mode=full
-    output_cmd "OK: (/run/whonix_firewall/first_run_current_boot.status exists.)"
+  elif [ "${firewall_mode}" = "full" ]; then
+    firewall_mode_detected=full
   else
-    ## /run/whonix_firewall/first_run_current_boot.status does not yet exist,
-    ## therefore return 'yes, timesync-fail-closed'.
-    firewall_mode=timesync-fail-closed
+    output_cmd "ERROR: firewall_mode must be 'full' or 'timesync-fail-closed', got '${firewall_mode}'."
+    error_handler
   fi
 
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
-    output_cmd "OK: First run during current boot, therefore running in timesync-fail-closed mode."
+  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+    output_cmd "OK: Running in timesync-fail-closed mode."
     output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
   else
-    output_cmd "OK: Consecutive run during current boot, therefore running in full mode."
+    output_cmd "OK: Running in full mode."
     output_cmd "OK: (Full torified network access allowed.)"
   fi
 }
@@ -352,6 +371,9 @@ nft_input_rules_gateway() {
   ## MTU than 1500 assumed by Whonix-Gateway
   if [ "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" = "1" ]; then
     $nftables_cmd add rule inet filter input icmp type destination-unreachable icmp code frag-needed ct state related counter accept
+    ## ICMPv6 Packet Too Big is the IPv6 equivalent of ICMPv4 frag-needed.
+    ## Required for IPv6 Path MTU Discovery.
+    $nftables_cmd add rule inet filter input icmpv6 type packet-too-big ct state related counter accept
   fi
 
   # Accept ICMPv6 neighbor discovery.
@@ -413,7 +435,7 @@ nft_input_rules_gateway() {
     fi
   done
 
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
     true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
     return 0
   fi
@@ -564,7 +586,7 @@ nft_forward_gateway() {
 }
 
 qubes_gateway() {
-  if [ "$firewall_mode" = "timesync-fail-closed" ]; then
+  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
     true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
     return 0
   fi
@@ -572,10 +594,13 @@ qubes_gateway() {
   if [ -e /run/qubes/this-is-netvm ] || [ -e /run/qubes/this-is-proxyvm ]; then
     ## The same for squid from qubes-updates-cache, which runs as user vm-updates.
     if getent passwd vm-updates > /dev/null; then
+      ## IPv4: 'ip protocol' matches the IPv4 header protocol field.
+      ## IPv6: 'ip6 nexthdr' matches the IPv6 next header field.
+      ## ('ip6 protocol' is not valid nftables syntax.)
       $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
-      $nftables_cmd add rule inet nat output ip6 protocol udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
+      $nftables_cmd add rule inet nat output ip6 nexthdr udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
       $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-      $nftables_cmd add rule inet nat output ip6 protocol tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
+      $nftables_cmd add rule inet nat output ip6 nexthdr tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
       ## TODO: IPv6: test
     fi
   fi

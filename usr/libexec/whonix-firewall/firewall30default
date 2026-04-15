@@ -21,6 +21,10 @@ sudo_error_exit_if_unavailable
 
 if [ -f "/usr/share/anon-gw-base-files/gateway" ]; then
   gsudoedit /etc/whonix_firewall.d/30_whonix_gateway_default.conf
-else
+elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
   gsudoedit /etc/whonix_firewall.d/30_whonix_workstation_default.conf
+elif [ -f "/usr/share/libvirt-dist/marker" ]; then
+  gsudoedit /etc/whonix_firewall.d/30_whonix_host_default.conf
+else
+  printf '%s\n' "ERROR: Running system does not appear to be Whonix-Gateway, Whonix-Workstation, or Whonix-Host!"
 fi

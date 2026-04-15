@@ -1,0 +1,109 @@
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+name: Firewall Dry-Run Tests
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run-tests:
+    name: Dry-run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install safe-rm
+        run: sudo apt install safe-rm
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run dry-run test suite
+        run: sudo ./tests/test_firewall_dry_run.sh ./test-output
+
+      - name: Upload generated nft scripts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nft-scripts
+          path: test-output/
+          retention-days: 30
+
+  nft-diff:
+    name: Diff nft rules vs base branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Install safe-rm
+        run: sudo apt install safe-rm
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          path: pr
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          path: base
+
+      - name: Generate nft scripts from base branch
+        run: |
+          cd base
+          sudo ./tests/test_firewall_dry_run.sh ./test-output-base 2>&1 || true
+
+      - name: Generate nft scripts from PR branch
+        run: |
+          cd pr
+          sudo ./tests/test_firewall_dry_run.sh ./test-output-pr 2>&1 || true
+
+      - name: Diff base vs PR nft scripts
+        run: |
+          echo "============================================="
+          echo "nftables rule diff: base vs PR"
+          echo "============================================="
+          has_diff=0
+          for f in pr/test-output-pr/*.nft; do
+            name="$(basename "$f")"
+            base_f="base/test-output-base/${name}"
+            if [ ! -f "$base_f" ]; then
+              echo "NEW: ${name} (no baseline)"
+              continue
+            fi
+            if ! diff -u "$base_f" "$f" > "/tmp/diff-${name}" 2>&1; then
+              has_diff=1
+              echo ""
+              echo "--- CHANGED: ${name} ---"
+              cat "/tmp/diff-${name}"
+            else
+              echo "UNCHANGED: ${name}"
+            fi
+          done
+          for f in base/test-output-base/*.nft; do
+            name="$(basename "$f")"
+            if [ ! -f "pr/test-output-pr/${name}" ]; then
+              has_diff=1
+              echo "REMOVED: ${name}"
+            fi
+          done
+          echo ""
+          if [ "$has_diff" -eq 0 ]; then
+            echo "No nftables rule changes detected."
+          else
+            echo "nftables rule changes detected. Review diffs above."
+          fi
+
+      - name: Upload diff artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nft-diff
+          path: |
+            base/test-output-base/
+            pr/test-output-pr/
+          retention-days: 30
