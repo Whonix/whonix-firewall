@@ -31,17 +31,46 @@ variables_defaults(){
 
   [ -n "${GATEWAY_ALLOW_INCOMING_FLASHPROXY:-}" ] || GATEWAY_ALLOW_INCOMING_FLASHPROXY="0"
   [ -n "${FLASHPROXY_PORT:-}" ] || FLASHPROXY_PORT="9000"
+
+  ## Variables required by nft_input_rules_gateway() in full mode.
+  [ -n "${GATEWAY_ALLOW_INCOMING_DIR_PORT:-}" ] || GATEWAY_ALLOW_INCOMING_DIR_PORT=0
+  [ -n "${GATEWAY_ALLOW_INCOMING_OR_PORT:-}" ] || GATEWAY_ALLOW_INCOMING_OR_PORT=0
+  [ -n "${DIR_PORT:-}" ] || DIR_PORT=80
+  [ -n "${OR_PORT:-}" ] || OR_PORT=443
+  [ -n "${CONTROL_PORT_FILTER_PROXY_ENABLE:-}" ] || CONTROL_PORT_FILTER_PROXY_ENABLE=0
+  [ -n "${WORKSTATION_ALLOW_SOCKSIFIED:-}" ] || WORKSTATION_ALLOW_SOCKSIFIED=0
+  [ -n "${WORKSTATION_TRANSPARENT_DNS:-}" ] || WORKSTATION_TRANSPARENT_DNS=0
+  [ -n "${WORKSTATION_TRANSPARENT_TCP:-}" ] || WORKSTATION_TRANSPARENT_TCP=0
+
+  ## Internal/tunnel interface (not used on host but required by shared functions).
+  [ -n "${INT_IF:-}" ] || INT_IF="eth1"
+  [ -n "${INT_TIF:-}" ] || INT_TIF="eth1"
+
+  ## Ports (not used on host but required by shared functions).
+  [ -n "${TRANS_PORT_WORKSTATION:-}" ] || TRANS_PORT_WORKSTATION="9040"
+  [ -n "${DNS_PORT_WORKSTATION:-}" ] || DNS_PORT_WORKSTATION="5300"
+  [ -n "${TRANS_PORT_GATEWAY:-}" ] || TRANS_PORT_GATEWAY="9041"
+  [ -n "${DNS_PORT_GATEWAY:-}" ] || DNS_PORT_GATEWAY="5400"
 }
 
 nft_defaults(){
   ## Flush old rules.
+  ## Using delete (not flush) to ensure a clean slate.
+  ## flush only removes rules but keeps chains intact,
+  ## which could leave stale chains from previous configurations.
+  ## delete removes the entire table including all chains.
+  ## Pattern: add (ensure exists) -> delete -> add (recreate empty).
   $nftables_cmd add table inet nat
   $nftables_cmd add table inet filter
   $nftables_cmd add table ip6 nat
 
-  $nftables_cmd flush table inet nat
-  $nftables_cmd flush table inet filter
-  $nftables_cmd flush table ip6 nat
+  $nftables_cmd delete table inet nat
+  $nftables_cmd delete table inet filter
+  $nftables_cmd delete table ip6 nat
+
+  $nftables_cmd add table inet nat
+  $nftables_cmd add table inet filter
+  $nftables_cmd add table ip6 nat
 
   ## Set secure defaults.
   $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
@@ -86,8 +115,18 @@ nft_output(){
     $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
   fi
 
+  ## Access to localhost is required,
+  ## otherwise breaks applications such as konsole and kwrite.
+  $nftables_cmd add rule inet filter output oifname "lo" counter accept
+
   ## Existing connections are accepted.
   $nftables_cmd add rule inet filter output ct state established counter accept
+
+  ## Accept ICMPv6 neighbor discovery.
+  ## Required for IPv6 connectivity: without ND, the host cannot discover
+  ## routers or resolve link-layer addresses of IPv6 neighbors.
+  ## Matches the gateway and workstation firewall behavior.
+  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
   if [ "$VPN_FIREWALL" = "1" ]; then
     ## Connections to VPN servers are allowed,
@@ -115,15 +154,44 @@ nft_output(){
   fi
 
   ## clearnet user is allowed to connect any outside target.
+  ## This rule must be in the filter table (not nat) because the filter
+  ## output chain policy is drop - only filter accept rules allow traffic
+  ## through. A nat table accept only controls NAT evaluation, not
+  ## whether the packet is allowed.
   if [ -n "$CLEARNET_USER" ]; then
-    $nftables_cmd add rule inet nat output skuid "$CLEARNET_USER" counter accept
+    $nftables_cmd add rule inet filter output skuid "$CLEARNET_USER" counter accept
   fi
 
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    ## Reject all other outgoing traffic.
-    $nftables_cmd add rule inet filter output counter reject
-  fi
+  ## Reject all other outgoing traffic.
+  $nftables_cmd add rule inet filter output counter reject
 }
+
+variable_list="
+CLEARNET_USER
+EXTERNAL_OPEN_ALL
+EXTERNAL_OPEN_PORTS
+EXTERNAL_UDP_OPEN_PORTS
+EXT_IF
+FLASHPROXY_PORT
+GATEWAY_ALLOW_INCOMING_FLASHPROXY
+GATEWAY_ALLOW_INCOMING_ICMP
+GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED
+GATEWAY_ALLOW_INCOMING_RELATED_STATE
+GATEWAY_ALLOW_INCOMING_SSH
+INTERNAL_OPEN_PORTS
+LOCAL_NET
+LOCAL_NET_IP6
+NON_TOR_GATEWAY
+NON_TOR_GATEWAY_IP6
+NO_REJECT_INVALID_OUTGOING_PACKAGES
+VPN_FIREWALL
+VPN_INTERFACE
+VPN_SERVERS
+firewall_mode
+firewall_mode_detected
+info_enabled
+source_only
+"
 
 main() {
   get_options "${@}"

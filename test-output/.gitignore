@@ -1,0 +1,5 @@
+## Ignore transient nft scripts from ad-hoc test re-runs.
+## Canonical artifacts are in old/ and new/ subdirectories.
+*.nft
+!old/*.nft
+!new/*.nft

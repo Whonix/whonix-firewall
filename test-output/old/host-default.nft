@@ -1,0 +1,26 @@
+#!/usr/sbin/nft -f
+add table inet nat
+add table inet filter
+add table ip6 nat
+flush table inet nat
+flush table inet filter
+flush table ip6 nat
+add chain inet filter input { type filter hook input priority 0; policy drop; }
+add chain inet filter forward { type filter hook forward priority 0; policy drop; }
+add chain inet filter output { type filter hook output priority 0; policy drop; }
+add chain inet nat prerouting { type nat hook prerouting priority -100; }
+add chain inet nat output { type nat hook output priority -100; }
+add chain ip6 nat output { type nat hook output priority -100; }
+add rule inet filter input ct state invalid counter drop
+add rule inet filter input tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|ack counter drop
+add rule inet filter input tcp flags & (fin|syn) == fin|syn counter drop
+add rule inet filter input tcp flags & (syn|rst) == syn|rst counter drop
+add rule inet filter input ip frag-off & 0x1fff != 0 counter drop
+add rule inet filter input tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter drop
+add rule inet filter input tcp flags & (fin|syn|rst|psh|ack|urg) == 0x0 counter drop
+add rule inet filter input iifname lo counter accept
+add rule inet filter input ct state established counter accept
+add rule inet filter input icmp type destination-unreachable icmp code frag-needed ct state related counter accept
+add rule inet filter input icmpv6 type { nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect } counter accept
+add rule inet filter input ip protocol icmp counter drop
+add rule inet filter input ip6 nexthdr icmpv6 counter drop
