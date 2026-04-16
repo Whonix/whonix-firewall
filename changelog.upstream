@@ -1,3 +1,422 @@
+commit 3fc29b94e8d02a9e4841bf67a7fbac1c2ed2e7f2
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 16 02:11:39 2026 -0400
+
+    refactoring
+
+commit ba5534a850c555790f10d68299dbe16e6153959e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 16 02:07:34 2026 -0400
+
+    CI
+
+commit 5bfdf9997605fed66157da779495fd9fe9e9aec0
+Merge: d958ede 29e36b6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 16 02:06:29 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 29e36b69279607f065d88372a25c6d12480fc1f7
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Apr 14 23:16:43 2026 -0400
+
+    Modified and squashed commit of the following:
+
+    commit bc74814e0d854d46f7fea4dd29c2d574e2d41779
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:52:22 2026 +0000
+
+        Fix test-output/.gitignore to actually ignore root-level .nft files
+
+        The previous content was a plain text comment, not a valid gitignore
+        pattern. Add *.nft glob with exceptions for old/ and new/ subdirs.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 925541d85cc46e8b053b588cd1468d6287b25e1a
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:51:50 2026 +0000
+
+        Restore firewall_mode validation to reject invalid values
+
+        The refactored firewall_mode_detection() treated any value other than
+        "timesync-fail-closed" as "full", silently defaulting to fail-open on
+        typos (e.g., "timesync_fail_closed" with underscores). The previous
+        code had explicit validation that errored on unsupported values.
+
+        Restore the error: firewall_mode must be exactly "full" or
+        "timesync-fail-closed". Any other value now triggers error_handler
+        with a message showing the invalid value.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit efb65f8ea3048e4a65e1dad4c9a913659f9c632c
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:36:45 2026 +0000
+
+        Add .gitignore for transient test-output root files
+
+        The test suite writes to test-output/ on each run. The canonical
+        artifacts are in test-output/old/ and test-output/new/. Ignore
+        root-level .nft files from ad-hoc re-runs.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit f212d8b14f8f8d31966ce20d0cf9c4e99591723e
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:36:25 2026 +0000
+
+        Update test script to follow Whonix coding style
+
+        - set -o errexit -o nounset -o errtrace -o pipefail
+        - printf '%s\n' instead of echo throughout
+        - Self-identification: all output lines prefixed with $0:
+        - Local variable declarations separated from assignments
+        - ${variable} style for all expansions
+        - Array-based timeout_wrapper instead of string splitting
+        - Long option names: --force, --recursive, --archive, --parents, --quiet
+        - End-of-options marker (--) after options
+        - grep --quiet instead of grep -q
+        - Two-space indentation (already correct)
+        - No trailing whitespace
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 62a9857971b4e21ee5196a92085bb0bcc95a20ce
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:07:11 2026 +0000
+
+        Add generated nft scripts (old vs new) and timeout wrapper
+
+        test-output/old/: nft scripts generated from master (pre-fix) code.
+          - host-default.nft is truncated (28 lines) because the old host
+            firewall crashed on unset variables in nft_input_rules_gateway().
+
+        test-output/new/: nft scripts generated from this branch (post-fix)
+          for all 13 test configurations. All pass nft --check validation.
+
+        Rule diff summary (gateway default — the only change for default configs):
+          +add rule inet filter input icmpv6 type packet-too-big ct state related counter accept
+          (ICMPv6 PMTUD fix — no other default-config rules changed)
+
+        Workstation default: no rule changes.
+        Host default: was broken on master, now produces 56 valid rules.
+
+        Test script changes:
+        - Add timeout_wrapper (timeout --kill-after=5 30) for all privileged
+          commands to prevent hangs from accidentally loading drop-all rules
+        - Add nft --check syntax validation after each dry-run test
+        - Fix exit code assertion being swallowed by output redirection
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit f7ac0d4f33e4749f17c90047d511d5d9499f1a21
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 07:53:22 2026 +0000
+
+        Remove .gitignore to track test output nft scripts in git
+
+        Recording generated nft scripts in version control allows diffing
+        the actual firewall rules across commits.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 170b381b6491da3d04889cefa91d09287cbfd4bc
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 07:01:18 2026 +0000
+
+        Add .gitignore for test output artifacts
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit f7f65215859009e9fc81eaa3449ef3d7eef71e59
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 07:00:53 2026 +0000
+
+        Add CI test suite, fix host firewall missing variable defaults
+
+        Host firewall crash fix:
+        - The host firewall calls nft_input_rules_gateway() which, in full mode,
+          accesses gateway-specific variables (GATEWAY_ALLOW_INCOMING_DIR_PORT,
+          DIR_PORT, OR_PORT, CONTROL_PORT_FILTER_PROXY_ENABLE,
+          WORKSTATION_ALLOW_SOCKSIFIED, WORKSTATION_TRANSPARENT_DNS/TCP,
+          INT_IF, INT_TIF, port variables). These were never defined in the
+          host's variables_defaults(), causing set -u to crash the script.
+          Added all required variable defaults.
+
+        CI test suite (tests/test_firewall_dry_run.sh):
+        - 13 test configurations covering all major code paths:
+          gateway (default, VPN, timesync, timesync+sdwdate, socksified=0),
+          workstation (default, tunnel, timesync, outgoing IP list),
+          host (default, VPN), CLI (--mode full, --mode timesync-fail-closed)
+        - Each test runs the firewall with --dry-run, verifies exit code,
+          and checks the generated nft script for expected/unexpected rules
+        - Generated nft scripts saved as artifacts for manual review
+
+        GitHub Actions workflow (.github/workflows/firewall-tests.yml):
+        - dry-run-tests job: runs the test suite on every push and PR
+        - nft-diff job: on PRs, generates nft scripts from both base and PR
+          branches and diffs them to show exactly which firewall rules changed
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 67396ed465e597bd7167dfcc98097a2fa92fc6c8
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 20:18:32 2026 +0000
+
+        Fix --mode CLI option being overridden by config files
+
+        get_options() runs before source_config_folder(), so the config file's
+        firewall_mode=full was overwriting the --mode CLI value. Fix by storing
+        the CLI value in a separate firewall_mode_cli variable (initialized in
+        common_variables_defaults_pre, set in get_options), then applying it at
+        the start of firewall_mode_detection() where it takes precedence over
+        the config file setting.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 39edca46450c46ef133c52e5a5ce84b5773a983a
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 20:12:17 2026 +0000
+
+        Add --mode CLI option, fix debug labels and config comments
+
+        Add --mode full|timesync-fail-closed CLI option so users can override
+        the firewall mode per invocation, e.g.:
+          sudo whonix_firewall --mode full
+
+        This provides an easy way to switch to full mode when running the
+        firewall manually, without editing configuration files.
+
+        Also:
+        - Fix debug message labels from 'firewall_mode is' to
+          'firewall_mode_detected is' for consistency with the variable rename
+        - Fix stale comments still referencing 'firewall_mode' where
+          'firewall_mode_detected' is meant
+        - Clean up config file comments: remove internal variable name
+          reference, document --mode override, improve wording
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit e29054135b84a96299e1d80118a90e476cc0cb7a
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 20:06:49 2026 +0000
+
+        Separate firewall_mode config from firewall_mode_detected runtime state
+
+        The firewall_mode variable was used as both a user configuration setting
+        and internal runtime state, causing a name collision. Setting
+        firewall_mode="timesync-fail-closed" in config would permanently lock
+        the firewall in restricted mode because detection was skipped entirely
+        when the variable was already set.
+
+        New design:
+        - firewall_mode: user configuration setting (default: "full").
+          "full" disables timesync-fail-closed entirely.
+          "timesync-fail-closed" is a user opt-in to restrict network until
+          sdwdate succeeds, then automatically transitions to full mode.
+        - firewall_mode_detected: internal runtime state set by
+          firewall_mode_detection(). All runtime firewall rule checks now
+          use this variable instead of the config variable.
+
+        Changes:
+        - Default firewall_mode to "full" in common_variables_defaults_post
+        - Rewrite firewall_mode_detection() to set firewall_mode_detected
+          based on sdwdate status files (only when user opts in)
+        - Replace all runtime $firewall_mode checks with
+          $firewall_mode_detected in gateway, workstation, host, and common
+        - Add firewall_mode_detected to variable_list in all scripts
+        - Update config file comments to document the two-variable design
+        - Document ip6 nexthdr vs ip6 protocol in qubes_gateway()
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 52b535917befac72d79baee78b51e127ea9312e9
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:55:11 2026 +0000
+
+        Fix firewall_mode config/state clash, eval injection, and restarter pipefail
+
+        firewall_mode variable clash:
+        - The firewall_mode variable was used both as a user config setting and
+          as internal runtime state. Setting firewall_mode="timesync-fail-closed"
+          in config caused firewall_mode_detection() to skip detection entirely
+          (via the 'if [ -n "${firewall_mode}" ]' guard), permanently locking
+          the firewall in timesync-fail-closed mode with no way to transition
+          to full mode after sdwdate succeeds.
+        - Fix: only skip detection when firewall_mode="full" (user explicitly
+          opts out of timesync-fail-closed). For all other values, always run
+          detection based on sdwdate status files, overriding the config value.
+
+        Premature timesync-fail-closed bypass:
+        - Remove first_run_current_boot.status from mode detection. Previously,
+          any firewall restart after the first load would switch to full mode
+          even if sdwdate had not yet succeeded. This defeated the purpose of
+          timesync-fail-closed since a manual restart or any restarter trigger
+          would bypass the time verification check. The status file is still
+          created by status_files() for other uses, just no longer influences
+          mode detection.
+
+        eval injection in print_variables:
+        - Replace 'eval value=$item' with bash indirect expansion '${!item}'.
+          A malicious config file could override variable_list to inject
+          arbitrary code via eval (e.g., variable_list="x; malicious_cmd").
+          While config dirs are root-owned, bash -n validation does not prevent
+          this since the payload is syntactically valid bash.
+
+        firewall-restarter pipefail:
+        - Add 'set -o pipefail' for consistency with the main firewall scripts.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 89e839539dc5a02bd975eba33a4b026e5c992ffd
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:46:43 2026 +0000
+
+        Fix invalid ip6 protocol syntax in workstation outgoing_allow_ip_list
+
+        Same class of bug as the qubes_gateway() fix: 'ip6 protocol tcp' is not
+        valid nftables syntax (ip6 header uses 'nexthdr', not 'protocol').
+        Changed to 'ip6 nexthdr tcp'. This would cause nft --check to fail when
+        outgoing_allow_ip_list is configured, preventing the firewall from loading.
+
+        No remaining 'ip6 protocol' occurrences exist in the codebase.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 2c0d0ca025bf0e74877199a58fd0091461bb858e
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:41:15 2026 +0000
+
+        Fix Qubes IPv6 syntax, add ICMPv6 PMTUD, revert host firewall_mode
+
+        - Fix invalid nftables syntax in qubes_gateway(): 'ip6 protocol' is not
+          a valid nftables expression (the ip6 header has 'nexthdr', not
+          'protocol'). Changed to 'ip6 nexthdr udp' and 'ip6 nexthdr tcp'.
+          This would cause nft --check to fail on Qubes systems, preventing the
+          firewall from loading.
+        - Add ICMPv6 Packet Too Big rule alongside the existing IPv4
+          frag-needed rule in nft_input_rules_gateway(). Packet Too Big is the
+          IPv6 equivalent of frag-needed and is required for IPv6 Path MTU
+          Discovery. Without it, ICMPv6 Packet Too Big was dropped by the
+          'ip6 nexthdr icmpv6 counter drop' rule, breaking IPv6 PMTUD.
+        - Revert firewall_mode=full from host config since the host will use
+          sdwdate and timesync-fail-closed mode is applicable.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 5951725bee96687248b63a4456844d69ddc0d491
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:38:09 2026 +0000
+
+        Address review feedback: revert NAT chains, add documentation
+
+        - Revert workstation NAT chains back to regular (non-base) chains.
+          The workstation has no NAT rules, so these are dead code. Making
+          them base chains would add packet processing overhead for no benefit.
+        - Add code comment explaining why delete is used instead of flush
+          in host firewall nft_defaults (delete removes stale chains, flush
+          only removes rules but keeps chains intact).
+        - Add code comment explaining why ICMPv6 neighbor discovery is needed
+          in host firewall output (required for IPv6 link-layer resolution).
+        - Add code comment explaining why clearnet user rule must be in filter
+          table not nat table (nat accept only controls NAT evaluation, filter
+          accept is what allows traffic through).
+        - Add code comment explaining why enable-firewall needs the host
+          marker check (whonix_firewall wrapper handles host, but enable-firewall
+          would lock down without it).
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 430fb47ea8269f6a61fc5083e413a3d846588662
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:35:21 2026 +0000
+
+        Fix host firewall support gaps in AppArmor, config, and desktop helper
+
+        - Add whonix-host-firewall to AppArmor abstraction's allowed executables.
+          The pattern only matched {gateway,workstation}-firewall, so when complain
+          mode is eventually disabled (per the existing TODO), the host firewall
+          would be denied execution by AppArmor.
+        - Add host marker file check to firewall30default desktop helper so it
+          opens 30_whonix_host_default.conf on host systems instead of falling
+          through to the workstation config.
+        - Add firewall_mode=full to host default config. Unlike gateway and
+          workstation which both set this, the host config was missing it, causing
+          the host to start in timesync-fail-closed mode on first boot. The host
+          does not use sdwdate, so timesync-fail-closed is not applicable.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 6eb6a2410d24f9bc88f5e6cf9601eea95c0dec2c
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:31:41 2026 +0000
+
+        Fix gateway early return and workstation tunnel mode reject bugs
+
+        - Remove erroneous 'return 0' from gateway variables_defaults() when
+          WORKSTATION_ALLOW_SOCKSIFIED != 1. The early return prevented
+          initialization of critical variables (INT_IF, INT_TIF, NON_TOR_GATEWAY,
+          LOCAL_NET, WORKSTATION_DEST_SOCKSIFIED, NO_NAT_USERS, etc.), causing
+          the firewall to crash under set -u when any of these were later accessed.
+          The WORKSTATION_ALLOW_SOCKSIFIED checks in nft_input_rules_gateway()
+          already handle skipping SOCKS port rules conditionally.
+        - Move final reject rule in workstation nft_output() outside the
+          TUNNEL_FIREWALL_ENABLE if/else block so it applies unconditionally.
+          Previously, when tunnel mode was enabled, no final reject was emitted
+          and non-matching traffic was silently dropped by chain policy instead
+          of being explicitly rejected.
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit bd8bd8c383870b5e617603e486c722d2e426c42e
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 19:24:26 2026 +0000
+
+        Fix 5 more bugs in host firewall and enable-firewall
+
+        - Add missing host marker file check (/usr/share/libvirt-dist/marker) in
+          enable-firewall, which caused host systems to get locked down instead of
+          loading the host firewall via the whonix_firewall wrapper
+        - Add missing loopback output rule in host firewall — localhost was completely
+          blocked when VPN_FIREWALL was enabled, breaking local applications
+        - Add missing ICMPv6 neighbor discovery output rule in host firewall, matching
+          the gateway and workstation scripts, to avoid breaking IPv6 connectivity
+        - Make the final reject rule unconditional in host firewall output chain —
+          previously it was only added when VPN_FIREWALL=1, causing silent drops
+          (from chain policy) instead of explicit rejects when VPN was off
+        - Change host firewall nft_defaults to use delete+add instead of flush,
+          matching the gateway and workstation pattern, ensuring stale chains from
+          previous configurations are properly cleaned up
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+    commit 593edff88b10cda17cbdf2ef535fef44bbe3ec4c
+    Author: Claude <noreply@anthropic.com>
+    Date:   Thu Apr 9 18:42:12 2026 +0000
+
+        Fix 5 bugs across firewall scripts
+
+        - Fix IPv6 typo in gateway WORKSTATION_DEST_SOCKSIFIED_IPV6: ::ffff:10.139.0.0
+          should be ::ffff:10.138.0.0 to match the DispVM Qubes IP range used elsewhere
+        - Fix host firewall clearnet user rule using wrong nftables table (inet nat
+          instead of inet filter), causing clearnet traffic to be silently dropped
+        - Add missing variable_list to host firewall, preventing a crash from set -u
+          when the -i (info) flag is used
+        - Fix workstation debug log printing entire outgoing_allow_ip_list instead of
+          current outgoing_allow_ip_item in the loop
+        - Fix workstation NAT chains created as regular chains instead of base chains
+          with proper hook types, matching the gateway firewall pattern
+
+        https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+commit d958ede311bcffff96e5befd0591707668ae1a83
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 11 10:19:06 2026 +0000
+
+    bumped changelog version
+
 commit a83076a72098487b5420e0e728956289373fe1b2
 Merge: 49ceb53 cc2c4fa
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -30,7 +449,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 9 14:58:26 2026 -0400
 
     Merge pull request #17 from assisted-by-ai/claude/fix-inotifywait-firewall-uJmyG
-    
+
     Add clarifying comments to firewall restart logic
 
 commit 7edc2eb1e207111878ad16175db28eac9ec9714f
@@ -38,11 +457,11 @@ Author: Claude <noreply@anthropic.com>
 Date:   Thu Apr 9 18:57:41 2026 +0000
 
     Document intentional systemctl status check in firewall-restarter
-    
+
     Clarify that the systemctl status gate before restarting whonix-firewall
     is intentional: the firewall should only be restarted if it is currently
     active, not if it is in a failed or inactive state.
-    
+
     https://claude.ai/code/session_017by8Udk9uMM21QgxeibA5S
 
 commit 4ba0df427fe036a66770323dd3be5405dfb4c5d1
@@ -94,7 +513,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 5 03:32:27 2026 -0500
 
     Merge pull request #16 from Nurmagoz/patch-5
-    
+
     Update whonix-firewall.postinst link
 
 commit c6f51014da653e08ed4359a37fda74f31d1c64ae
@@ -103,7 +522,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 5 03:31:12 2026 -0500
 
     Merge pull request #15 from Nurmagoz/patch-4
-    
+
     Update 30_whonix_gateway_default.conf links
 
 commit 0641d13ec85a9af4121823558fdd395245731dcf
@@ -112,7 +531,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 5 03:30:45 2026 -0500
 
     Merge pull request #14 from Nurmagoz/patch-3
-    
+
     Update whonix-firewall.service Link
 
 commit f0a7299c68ff98ee6c60fae21c7e612a93a71966
@@ -121,7 +540,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 5 03:30:23 2026 -0500
 
     Merge pull request #13 from Nurmagoz/patch-2
-    
+
     Update whonix-workstation-firewall link
 
 commit c1c8595f811d749aeb6a7ef08da1999ec0c9cea9
@@ -130,7 +549,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jan 5 03:30:01 2026 -0500
 
     Merge pull request #12 from Nurmagoz/patch-1
-    
+
     Update enable-firewall Link
 
 commit 1ec8d81f11007fafd7e526a608ec26b115be007f
@@ -151,7 +570,7 @@ Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Fri Jan 2 12:59:59 2026 -0600
 
     Revert "Disable IPv6 rules when IPv6 is disabled"
-    
+
     This reverts commit 3ff941cf04a8d271ccf0d0bc69ca86eb69bd901d.
 
 commit ab54022d042c3567db05abd5e41313d9e9304d6b
@@ -407,7 +826,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 13 05:04:15 2025 -0400
 
     Merge pull request #10 from DanWin/ip6
-    
+
     Add IPv6 support
 
 commit f298042481b44d9d1a3723df980ab552c8860865
@@ -470,7 +889,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 17 08:08:57 2025 -0400
 
     deleted symlinks:
-    
+
     * `man/whonix-gateway-firewall.8.ronn`
     * `man/whonix-host-firewall.8.ronn`
     * `man/whonix-workstation-firewall.8.ronn`
@@ -494,7 +913,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Apr 4 09:52:41 2025 -0400
 
     Merge pull request #11 from douglasrdv/patch-1
-    
+
     Update 30_whonix_gateway_default.conf
 
 commit 12d34f285c947669c4e7085383e02c0f30ca0518
@@ -502,7 +921,7 @@ Author: Douglas <142635021+douglasrdv@users.noreply.github.com>
 Date:   Thu Apr 3 14:14:10 2025 -0300
 
     Update 30_whonix_gateway_default.conf
-    
+
     Correct the word "DISABELD" to "DISABLED"
 
 commit ffce31581531530d935ac7f29ecd20f1237a4ec3
@@ -607,7 +1026,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Tue Jun 11 14:08:18 2024 +0200
 
     Do not delete chains
-    
+
     NFTables syntax check fails, it needs to be skipped if editing policy of
     existing chain.
 
@@ -616,7 +1035,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Mon Jun 10 10:37:14 2024 +0200
 
     Fix dry-run mode and policy of existing chain
-    
+
     If adding a policy to an existing chain, it fails on dry-run mode with
     the message that the "File exists", which means that the chain already
     exists.
@@ -632,7 +1051,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Mon Jun 10 10:22:05 2024 +0200
 
     Add dry-run to test firewall on non-Whonix
-    
+
     Workstation firewall works, Gateway and Host doesn't.
 
 commit c4b1357667e77530e3318130cc7c1ba0abc07edc
@@ -677,7 +1096,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Wed Jun 5 17:15:02 2024 +0200
 
     Move duplicated functions to libexec
-    
+
     Some variables were reordered for clarity.
 
 commit edaf04b8bf53511cf9ee0928c4d4877cca775dd9
@@ -685,7 +1104,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Wed Jun 5 12:21:20 2024 +0200
 
     Simplify sequential ports to open
-    
+
     Maintain comments with port number for easy grepping.
 
 commit d16db2b5434e6b9336373668488972ae086167c9
@@ -693,7 +1112,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Wed Jun 5 12:02:02 2024 +0200
 
     Canonical way to detect Qubes VM
-    
+
     https://www.qubes-os.org/faq/#what-is-the-canonical-way-to-detect-qubes-vm
 
 commit 777428faaa9f97878b1f7d60cfec372621e6b8f3
@@ -725,7 +1144,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Tue Jun 4 21:49:54 2024 +0200
 
     Deal with shell option errexit
-    
+
     Use if statements else if the test result is false, it can fail the
     whole script.
 
@@ -740,7 +1159,7 @@ Author: Ben Grande <ben.grande.b@gmail.com>
 Date:   Tue Jun 4 21:37:23 2024 +0200
 
     Print used variables
-    
+
     At least the ones I could identify.
 
 commit 0eb6317197e51e2544c8a10d53c3297aa3b1d8a4
@@ -792,7 +1211,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jun 2 08:25:00 2024 -0400
 
     aa-logprof
-    
+
     https://forums.whonix.org/t/consider-nftables-berkeley-packet-filter-bpf-as-a-replacement-for-iptables/18896
 
 commit 5a09deb1d7a9a4e110b14b84a66652f4ec83c2b8
@@ -830,7 +1249,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jun 1 16:21:31 2024 -0400
 
     firewall rules simplification: sys-whonix use Qubes UpdatesProxy tinyproxy with socks instead of transparent torification
-    
+
     https://github.com/QubesOS/qubes-issues/issues/8398
 
 commit dcde7447aa11763d13966512cdf89885682679b6
@@ -844,7 +1263,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Jun 1 13:31:23 2024 -0400
 
     switch dependency from iptables to nftables
-    
+
     https://forums.whonix.org/t/consider-nftables-berkeley-packet-filter-bpf-as-a-replacement-for-iptables/18896
 
 commit 9169557a9fba5ff1c4aa6ea264b38698ec1ea68f
@@ -876,7 +1295,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 28 09:33:37 2024 -0400
 
     port to nftables
-    
+
     https://forums.whonix.org/t/consider-nftables-berkeley-packet-filter-bpf-as-a-replacement-for-iptables/18896
 
 commit f54cc18a489e7a385bc513369c31016b85cd3f7d
@@ -898,7 +1317,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 6 08:50:34 2024 -0400
 
     Merge pull request #7 from DanWin/qubes-nftables
-    
+
     Fix nftables firewall version for Qubes
 
 commit 73165d1ed758c9fe9f1b617799138c03d7b06453
@@ -948,7 +1367,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 13:41:25 2023 -0500
 
     change license to AGPL-3+
-    
+
     https://forums.whonix.org/t/license-change-to-agplv3/17455
 
 commit fc300780d0631be0d742d1dae5cee76c207a2d11
@@ -970,7 +1389,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 2 12:57:18 2023 -0400
 
     Merge pull request #6 from 1cho1ce/firewall-accept-HTTPTunnelPort
-    
+
     Allow input connections to HTTPTunnelPort
 
 commit c170d364c20c4582928fee7be6cfbafbfd3b8bec
@@ -1110,9 +1529,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 29 08:26:21 2023 -0400
 
     Fix MTU problem by allowing RELATED fragmentation-needed ICMP by
-    
+
     enabling `GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED=1` by default.
-    
+
     Run
     `iptables -A INPUT -p icmp --icmp-type fragmentation-needed -m state --state RELATED -j ACCEPT`
     on Whonix-Gateway.
@@ -1263,7 +1682,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jun 2 11:13:16 2023 +0000
 
     Merge pull request #5 from 1cho1ce/allow-icmp-frag-needed
-    
+
     Fix MTU problem by allowing RELATED fragmentation-needed ICMP
 
 commit bf26fc743af48d68e0b1bd97484ba46228e1591b
@@ -1517,10 +1936,10 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 15 14:18:27 2023 +0000
 
     port to `nftables` work in progress:
-    
+
     - `whonix-gateway-firewall.nftables`
     - `whonix-workstation-firewall.nftables`
-    
+
     translated using `translate-iptables-to-nftables`
     (Which uses `iptables-translate`.)
 
@@ -1565,15 +1984,15 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 15 11:52:09 2023 +0000
 
     support new setting `GATEWAY_ALLOW_INCOMING_RELATED_STATE=1`
-    
+
     disabled by default
-    
+
     if enabled:
-    
+
     Allow ESTABLISHED,RELATED instead of only ESTABLISHED.
-    
+
     Reported to be required sometimes for Whonix KVM.
-    
+
     https://forums.whonix.org/t/tor-is-not-yet-fully-bootstrapped-30-done/8792/3
     https://forums.whonix.org/t/have-firewall-accept-icmp-fragmentation-needed/10233
     https://phabricator.whonix.org/T28
@@ -1591,7 +2010,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 15 07:37:57 2023 -0400
 
     Merge pull request #3 from IainKay/allow-incoming-related-state
-    
+
     add opt-in configuration for incoming Related connections through 'gateway_allow_incoming_related_state'
 
 commit b2ff0e370d42fa8bf3e935c2bcb5b7a8ecdb1ea4
@@ -1605,7 +2024,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 10 12:13:19 2023 +0000
 
     add deterministic tabels dumps for later comparison
-    
+
     after port to nftables
 
 commit f604259dd55e5dde4765ac7e2ad095d95258caa0
@@ -1613,15 +2032,15 @@ Author: Iain Kay <github@iain.it>
 Date:   Mon May 8 20:05:52 2023 +0100
 
     add opt-in configuration for incoming Related connections through 'gateway_allow_incoming_related_state'
-    
+
     When running a freshly installed Whonix-Gateway (confirmed that at least 16.0.9.8 and 16.0.9.0 are affected) on a KVM host (note: with Kicksecure installed on the host), Tor gets stuck at 30% when attempting to bootstrap.
-    
+
     When I enable the new configuration option "GATEWAY_ALLOW_INCOMING_RELATED_STATE" in file "/usr/local/etc/whonix_firewall.d/50_user.conf", this allows the connection to complete successfully every time.
-    
+
     When I disable the "GATEWAY_ALLOW_INCOMING_RELATED_STATE" option I observe that the issue returns.
-    
+
     I saw a suggestion on the Whonix forums (I believe from Patrick Schleizer) that this could be made into a configuration option. Rather than wasting time replying saying: "yes please I would love this", I've gone ahead and made the necessary changes myself.
-    
+
     Tested on my end and confirmed that this is working as expected.
 
 commit efc9844a78b35ff295b9d224b620e471e79d3bd7
@@ -1683,9 +2102,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 26 15:23:46 2022 -0400
 
     set all defaults first before parsing config folder
-    
+
     Thanks to @nyxnor for the report!
-    
+
     https://forums.whonix.org/t/how-to-unset-firewall-array/15604
 
 commit 4a8faa6cce08f31f6b6dcb77556f900013b4bf34
@@ -1701,7 +2120,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Sep 26 15:15:37 2022 -0400
 
     Merge pull request #1 from nyxnor/master
-    
+
     info messages to firewall
 
 commit 5ec6e1fac57c5dd6d5f6a80170c61476e95141b3
@@ -1733,7 +2152,7 @@ Author: nyxnor <nyxnor@protonmail.com>
 Date:   Mon Sep 26 14:29:00 2022 +0000
 
     print informational messages
-    
+
     https://forums.whonix.org/t/print-ports-opened-in-the-firewall/15469
 
 commit 6e0dd7bed6138f2121938399b6d30bc9f2016ce1
@@ -1741,7 +2160,7 @@ Author: nyxnor <nyxnor@protonmail.com>
 Date:   Mon Sep 26 14:28:23 2022 +0000
 
     make the main script pass arguments to child
-    
+
     also make the script be called by path, so easier to test by placing script at /usr/local/bin
 
 commit 9da705ed2ce94994c952df4c8cd57631a1b83b7a
@@ -1815,9 +2234,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Dec 4 16:03:48 2021 -0500
 
     use `curl` with `--cert-status`
-    
+
     Thanks for @yodawins for the suggestion!
-    
+
     https://forums.whonix.org/t/scurl-secure-curl-wrapper/7125/8
 
 commit 7cc5b0d978bd74c338718c208d70ea861e8afb3d
@@ -1939,7 +2358,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 17 13:59:41 2021 -0400
 
     After=systemd-modules-load.service
-    
+
     required for LKRG
     otherwise iptables modules cannot be auto load
 
@@ -2028,7 +2447,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 9 10:45:27 2021 -0400
 
     Merge pull request #9 from madaidan/denials
-    
+
     Fix denial errors
 
 commit b5e89fb8e13e8b64006aa65cd39baa2c50abe823
@@ -2048,7 +2467,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 18 04:20:24 2021 -0400
 
     fix
-    
+
     https://forums.whonix.org/t/internal-open-ports-setting/11404
 
 commit 96043b135d40996f876925d85010c37ff3fa4699
@@ -2068,7 +2487,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 18 03:54:00 2021 -0400
 
     fix
-    
+
     https://forums.whonix.org/t/internal-open-ports-setting/11404
 
 commit 786da8da790da66ff6b3e807da06a6947a61a39d
@@ -2124,7 +2543,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 10 19:12:12 2021 -0400
 
     refactoring
-    
+
     https://forums.whonix.org/t/internal-open-ports-setting/11404
 
 commit d10be32db0e745a9b439e9e8a3d398dd6c278e33
@@ -2144,12 +2563,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 10 18:46:18 2021 -0400
 
     Whonix-Gateway firewall: implement INTERNAL_OPEN_PORTS
-    
+
     Deprecate support for `SOCKS_PORT_CUSTOM=" 9230 "` syntax,
     use INTERNAL_OPEN_PORTS+=" 9230 " instead.
-    
+
     refactoring / code simplification
-    
+
     https://forums.whonix.org/t/internal-open-ports-setting/11404
 
 commit 3f39be5fe4b5d8b2ac335313631b0e6f896ae580
@@ -2193,14 +2612,14 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Feb 12 03:30:55 2021 -0500
 
     disable the following Tor stream isolation ports
-    
+
     - privoxy 9112
     - polipo 9113
     - Tor Browser Updater by Whonix Developers gpg 9116
     - TorChat 9119
     - mixmaster update 9120
     - mixmaster 9121
-    
+
     since deprecated applications in Whonix and no longer in use
 
 commit 18599d0a9e3382280d8028a7283cc1fbefe25bb5
@@ -2226,7 +2645,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Jan 9 00:54:46 2021 -0500
 
     update path
-    
+
     https://phabricator.whonix.org/T1001
 
 commit c43b1fb954d30a1e87ac49a09261a6f2bb886b3e
@@ -2278,7 +2697,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Oct 9 14:42:24 2020 +0000
 
     Merge pull request #8 from madaidan/apparmor
-    
+
     AppArmor fix
 
 commit f91ee6ba5aa65fcd11efaa6b7275de4db431bd21
@@ -2318,7 +2737,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Sep 5 08:57:51 2020 +0000
 
     Merge pull request #6 from madaidan/fixes
-    
+
     Fixes
 
 commit 840176c7c906c475b6bc78e1c8b1d0681713536b
@@ -2338,11 +2757,11 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 25 11:01:13 2020 -0400
 
     remove auto restart feature if networking did not come up
-    
+
     remove /lib/systemd/system/onion-grater.service.d/30_whonix_cpfpy.conf
-    
+
     fixes https://forums.whonix.org/t/bug-restart-of-sdwdate-in-whonix-gateway-causes-100-cpu-use-of-tor-browser-in-whonix-workstation/9541/15
-    
+
     fixes https://github.com/QubesOS/qubes-issues/issues/4969
 
 commit 8434ba010debc74eaca4460b52cc8d658e71f6be
@@ -2491,7 +2910,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Mar 21 15:38:57 2020 -0400
 
     refactoring
-    
+
     Just so Whonix-Workstation firewall can be more similar to Whonix-Gateway firewall.
 
 commit 5820b46380677b14c457b759f72aa8bfa0924de3
@@ -2585,7 +3004,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jan 13 17:32:05 2020 +0000
 
     Merge pull request #5 from madaidan/apparmor
-    
+
     Allow ptracing
 
 commit a47ea08768ca2a4133a02befb901eebb38d28131
@@ -2619,7 +3038,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Jan 1 19:37:25 2020 +0000
 
     Merge pull request #4 from madaidan/apparmor
-    
+
     Apparmor fixes
 
 commit e9c6a61ff1bef4d60b61f0d49e82fcc3aa09c502
@@ -2659,7 +3078,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Dec 24 23:38:22 2019 +0000
 
     Merge pull request #2 from madaidan/apparmor
-    
+
     whonix-firewall apparmor profile
 
 commit 4b24bbd5d81d008c4f2f220ef43f2f4a72c1832c
@@ -2681,7 +3100,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Dec 24 23:27:15 2019 +0000
 
     Merge pull request #3 from madaidan/ipv6
-    
+
     Don't fail if ipv6 isn't available
 
 commit 5cb824b52f8c1aaf327bd87c5d7fb389f966b747
@@ -2779,9 +3198,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Nov 19 09:51:05 2019 -0500
 
     fix use of sudoedit
-    
+
     https://forums.whonix.org/t/use-sudoedit-in-whonix-documentation-and-whonix-software/7599/30
-    
+
     as suggested by @madaidan
 
 commit ea80c48c1d75cc227b159c54643a762fd50aaa92
@@ -2927,7 +3346,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jul 19 11:55:38 2019 +0000
 
     Do not write to /var/log/sdwdate.log in TemplateVM
-    
+
     since sdwdate does not run there to avoid polluting the log.
 
 commit 8efd4c2def5bea29772251bb12f73f68acaa3fdd
@@ -2971,9 +3390,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jun 7 23:30:40 2019 -0400
 
     fix IP range
-    
+
     thanks to @marmarek for the suggestion!
-    
+
     https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/18
 
 commit 5fc78ed8d82657fdb3209e51bec638bafb396813
@@ -2981,7 +3400,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jun 7 23:24:33 2019 -0400
 
     fix IP range
-    
+
     thanks to @marmarek for the suggestion!
 
 commit baafc747a568ecd9d136005655759543689f9bcb
@@ -2995,7 +3414,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jun 7 23:13:21 2019 -0400
 
     remove 10.138.0.0/8 as 10.138.0.0/8 results in 10.0.0.0/8 anyhow
-    
+
     https://forums.whonix.org/t/whonix-gateway-not-reachable/7484/16
 
 commit e96771637f88aba9f037466d9bb2f112f1a0e3c8
@@ -3189,18 +3608,18 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Mar 1 14:32:43 2019 +0000
 
     add improved legal protections clauses
-    
+
     The license for software created by Whonix is the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version with additional terms applicable per GNU GPL version 3 section 7.
-    
+
     The additional terms are based on the Doom 3 license which is Debian refers to as `GPL-3+-with-id-software-additional-terms`, which is Debian DFSG [1] (The Debian Free Software Guidelines) approved and which is therefore suitable for Debian `main`. Whonix made applied minimal changes to it:
-    
+
     * Rewrite `The Doom 3 BFG Edition GPL Source Code` to the more common `this program` which is used throughout the GPL.
     * Added a "trump clause" [2], in other words, any conflicts or disputes between the additional terms and the GPLv3 shall be resolved in favor of the GPLv3 by adding `Notwithstanding any other provision of this License` (as mentioned in GPL FAQ [3]) at the beginning of the additional terms.
-    
+
     [1] https://www.debian.org/social_contract#guidelines
     [2] https://www.fsf.org/news/canonical-updated-licensing-terms
     [3] https://www.gnu.org/licenses/gpl-faq.html#v3Notwithstanding
-    
+
     For more considerations, see also:
     https://www.whonix.org/wiki/Dev/Licensing
 
@@ -3217,7 +3636,7 @@ Date:   Sat Nov 17 00:13:17 2018 -0500
     Disable fail closed mechanism.
     (i.e. do not start networking if whonix-firewall.service fails to load.)
     Breaks networking on package upgrades.
-    
+
     https://phabricator.whonix.org/T875
 
 commit ec46e9b15c794ebf575dfcbd7539cc2632d0a3e9
@@ -3243,7 +3662,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Aug 23 06:30:44 2018 -0400
 
     improve Qubes detection
-    
+
     if command -v "qubesdb-read" >/dev/null 2>&1 ; then
 
 commit 5a86e8698cf92318eb3de0f7af35aae40b92d50f
@@ -3479,9 +3898,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 20:17:33 2017 +0000
 
     Restart firewall when file /var/run/qubes-service/whonix-secure-proxy gets created.
-    
+
     So blocking access to Qubes updates proxy for everyone but user updatesproxycheck ends.
-    
+
     In other words, to allow full access to Qubes updates proxy.
 
 commit 972c62e492608862a93dc7828788babf3e9eb3d2
@@ -3525,7 +3944,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 19:35:31 2017 +0000
 
     symlink man pages
-    
+
     to fix lintian warning
 
 commit 82ffba5f557bfe587baa733951d2da3b69ba99db
@@ -3593,7 +4012,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 21 19:01:00 2017 +0000
 
     import usr/share/whonix-ws-firewall/unit_tests/stream_isolation_test
-    
+
     from whonix-ws-firewall package
 
 commit 70df752f37d484c0b555435d1780031e973935e0
@@ -3759,7 +4178,7 @@ Date:   Sat Dec 2 19:23:56 2017 +0000
     Non-Qubes-Whonix: enable sdwdate-gui systray by default
     https://phabricator.whonix.org/T636
     Qubes-Whonix: make sdwdate-gui Qubes friendlhttps://phabricator.whonix.org/T534
-    
+
     firewall_mode=full
 
 commit 040dd59cf8c307dd87a980315a00ea911400d26c
@@ -3774,7 +4193,7 @@ Date:   Mon Oct 23 16:18:42 2017 +0200
 
     - Qubes: NON_TOR_GATEWAY=""
     - Qubes: allow user tinyproxy to connect to 127.0.0.1 9040 and 5300 where Tor is listening (required since we are now using NON_TOR_GATEWAY="")
-    
+
     https://github.com/QubesOS/qubes-issues/issues/3201
 
 commit df422c5aea2baec365273d1b140f12872cbaf240
@@ -3782,9 +4201,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Oct 21 13:08:04 2017 +0000
 
     NON_TOR_GATEWAY="127.0.0.0-127.0.0.8"
-    
+
     prevent sys-whonix from being able to access non-torified Qubes Updates Proxy
-    
+
     https://github.com/QubesOS/qubes-issues/issues/3201
 
 commit 4930133bc78535794ad52b97f05277c269cb4052
@@ -3821,7 +4240,7 @@ Date:   Fri May 19 13:58:32 2017 +0200
     In case someone confused this setting, i.e. using TUNNEL_FIREWALL_ENABLE=true
     since this is how it is done on Whonix-Workstation, then gracefully enable
     VPN_FIREWALL="1" to prevent users shooting their own feet.
-    
+
     if [ "$TUNNEL_FIREWALL_ENABLE" = "true" ]; then
        VPN_FIREWALL="1"
     fi
@@ -3891,7 +4310,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Feb 10 15:47:55 2017 +0000
 
     remove faketime from Build-Depends:
-    
+
     since no longer used for reproducible builds
 
 commit 0c341e90b128e76d6425f3478421ffb5a2abd226
@@ -3947,7 +4366,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jan 9 03:53:04 2017 +0000
 
     add Documentation=
-    
+
     to fix stretch lintian warning
 
 commit ab7e84dfa67808c3fbcf76d235c75347a0ca0fcc
@@ -3967,9 +4386,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Dec 24 00:25:09 2016 +0100
 
     Prevent connections to Tor SocksPorts in timesync-fail-closed mode.
-    
+
     Access to localhost is required even in timesync-fail-closed mode, otherwise breaks applications such as konsole and kwrite.
-    
+
     https://phabricator.whonix.org/T533#11025
 
 commit 19c9382868cc390a39d40da7e5c4465c2fcd6307
@@ -3977,7 +4396,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Dec 18 16:28:27 2016 +0100
 
     fix file location of tor-controlport-filter.d systemd dropin
-    
+
     lib/systemd/system/tor-controlport-filter.d/30_whonix_cpfpy.conf
     ->
     lib/systemd/system/tor-controlport-filter.service.d/30_whonix_cpfpy.conf
@@ -3993,9 +4412,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Dec 16 16:44:05 2016 +0000
 
     temporary workaround for 127.0.0.1 connections issues
-    
+
     to unbreak developers repository
-    
+
     https://phabricator.whonix.org/T533#10288
 
 commit 67aaf37fdacaa83172b82802756dcc108be3119f
@@ -4009,7 +4428,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 14 21:06:11 2016 +0000
 
     After=sysinit.target -> After=qubes-sysinit.target
-    
+
     to prevent conflict with networking.service, which runs after before sysinit.target
 
 commit 6f3d4e2888fac90947d9899bd7004bcf9ae63c17
@@ -4023,7 +4442,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 23:02:21 2016 +0000
 
     adjust for tor-controlport-filter
-    
+
     https://phabricator.whonix.org/T573
 
 commit f7ee29c866d376d853140b0feea7e9e6b4446ce7
@@ -4031,7 +4450,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 7 19:28:48 2016 +0100
 
     CONTROL_PORT_FILTER_PROXY_PORT="9051"
-    
+
     https://phabricator.whonix.org/T573
 
 commit 44769385848f287dd663c1bdd05d6a7b5d2472b7
@@ -4045,7 +4464,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Oct 12 22:41:31 2016 +0000
 
     refactoring; fix
-    
+
     https://phabricator.whonix.org/T462
 
 commit f2dfc5c43cfe28a2b84b4543ee2f8eed07e7b4bd
@@ -4053,7 +4472,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Oct 12 22:32:39 2016 +0000
 
     add sane built-in defaults even if config files are non-existing
-    
+
     https://phabricator.whonix.org/T503
 
 commit e4e8d73af263364870ec7ee6853d689e707991a0
@@ -4061,11 +4480,11 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Oct 12 19:57:52 2016 +0200
 
     limit prerouting rules for socks redirectionto gateway IPs
-    
+
     to prevent interfering with transparent torification
-    
+
     Thanks to bubblewap for the bug report and fix suggestions!
-    
+
     https://phabricator.whonix.org/T462
 
 commit a5bc4b389083f7f7d78bc981209042ca59ba11cd
@@ -4079,9 +4498,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Oct 6 17:38:37 2016 +0200
 
     remove partial Qubes TemplateVM support
-    
+
     since we do not run Whonix firewall in Qubes TemplateVM
-    
+
     and because Qubes TemplateVMs will be made non-networked in future
 
 commit 54a32ab11b2e9bc88b55f2cdc559cf402d470ee2
@@ -4089,7 +4508,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Sep 15 22:32:02 2016 +0000
 
     add firewall mode to sdwdate log
-    
+
     https://phabricator.whonix.org/T551
 
 commit c0ac966e2419e402b9daf6ce9e531b1a97197868
@@ -4103,10 +4522,10 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Sep 11 17:45:53 2016 +0200
 
     add configuration option to open external ports
-    
+
     EXTERNAL_OPEN_PORTS+=" 22 "
     EXTERNAL_OPEN_PORTS+=" 9050 "
-    
+
     https://phabricator.whonix.org/T533
 
 commit e55b6213a4d284368a4d3736590f516b712a109e
@@ -4114,7 +4533,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Sep 9 14:26:18 2016 +0000
 
     limit control-port-filter-python access in timesync-fail-closed mode to localhost
-    
+
     https://phabricator.whonix.org/T533
 
 commit 4bf032818748398fdc830fb584346f1f820b51fb
@@ -4122,9 +4541,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Sep 5 16:52:43 2016 +0200
 
     improved terminology restricted mode to timesync-fail-closed mode
-    
+
     as suggested by @HulaHoopWhonix
-    
+
     https://phabricator.whonix.org/T533
 
 commit 1f6c55e840a898741751614f166baf6bb1f5d0e7
@@ -4138,7 +4557,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Aug 26 20:03:24 2016 +0000
 
     Create user sdwdate and whonxicheck so we do not have to depend on these packages.
-    
+
     https://phabricator.whonix.org/T533
 
 commit 29e282fdb7c7ba1d8a9795c18793b0c198685979
@@ -4170,7 +4589,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Aug 24 21:24:44 2016 +0000
 
     add whonix-firewall-sdwdate-watcher.service
-    
+
     https://phabricator.whonix.org/T533
 
 commit 2fc16d8ac336f77df65e9eb9e5a26730f687c349
@@ -4178,9 +4597,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Aug 24 19:43:22 2016 +0000
 
     iptables block network access until sdwdate succeeded
-    
+
     for everything but sdwdate and whonixcheck
-    
+
     https://phabricator.whonix.org/T533
 
 commit e9eaeb71bc85115ebba2121d550f0ddf4c8b4201
@@ -4188,7 +4607,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 23 17:00:40 2016 +0000
 
     create status files for first / consecutive runs
-    
+
     https://phabricator.whonix.org/T533
 
 commit d88073538fa9e5dd14ac46cb7335151ccd3d3a7c
@@ -4196,7 +4615,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Aug 23 16:40:53 2016 +0000
 
     refactoring for 'iptables block network access until sdwdate succeeded'
-    
+
     https://phabricator.whonix.org/T533
 
 commit 149525c6e4e76eff16984ba065e16544fd861b00
@@ -4216,14 +4635,14 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Aug 14 20:15:56 2016 +0000
 
     control-port-filter-python.service.d systemd drop-in file
-    
+
     Workaround:
     control-port-filter-python fails if it cannot bind on the network interface.
     This is the case when networking did not come up, which is the case when
     whonix-firewall.service failed. To make control-port-filter-python
     automatically start after lets says Whonix firewall config was fixed and the
     whonix-firewall.service was restarted.
-    
+
     After=whonix-firewall.service
     Requires=whonix-firewall.service
 
@@ -4238,7 +4657,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Aug 14 18:28:44 2016 +0200
 
     removed /etc/network/if-pre-up.d/30_whonix_firewall
-    
+
     because ported to systemd
 
 commit 9a048cf886774b413b598663bb40961f365b9c83
@@ -4264,10 +4683,10 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Aug 14 18:17:10 2016 +0200
 
     fix dependencies
-    
+
     Since issue "ifupdown, netbase are dependencies of whonix-gw-network-conf, that cannot
     be added to whonix-gw-network-conf due to conflicts with chroot." was solved.
-    
+
     Also no longer need to depend on whonix-(gw|ws)-network-conf since in future firewall
     will be load using systemd service rather than /etc/network/pre-up.d.
 
@@ -4290,7 +4709,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Jun 20 14:16:20 2016 +0200
 
     Merge pull request #1 from rustybird/qubes-updates-cache
-    
+
     qubes-updates-cache: Transparently torify squid traffic
 
 commit 1422df28b79acc37c7cba8001b6786772c9c71f1
@@ -4298,7 +4717,7 @@ Author: Rusty Bird <rustybird@openmailbox.org>
 Date:   Sun Jun 19 10:48:40 2016 +0000
 
     qubes-updates-cache: Transparently torify squid traffic
-    
+
     qubes-updates-cache runs squid as user/group vm-updates. Eventually,
     qubes-updates-proxy could be modified to run tinyproxy with the same
     credentials so that only one ruleset is needed.
@@ -4356,7 +4775,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Mar 31 20:46:34 2016 +0000
 
     made NO_NAT_USERS generic and configurable to aid I2PBOX development
-    
+
     https://forums.whonix.org/t/i2p-running-on-whonix-gateway/2163/9
 
 commit 1a2ad0cf4f12a0c6b296d50642b9b5e64b779ff6
@@ -4370,7 +4789,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Feb 19 18:23:02 2016 +0100
 
     also source /rw/config/whonix_firewall.d/
-    
+
     https://forums.whonix.org/t/customizing-whonix-firewall-torified-dom0-upgrades/1356/14
 
 commit f0d7020b6d3511d781cb072b88d5a28b6657c5b9
@@ -4396,7 +4815,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 12 20:31:31 2016 +0100
 
     refactoring
-    
+
     Thanks to @marmarek for the suggestion!
 
 commit 14c6e5ad3c37022be1acaa19cc327969d46aef27
@@ -4404,7 +4823,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 12 11:35:32 2016 +0100
 
     further refactored / shrinked socks redirection rules
-    
+
     https://phabricator.whonix.org/T465
 
 commit 34922d3831b6d0894ca22d16857bf3f5692aa754
@@ -4418,7 +4837,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Jan 10 15:53:18 2016 +0000
 
     refactored / shrinked socks redirection rules
-    
+
     https://phabricator.whonix.org/T465
 
 commit 7f5f65f6bf682a7f7df1df37976b8733f933f239
@@ -4426,9 +4845,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Jan 5 13:44:59 2016 +0000
 
     included DispVM IP range
-    
+
     Thanks to @marmarek for the suggestion!
-    
+
     https://phabricator.whonix.org/T462
 
 commit c26d7395e1d0a6d03ffca320109869bdb5b383a7
@@ -4436,7 +4855,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Dec 29 21:29:19 2015 +0100
 
     when VPN_FIREWALL=1, allow user 'tunnel'; abolished VPN_SERVERS variable
-    
+
     https://phabricator.whonix.org/T460
 
 commit 00724fd517e66fed0fb52051635aecb9f8e8dca3
@@ -4444,7 +4863,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Dec 29 18:28:01 2015 +0100
 
     create user 'tunnel'
-    
+
     https://phabricator.whonix.org/T158
 
 commit 35c77c871c3ad449e82f53e2be5c789de8a8f1c7
@@ -4458,7 +4877,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Wed Dec 9 19:04:05 2015 +0000
 
     open reload Tor starter maximized by default in Konsole
-    
+
     https://phabricator.whonix.org/T451
 
 commit 5e6e36a23cb8f273d5d7cbfce13fd7061d45377c
@@ -4472,9 +4891,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Nov 30 21:27:58 2015 +0000
 
     Only source configuration files that end with the '.conf' extension.
-    
+
     Thanks to @nrgaway for the suggestion!
-    
+
     https://phabricator.whonix.org/T286
 
 commit eafa4a9f7ec30b706597c88fccd22506691dfb69
@@ -4482,9 +4901,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Nov 30 19:44:47 2015 +0000
 
     Only source configuration files that end with the '.conf' extension.
-    
+
     Thanks to @nrgaway for the suggestion!
-    
+
     https://phabricator.whonix.org/T286
 
 commit a6f430d7bc8f8bf47c2eb3e2979fce3d3890d86e
@@ -4492,10 +4911,10 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Nov 22 23:41:35 2015 +0000
 
     redirect tinyproxy traffic to 127.0.0.1 instead to qubes-netvm-gateway
-    
+
     This saves one call 'qubesdb-read /qubes-netvm-gateway' and is more robust
     in case of IP changes, hypothetical failure or strange output of that command.
-    
+
     https://phabricator.whonix.org/T434
 
 commit 83779cac13877bc6f41bd8affba06bc7c6d1aa91
@@ -4509,7 +4928,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sun Nov 22 22:22:47 2015 +0000
 
     no longer depend on /var/run/qubes-service status files
-    
+
     https://phabricator.whonix.org/T432
 
 commit dac74921a45d5cda93fecc0d59a1d6a6fa572c83
