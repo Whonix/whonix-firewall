@@ -7,6 +7,9 @@
 
 set -eu -o pipefail -o errtrace
 
+# shellcheck source=../../../../../kicksecure/helper-scripts/usr/libexec/helper-scripts/strings.bsh
+source /usr/libexec/helper-scripts/strings.bsh
+
 ## Function to use shellcheck on all the variables inside the function.
 # shellcheck disable=SC2034
 common_variables_defaults_pre(){
@@ -112,11 +115,7 @@ print_variables() {
   local item
   # shellcheck disable=SC2154
   for item in ${variable_list}; do
-    ## "${!item}" may evaluate code within the string, therefore strings must
-    ## be sanity-checked.
-    if ! [[ "$item" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
-      continue;
-    fi
+    check_variable_name "${item}" || continue
     value="${!item}"
     output_cmd "INFO: ${item}=$(output_trim "${value}")"
   done
