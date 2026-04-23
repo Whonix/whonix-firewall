@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run dry-run test suite
-        run: sudo ./tests/test_firewall_dry_run.sh ./test-output
+        run: sudo --preserve-env=CI ./tests/test_firewall_dry_run.sh ./test-output
 
       - name: Upload generated nft scripts
         if: always()
@@ -55,12 +55,12 @@ jobs:
       - name: Generate nft scripts from base branch
         run: |
           cd base
-          sudo ./tests/test_firewall_dry_run.sh ./test-output-base 2>&1 || true
+          sudo --preserve-env=CI ./tests/test_firewall_dry_run.sh ./test-output-base 2>&1 || true
 
       - name: Generate nft scripts from PR branch
         run: |
           cd pr
-          sudo ./tests/test_firewall_dry_run.sh ./test-output-pr 2>&1 || true
+          sudo --preserve-env=CI ./tests/test_firewall_dry_run.sh ./test-output-pr 2>&1 || true
 
       - name: Diff base vs PR nft scripts
         run: |
