@@ -23,7 +23,7 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-if ! [ "$CI" = "true" ]; then
+if ! [ "${CI:-}" = "true" ]; then
   printf '%s\n' "$0: These tests are only supposed to run on CI." >&2
   exit 1
 fi
