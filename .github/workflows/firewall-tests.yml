@@ -16,11 +16,23 @@ jobs:
     name: Dry-run tests
     runs-on: ubuntu-latest
     steps:
-      - name: Install safe-rm
-        run: sudo apt install safe-rm
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y safe-rm rsync
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install genmkfile
+        run: |
+          git clone --depth=1 https://github.com/Kicksecure/genmkfile.git /tmp/genmkfile
+          cd /tmp/genmkfile
+          sudo ./usr/bin/genmkfile install
+
+      - name: Install helper-scripts
+        run: |
+          git clone --depth=1 https://github.com/Kicksecure/helper-scripts.git /tmp/helper-scripts
+          cd /tmp/helper-scripts
+          sudo genmkfile install
 
       - name: Run dry-run test suite
         run: sudo --preserve-env=CI ./tests/test_firewall_dry_run.sh ./test-output
@@ -38,8 +50,21 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Install safe-rm
-        run: sudo apt install safe-rm
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y safe-rm
+
+      - name: Install genmkfile
+        run: |
+          git clone --depth=1 https://github.com/Kicksecure/genmkfile.git /tmp/genmkfile
+          cd /tmp/genmkfile
+          sudo ./usr/bin/genmkfile deb-all-dep
+          sudo ./usr/bin/genmkfile install
+
+      - name: Install helper-scripts
+        run: |
+          git clone --depth=1 https://github.com/Kicksecure/helper-scripts.git /tmp/helper-scripts
+          cd /tmp/helper-scripts
+          sudo genmkfile install
 
       - name: Checkout PR branch
         uses: actions/checkout@v4
