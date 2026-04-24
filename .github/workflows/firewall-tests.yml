@@ -23,6 +23,7 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/Kicksecure/genmkfile.git /tmp/genmkfile
           cd /tmp/genmkfile
+          sudo ./usr/bin/genmkfile deb-all-dep
           sudo ./usr/bin/genmkfile install
 
       - name: Install helper-scripts
