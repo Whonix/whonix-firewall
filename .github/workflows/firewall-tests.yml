@@ -16,11 +16,8 @@ jobs:
     name: Dry-run tests
     runs-on: ubuntu-latest
     steps:
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y safe-rm rsync
-
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install genmkfile
         run: |
@@ -50,9 +47,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y safe-rm
-
       - name: Install genmkfile
         run: |
           git clone --depth=1 https://github.com/Kicksecure/genmkfile.git /tmp/genmkfile
@@ -67,12 +61,12 @@ jobs:
           sudo genmkfile install
 
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: pr
 
       - name: Checkout base branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           path: base
