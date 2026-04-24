@@ -1,3 +1,45 @@
+commit d8c11462d3dcb9e1ba287904a2c10b8cf745d6e8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 24 05:22:42 2026 -0400
+
+    CI
+
+commit 9d669b984299318f2af321439a1a70b80709f7a7
+Merge: e8b0449 9e903fe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 24 05:17:47 2026 -0400
+
+    Merge remote-tracking branch 'assisted-by-ai/claude/fix-ci-firewall-tests'
+
+commit 9e903fe1e7db7deeb2fd45001d9d38abf166b8ec
+Author: Claude <noreply@anthropic.com>
+Date:   Fri Apr 24 09:09:22 2026 +0000
+
+    Fix CI: install helper-scripts via genmkfile for test suite
+
+    firewall-common now sources /usr/libexec/helper-scripts/strings.bsh
+    (from Kicksecure helper-scripts package) which is not available on
+    GitHub Actions ubuntu-latest runners. All 13 dry-run tests failed
+    with exit 1 because the firewall scripts could not source the file.
+
+    CI workflow now installs the real helper-scripts package:
+    - apt-get install safe-rm (test script dependency)
+    - git clone Kicksecure/genmkfile, install via deb-all-dep + install
+    - git clone Kicksecure/helper-scripts, install via genmkfile install
+
+    Both dry-run-tests and nft-diff jobs updated.
+
+    Test script: removed inline helper-scripts stub that is no longer
+    needed now that the real package is installed in CI.
+
+    https://claude.ai/code/session_012mEmFr2YCscBvPKLoxz4eu
+
+commit e8b0449c95674847ab3030776d0c1ad17eebf25b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 23 10:43:09 2026 +0000
+
+    bumped changelog version
+
 commit b02eac3dec61082b7f8bc022405b8b3a83f08922
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 23 06:40:20 2026 -0400
