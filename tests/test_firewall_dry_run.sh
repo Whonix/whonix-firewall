@@ -18,6 +18,15 @@
 ## The generated nft scripts are saved to output_dir (default: ./test-output)
 ## for manual review and diffing against baselines.
 
+echo "------------------------------------------------"
+
+echo "------------------------------------------------"
+
+echo "------------------------------------------------"
+
+echo "------------------------------------------------"
+
+
 set -o errexit
 set -o nounset
 set -o errtrace
