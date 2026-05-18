@@ -1,3 +1,44 @@
+commit 9c8e4f1482afbcacd83e4afa4b748ffbd14fa88e
+Merge: 34af8fb e849397
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 18 17:49:25 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit e849397ff3940ca2d9a8bc9fa1ed263a93744f03
+Merge: 34af8fb 670d059
+Author: assisted-by-ai (Bot Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon May 18 17:24:41 2026 -0400
+
+    Merge pull request #12 from org-ai-assisted/claude/fix-genmkfile-exit-codes-Xi0NP
+
+    ci: bump actions/upload-artifact from v4 to v7.0.1 (mirror Whonix#19)
+
+commit 670d059e2baa6e26fcac8b72e2352645f47db8fd
+Author: Claude <noreply@anthropic.com>
+Date:   Mon May 18 21:24:11 2026 +0000
+
+    ci: bump actions/upload-artifact from v4 to v7.0.1
+
+    Mirrors upstream Whonix/whonix-firewall#19 (Dependabot).
+
+    Pinned SHA 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a corresponds to
+    the actions/upload-artifact v7.0.1 release tag (verified against
+    https://github.com/actions/upload-artifact/releases/tag/v7.0.1).
+
+    The two `uses:` lines in .github/workflows/local-firewall-tests.yml
+    are 'nft-scripts' (dry-run job) and 'nft-diff' (PR job). Both
+    artifacts have distinct names and live in different jobs, so v4's
+    "no append to same artifact" constraint (still in force in v7)
+    does not bite. Basic inputs (name / path / retention-days) are
+    unchanged between v4 and v7.
+
+commit 34af8fb97bc96550d0bfe1ab8829f481abc783ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 18 10:18:16 2026 +0000
+
+    bumped changelog version
+
 commit f3ca556e064238c26b438b85714800890de741bc
 Merge: 2cc625b e79ae8a
 Author: Patrick Schleizer <adrelanos@whonix.org>
