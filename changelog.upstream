@@ -1,3 +1,9 @@
+commit 9b72e6f9894f73d1fb39be2ad9c96f2639750d9f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 18 21:52:38 2026 +0000
+
+    bumped changelog version
+
 commit 9c8e4f1482afbcacd83e4afa4b748ffbd14fa88e
 Merge: 34af8fb e849397
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -666,9 +672,9 @@ Date:   Tue Apr 14 23:16:43 2026 -0400
         test-output/new/: nft scripts generated from this branch (post-fix)
           for all 13 test configurations. All pass nft --check validation.
 
-        Rule diff summary (gateway default — the only change for default configs):
+        Rule diff summary (gateway default _ the only change for default configs):
           +add rule inet filter input icmpv6 type packet-too-big ct state related counter accept
-          (ICMPv6 PMTUD fix — no other default-config rules changed)
+          (ICMPv6 PMTUD fix _ no other default-config rules changed)
 
         Workstation default: no rule changes.
         Host default: was broken on master, now produces 56 valid rules.
@@ -949,11 +955,11 @@ Date:   Tue Apr 14 23:16:43 2026 -0400
         - Add missing host marker file check (/usr/share/libvirt-dist/marker) in
           enable-firewall, which caused host systems to get locked down instead of
           loading the host firewall via the whonix_firewall wrapper
-        - Add missing loopback output rule in host firewall — localhost was completely
+        - Add missing loopback output rule in host firewall _ localhost was completely
           blocked when VPN_FIREWALL was enabled, breaking local applications
         - Add missing ICMPv6 neighbor discovery output rule in host firewall, matching
           the gateway and workstation scripts, to avoid breaking IPv6 connectivity
-        - Make the final reject rule unconditional in host firewall output chain —
+        - Make the final reject rule unconditional in host firewall output chain _
           previously it was only added when VPN_FIREWALL=1, causing silent drops
           (from chain policy) instead of explicit rejects when VPN was off
         - Change host firewall nft_defaults to use delete+add instead of flush,
