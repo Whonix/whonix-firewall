@@ -11,7 +11,7 @@
 #### meta end
 
 source /usr/libexec/helper-scripts/use_sudo.sh
-sudo_error_exit_if_unavailable
+sudo_error_exit_if_unavailable graphical
 
 set -x
 
