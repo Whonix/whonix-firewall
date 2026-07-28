@@ -1,3 +1,56 @@
+commit eca7656202cce7322e09dcaae283d2a12f87041c
+Merge: 7857467 b8c7bd0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 28 08:21:24 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit b8c7bd008daf810bc2b7d4bd85d80575a28cb90f
+Author: claude <noreply@anthropic.com>
+Date:   Tue Jul 28 06:17:26 2026 -0400
+
+    consumer-codex-review: drop OPENAI_API_KEY forward to the disabled reusable
+
+    Propagates org-ai-assisted/developer-meta-files#167. The reusable is a no-op
+    stub (job 'if: false') and no longer declares an OPENAI_API_KEY secret;
+    forwarding an undeclared secret is rejected by GitHub at workflow startup
+    (startup_failure). Dropping the forward lets the no-op run green; Codex review
+    stays cleanly disabled.
+
+    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+
+commit 7857467aa55ea8f6c6797ae16c7db9f5e99df9c0
+Merge: 56bac40 977b98b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 23 08:20:51 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 56bac40b362e2f16542f136a85c28ffc826b9768
+Merge: e8e6aa8 34044fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 23 05:57:35 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 977b98b4233643d5046a8b4d631dea513232ed41
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Wed Jul 22 10:21:29 2026 -0400
+
+    consumer-claude-code: forward CLAUDE_CODE_OAUTH_TOKEN (claude review OAuth port)
+
+commit 34044fb4874b3606e4378f8532f43476ed16e0a5
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Jul 21 22:19:08 2026 -0400
+
+    Use graphical messages in firewall editor scripts when sudo is unavailable
+
+commit e8e6aa82a238d042dfa66b9276a0e7abccc0d236
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 20 22:36:38 2026 +0000
+
+    bumped changelog version
+
 commit 0c110e91af4b0fc86afc56f7c6379c8efd808f41
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed May 20 16:57:40 2026 -0400
