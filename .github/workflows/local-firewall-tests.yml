@@ -19,6 +19,11 @@ concurrency:
 
 jobs:
   dry-run-tests:
+    ## CI runs only where we enabled it. Unset variable -> the job is
+    ## skipped, no runner is allocated, and the run stays green: upstream
+    ## and forks are never handed a red X for a lane they did not opt into.
+    ## A fork that WANTS our CI sets the same variable in its own repo.
+    if: vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
     name: Dry-run tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -46,7 +51,11 @@ jobs:
     name: Diff nft rules vs base branch
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: github.event_name == 'pull_request'
+    ## CI runs only where we enabled it; ANDed with the existing guard.
+    ## Unset variable -> skipped, no runner, run stays green.
+    if: >-
+      vars.CI_ENABLED_ORG_AI_ASSISTED == 'true'
+      && (github.event_name == 'pull_request')
     steps:
       - name: Install genmkfile + helper-scripts
         uses: org-ai-assisted/developer-meta-files/.github/actions/install-deps@master
