@@ -30,7 +30,14 @@
 ## Wrapper to start firewall and create failure status files on failure.
 #### meta end
 
-[ -n "$nftables_cmd" ] || nftables_cmd="nft"
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
+nftables_cmd="${nftables_cmd:-nft}"
 
 failed_status_file_create() {
   mkdir -p /run/anon-firewall || true
@@ -46,19 +53,19 @@ failed_status_file_create() {
 firewall_lockdown() {
   ## Flush old rules.
 
-  $nftables_cmd add table inet nat
-  $nftables_cmd add table inet filter
+  ${nftables_cmd} add table inet nat
+  ${nftables_cmd} add table inet filter
 
-  $nftables_cmd delete table inet nat 2>/dev/null || true
-  $nftables_cmd delete table inet filter 2>/dev/null || true
+  ${nftables_cmd} delete table inet nat 2>/dev/null || true
+  ${nftables_cmd} delete table inet filter 2>/dev/null || true
 
-  $nftables_cmd add table inet nat
-  $nftables_cmd add table inet filter
+  ${nftables_cmd} add table inet nat
+  ${nftables_cmd} add table inet filter
 
   ## Set secure defaults.
-  $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
-  $nftables_cmd "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
-  $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter input { type filter hook input priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 }
 
 on_failure() {
