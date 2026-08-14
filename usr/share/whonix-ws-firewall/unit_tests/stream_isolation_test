@@ -14,7 +14,12 @@
 ## Qubes-Whonix-Workstation. (Otherwise out comment test using qubesdb-read.)
 
 set -x
-set -e
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 set -o pipefail
 set -o errtrace
 
@@ -43,26 +48,26 @@ ip_transparent="$(UWT_DEV_PASSTHROUGH=1 scurl --fail https://check.torproject.or
 ## Using usual uwt.
 ip_socksified_uwt="$(scurl --fail https://check.torproject.org/api/ip)"
 
-ip_socksified_two="$(UWT_DEV_PASSTHROUGH=1 scurl --fail --proxy socks5h://$(qubesdb-read /qubes-gateway):9117 https://check.torproject.org/api/ip)"
+ip_socksified_two="$(UWT_DEV_PASSTHROUGH=1 scurl --fail --proxy socks5h://"$(qubesdb-read /qubes-gateway)":9117 https://check.torproject.org/api/ip)"
 
 ip_socksified_three="$(UWT_DEV_PASSTHROUGH=1 scurl --fail --proxy socks5h://192.168.0.10:9117 https://check.torproject.org/api/ip)"
 
 ## IP HARDCODED but only used during manual testing.
 ip_socksified_four="$(UWT_DEV_PASSTHROUGH=1 scurl --fail --proxy socks5h://10.152.152.10:9117 https://check.torproject.org/api/ip)"
 
-if [ "$ip_transparent" = "$ip_socksified_uwt" ]; then
+if [ "${ip_transparent}" = "${ip_socksified_uwt}" ]; then
   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
   exit 1
 fi
-if [ "$ip_transparent" = "$ip_socksified_two" ]; then
+if [ "${ip_transparent}" = "${ip_socksified_two}" ]; then
   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
   exit 1
 fi
-if [ "$ip_transparent" = "$ip_socksified_three" ]; then
+if [ "${ip_transparent}" = "${ip_socksified_three}" ]; then
   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
   exit 1
 fi
-if [ "$ip_transparent" = "$ip_socksified_four" ]; then
+if [ "${ip_transparent}" = "${ip_socksified_four}" ]; then
   true "ERROR: Maybe FAILED! (IP change could be due to Tor.) Try again."
   exit 1
 fi

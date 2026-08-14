@@ -14,6 +14,12 @@ source /usr/libexec/helper-scripts/use_sudo.sh
 sudo_error_exit_if_unavailable graphical
 
 set -x
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 ## https://bugzilla.xfce.org/show_bug.cgi?id=15282
 ## https://github.com/lxqt/lxqt-sudo/issues/114
