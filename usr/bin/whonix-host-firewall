@@ -1,8 +1,17 @@
 #!/bin/bash
 
+# shellcheck source-path=SCRIPTDIR
+
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## Copyright (C) 2024 - 2024 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 set -eu -o pipefail -o errtrace
 
@@ -60,31 +69,31 @@ nft_defaults(){
   ## which could leave stale chains from previous configurations.
   ## delete removes the entire table including all chains.
   ## Pattern: add (ensure exists) -> delete -> add (recreate empty).
-  $nftables_cmd add table inet nat
-  $nftables_cmd add table inet filter
-  $nftables_cmd add table ip6 nat
+  ${nftables_cmd} add table inet nat
+  ${nftables_cmd} add table inet filter
+  ${nftables_cmd} add table ip6 nat
 
-  $nftables_cmd delete table inet nat
-  $nftables_cmd delete table inet filter
-  $nftables_cmd delete table ip6 nat
+  ${nftables_cmd} delete table inet nat
+  ${nftables_cmd} delete table inet filter
+  ${nftables_cmd} delete table ip6 nat
 
-  $nftables_cmd add table inet nat
-  $nftables_cmd add table inet filter
-  $nftables_cmd add table ip6 nat
+  ${nftables_cmd} add table inet nat
+  ${nftables_cmd} add table inet filter
+  ${nftables_cmd} add table ip6 nat
 
   ## Set secure defaults.
-  $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter input { type filter hook input priority 0; policy drop; }"
 
   ## forward rules does not actually do anything if forwarding is disabled. Better be safe just in case.
-  $nftables_cmd "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
 
   ## Will be lifted below.
-  $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 
-  $nftables_cmd "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
-  $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
+  ${nftables_cmd} "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
+  ${nftables_cmd} "add chain inet nat output { type nat hook output priority -100; }"
 
-  $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"
+  ${nftables_cmd} "add chain ip6 nat output { type nat hook output priority -100; }"
 }
 
 qubes() {
@@ -111,45 +120,45 @@ nft_output(){
   ## Allow outgoing traffic on VPN interface,
   ## if VPN_FIREWALL mode is enabled.
   ## DISABLED BY DEFAULT.
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
+  if [ "${VPN_FIREWALL}" = "1" ]; then
+    ${nftables_cmd} add rule inet filter output oifname "${VPN_INTERFACE}" counter accept
   fi
 
   ## Access to localhost is required,
   ## otherwise breaks applications such as konsole and kwrite.
-  $nftables_cmd add rule inet filter output oifname "lo" counter accept
+  ${nftables_cmd} add rule inet filter output oifname "lo" counter accept
 
   ## Existing connections are accepted.
-  $nftables_cmd add rule inet filter output ct state established counter accept
+  ${nftables_cmd} add rule inet filter output ct state established counter accept
 
   ## Accept ICMPv6 neighbor discovery.
   ## Required for IPv6 connectivity: without ND, the host cannot discover
   ## routers or resolve link-layer addresses of IPv6 neighbors.
   ## Matches the gateway and workstation firewall behavior.
-  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+  ${nftables_cmd} add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
-  if [ "$VPN_FIREWALL" = "1" ]; then
+  if [ "${VPN_FIREWALL}" = "1" ]; then
     ## Connections to VPN servers are allowed,
     ## when VPN_FIREWALL mode is enabled.
     ## DISABLED BY DEFAULT.
-    for SERVER in $VPN_SERVERS; do
-      if [[ "$SERVER" = *:* ]]; then
+    for SERVER in ${VPN_SERVERS}; do
+      if [[ "${SERVER}" = *:* ]]; then
         addr_family="ip6"
       else
         addr_family="ip"
       fi
 
-      $nftables_cmd add rule inet filter output "$addr_family" daddr "$SERVER" counter accept
+      ${nftables_cmd} add rule inet filter output "${addr_family}" daddr "${SERVER}" counter accept
     done
   else
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
     ## unless VPN_FIREWALL mode is enabled.
     ## ENABLED BY DEFAULT.
-    for NET in $NON_TOR_GATEWAY; do
-      $nftables_cmd add rule inet filter output ip daddr "$NET" counter accept
+    for NET in ${NON_TOR_GATEWAY}; do
+      ${nftables_cmd} add rule inet filter output ip daddr "${NET}" counter accept
     done
-    for NET in $NON_TOR_GATEWAY_IP6; do
-      $nftables_cmd add rule inet filter output ip6 daddr "$NET" counter accept
+    for NET in ${NON_TOR_GATEWAY_IP6}; do
+      ${nftables_cmd} add rule inet filter output ip6 daddr "${NET}" counter accept
     done
   fi
 
@@ -158,12 +167,12 @@ nft_output(){
   ## output chain policy is drop - only filter accept rules allow traffic
   ## through. A nat table accept only controls NAT evaluation, not
   ## whether the packet is allowed.
-  if [ -n "$CLEARNET_USER" ]; then
-    $nftables_cmd add rule inet filter output skuid "$CLEARNET_USER" counter accept
+  if [ -n "${CLEARNET_USER}" ]; then
+    ${nftables_cmd} add rule inet filter output skuid "${CLEARNET_USER}" counter accept
   fi
 
   ## Reject all other outgoing traffic.
-  $nftables_cmd add rule inet filter output counter reject
+  ${nftables_cmd} add rule inet filter output counter reject
 }
 
 variable_list="
@@ -195,7 +204,7 @@ source_only
 
 main() {
   get_options "${@}"
-  if [ "$source_only" = "1" ]; then
+  if [ "${source_only}" = "1" ]; then
     return 0
   fi
   init

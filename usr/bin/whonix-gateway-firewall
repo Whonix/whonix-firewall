@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# shellcheck source-path=SCRIPTDIR
+
 ## Copyright (C) 2014 - 2015 Jason Mehring <nrgaway@gmail.com>
 ## Copyright (C) 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## Copyright (C) 2024 - 2024 Benjamin Grande M. S. <ben.grande.b@gmail.com>
@@ -11,6 +13,13 @@
 #### description
 ## firewall script
 #### meta end
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
 
 set -eu -o pipefail -o errtrace
 
@@ -57,29 +66,29 @@ variables_defaults() {
   [ -n "${GATEWAY_ALLOW_INCOMING_FLASHPROXY:-}" ] || GATEWAY_ALLOW_INCOMING_FLASHPROXY="0"
   [ -n "${FLASHPROXY_PORT:-}" ] || FLASHPROXY_PORT="9000"
 
-  NO_NAT_USERS+=" $CLEARNET_USER"
-  NO_NAT_USERS+=" $TUNNEL_USER"
+  NO_NAT_USERS+=" ${CLEARNET_USER}"
+  NO_NAT_USERS+=" ${TUNNEL_USER}"
 
   ## No NAT for account "user".
   ## DISABLED BY DEFAULT. For testing/debugging only.
-  if [ "$ALLOW_GATEWAY_USER_USER" = "1" ]; then
-    if [ -z "$USER_USER" ]; then
+  if [ "${ALLOW_GATEWAY_USER_USER}" = "1" ]; then
+    if [ -z "${USER_USER}" ]; then
       output_cmd "INFO: USER_USER is empty. Not adding USER_USER to NO_NAT_USERS."
     else
-      NO_NAT_USERS+=" $USER_USER"
+      NO_NAT_USERS+=" ${USER_USER}"
     fi
   fi
 
   ## No NAT for account "root".
   ## DISABLED BY DEFAULT. For testing/debugging only.
-  if [ "$ALLOW_GATEWAY_ROOT_USER" = "1" ]; then
-    NO_NAT_USERS+=" $ROOT_USER"
+  if [ "${ALLOW_GATEWAY_ROOT_USER}" = "1" ]; then
+    NO_NAT_USERS+=" ${ROOT_USER}"
   fi
 
   ## No NAT for Tor itself,
   ## unless VPN_FIREWALL mode is enabled.
-  if [ "$VPN_FIREWALL" != "1" ]; then
-    NO_NAT_USERS+=" $TOR_USER"
+  if [ "${VPN_FIREWALL}" != "1" ]; then
+    NO_NAT_USERS+=" ${TOR_USER}"
   fi
 
   if test -f /usr/share/qubes/marker-vm; then
@@ -236,31 +245,31 @@ variables_defaults() {
 nft_defaults() {
   ## Flush old rules.
 
-  $nftables_cmd add table inet nat
-  $nftables_cmd add table inet filter
-  $nftables_cmd add table ip6 nat
+  ${nftables_cmd} add table inet nat
+  ${nftables_cmd} add table inet filter
+  ${nftables_cmd} add table ip6 nat
 
-  $nftables_cmd delete table inet nat
-  $nftables_cmd delete table inet filter
-  $nftables_cmd delete table ip6 nat
+  ${nftables_cmd} delete table inet nat
+  ${nftables_cmd} delete table inet filter
+  ${nftables_cmd} delete table ip6 nat
 
-  $nftables_cmd add table inet nat
-  $nftables_cmd add table inet filter
-  $nftables_cmd add table ip6 nat
+  ${nftables_cmd} add table inet nat
+  ${nftables_cmd} add table inet filter
+  ${nftables_cmd} add table ip6 nat
 
   ## Set secure defaults.
-  $nftables_cmd "add chain inet filter input { type filter hook input priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter input { type filter hook input priority 0; policy drop; }"
 
   ## forward rules does not actually do anything if forwarding is disabled. Better be safe just in case.
-  $nftables_cmd "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter forward { type filter hook forward priority 0; policy drop; }"
 
   ## Will be lifted below.
-  $nftables_cmd "add chain inet filter output { type filter hook output priority 0; policy drop; }"
+  ${nftables_cmd} "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 
-  $nftables_cmd "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
-  $nftables_cmd "add chain inet nat output { type nat hook output priority -100; }"
+  ${nftables_cmd} "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
+  ${nftables_cmd} "add chain inet nat output { type nat hook output priority -100; }"
 
-  $nftables_cmd "add chain ip6 nat output { type nat hook output priority -100; }"
+  ${nftables_cmd} "add chain ip6 nat output { type nat hook output priority -100; }"
 }
 
 qubes() {
@@ -280,139 +289,139 @@ nft_forward() {
   #$nftables_cmd add rule inet filter forward counter log prefix \"Whonix_blocked_forward4:\"
 
   ## Reject everything.
-  $nftables_cmd add rule inet filter forward counter reject
+  ${nftables_cmd} add rule inet filter forward counter reject
 }
 
 nft_output() {
   ## Allow outgoing traffic on VPN interface,
   ## if VPN_FIREWALL mode is enabled.
   ## DISABLED BY DEFAULT.
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    $nftables_cmd add rule inet filter output oifname "$VPN_INTERFACE" counter accept
+  if [ "${VPN_FIREWALL}" = "1" ]; then
+    ${nftables_cmd} add rule inet filter output oifname "${VPN_INTERFACE}" counter accept
   fi
 
   local no_nat_user_item
-  for no_nat_user_item in $NO_NAT_USERS; do
-    $nftables_cmd add rule inet nat output skuid "$no_nat_user_item" counter return
+  for no_nat_user_item in ${NO_NAT_USERS}; do
+    ${nftables_cmd} add rule inet nat output skuid "${no_nat_user_item}" counter return
   done
 
-  if [ "$firewall_mode_detected" = "full" ]; then
+  if [ "${firewall_mode_detected}" = "full" ]; then
     ## Redirect of Gateway DNS traffic to DNS_PORT_GATEWAY.
     ## DISABLED BY DEFAULT. default. Using SocksPort instead.
-    if [ "$GATEWAY_TRANSPARENT_DNS" = "1" ]; then
-      $nftables_cmd add rule inet nat output udp dport 53 counter redirect to :"$DNS_PORT_GATEWAY"
+    if [ "${GATEWAY_TRANSPARENT_DNS}" = "1" ]; then
+      ${nftables_cmd} add rule inet nat output udp dport 53 counter redirect to :"${DNS_PORT_GATEWAY}"
     fi
 
     ## Exclude connections to local network, Whonix-Workstation, VirtualBox from being redirected through Tor,
     ## unless VPN_FIREWALL mode is enabled.
     ## ENABLED BY DEFAULT.
-    if [ ! "$VPN_FIREWALL" = "1" ]; then
+    if [ ! "${VPN_FIREWALL}" = "1" ]; then
       local non_tor_gateway_item
-      for non_tor_gateway_item in $NON_TOR_GATEWAY; do
-        $nftables_cmd add rule inet nat output ip daddr "$non_tor_gateway_item" counter return
+      for non_tor_gateway_item in ${NON_TOR_GATEWAY}; do
+        ${nftables_cmd} add rule inet nat output ip daddr "${non_tor_gateway_item}" counter return
       done
-      for non_tor_gateway_item in $NON_TOR_GATEWAY_IP6; do
-        $nftables_cmd add rule inet nat output ip6 daddr "$non_tor_gateway_item" counter return
+      for non_tor_gateway_item in ${NON_TOR_GATEWAY_IP6}; do
+        ${nftables_cmd} add rule inet nat output ip6 daddr "${non_tor_gateway_item}" counter return
       done
     fi
 
     ## Redirect all Gateway TCP traffic to TRANS_PORT_GATEWAY.
     ## DISABLED BY DEFAULT. Using SocksPort instead.
-    if [ "$GATEWAY_TRANSPARENT_TCP" = "1" ]; then
-      $nftables_cmd add rule inet nat output tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"$TRANS_PORT_GATEWAY"
+    if [ "${GATEWAY_TRANSPARENT_TCP}" = "1" ]; then
+      ${nftables_cmd} add rule inet nat output tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"${TRANS_PORT_GATEWAY}"
     fi
   fi
 
   ## Existing connections are accepted.
-  $nftables_cmd add rule inet filter output ct state established counter accept
+  ${nftables_cmd} add rule inet filter output ct state established counter accept
 
   # Accept ICMPv6 neighbor discovery.
-  $nftables_cmd add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+  ${nftables_cmd} add rule inet filter output icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
-  if [ "$firewall_mode_detected" = "full" ]; then
+  if [ "${firewall_mode_detected}" = "full" ]; then
     ## Accept outgoing connections to local network, Whonix-Workstation and VirtualBox,
     ## unless VPN_FIREWALL mode is enabled.
     ## ENABLED BY DEFAULT.
-    if [ ! "$VPN_FIREWALL" = "1" ]; then
+    if [ ! "${VPN_FIREWALL}" = "1" ]; then
       local non_tor_gateway_item
-      for non_tor_gateway_item in $NON_TOR_GATEWAY; do
-        $nftables_cmd add rule inet filter output ip daddr "$non_tor_gateway_item" counter accept
+      for non_tor_gateway_item in ${NON_TOR_GATEWAY}; do
+        ${nftables_cmd} add rule inet filter output ip daddr "${non_tor_gateway_item}" counter accept
       done
-      for non_tor_gateway_item in $NON_TOR_GATEWAY_IP6; do
-        $nftables_cmd add rule inet filter output ip6 daddr "$non_tor_gateway_item" counter accept
+      for non_tor_gateway_item in ${NON_TOR_GATEWAY_IP6}; do
+        ${nftables_cmd} add rule inet filter output ip6 daddr "${non_tor_gateway_item}" counter accept
       done
     fi
   fi
 
-  if [ "$firewall_mode_detected" = "full" ]; then
+  if [ "${firewall_mode_detected}" = "full" ]; then
     ## Accept outgoing connections to local network,
     ## when VPN_FIREWALL mode is enabled.
     ## DISABLED BY DEFAULT.
-    if [ "$VPN_FIREWALL" = "1" ]; then
+    if [ "${VPN_FIREWALL}" = "1" ]; then
       local local_net_item
-      for local_net_item in $LOCAL_NET; do
-        $nftables_cmd add rule inet filter output ip daddr "$local_net_item" counter accept
+      for local_net_item in ${LOCAL_NET}; do
+        ${nftables_cmd} add rule inet filter output ip daddr "${local_net_item}" counter accept
       done
-      for local_net_item in $LOCAL_NET_IP6; do
-        $nftables_cmd add rule inet filter output ip6 daddr "$local_net_item" counter accept
+      for local_net_item in ${LOCAL_NET_IP6}; do
+        ${nftables_cmd} add rule inet filter output ip6 daddr "${local_net_item}" counter accept
       done
     fi
   fi
 
   ## Prevent connections to Tor SocksPorts.
   ## https://forums.whonix.org/t/iptables-block-network-access-until-sdwdate-succeeded/18872
-  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+  if [ "${firewall_mode_detected}" = "timesync-fail-closed" ]; then
     output_cmd "INFO: not opening Internal TCP port(s): $(output_trim "${INTERNAL_OPEN_PORTS}"), except 9108 for sdwdate, because firewall_mode_detected=${firewall_mode_detected}"
     local socks_port_item
-    for socks_port_item in $INTERNAL_OPEN_PORTS; do
-      true "socks_port_item: $socks_port_item"
+    for socks_port_item in ${INTERNAL_OPEN_PORTS}; do
+      true "socks_port_item: ${socks_port_item}"
       ## SOCKS_PORT_SDWDATE
-      if [ "$socks_port_item" = "9108" ]; then
+      if [ "${socks_port_item}" = "9108" ]; then
         ## Permit connections to SOCKS_PORT_SDWDATE 9108 even in
         ## 'timesync-fail-closed' mode. Otherwise, sdwdate could never
         ## succeed and firewall_mode_detected could never change to 'full'.
         continue
       fi
-      $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$socks_port_item" counter reject
+      ${nftables_cmd} add rule inet filter output ip daddr 127.0.0.1 tcp dport "${socks_port_item}" counter reject
       ## TODO: IPv6 test
-      $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$socks_port_item" counter reject
+      ${nftables_cmd} add rule inet filter output ip6 daddr ::1 tcp dport "${socks_port_item}" counter reject
     done
   fi
 
   ## Access to localhost is required even in timesync-fail-closed mode,
   ## otherwise breaks applications such as konsole and kwrite.
-  $nftables_cmd add rule inet filter output oifname "lo" counter accept
+  ${nftables_cmd} add rule inet filter output oifname "lo" counter accept
 
   local no_nat_user_item
-  for no_nat_user_item in $NO_NAT_USERS; do
-    $nftables_cmd add rule inet filter output skuid "$no_nat_user_item" counter accept
+  for no_nat_user_item in ${NO_NAT_USERS}; do
+    ${nftables_cmd} add rule inet filter output skuid "${no_nat_user_item}" counter accept
   done
 
-  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+  if [ "${firewall_mode_detected}" = "timesync-fail-closed" ]; then
     ## Allow sdwdate talking to localhost and Tor in Whonix firewall timesync-fail-closed mode.
     ## Otherwise in Whonix firewall full mode this rule is redundant.
-    if [ -n "$SDWDATE_USER" ]; then
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip daddr 127.0.0.1 counter accept
+    if [ -n "${SDWDATE_USER}" ]; then
+      ${nftables_cmd} add rule inet filter output skuid "${SDWDATE_USER}" ip daddr 127.0.0.1 counter accept
       ## TODO: IPV6 test
-      $nftables_cmd add rule inet filter output skuid "$SDWDATE_USER" ip6 daddr ::1 counter accept
+      ${nftables_cmd} add rule inet filter output skuid "${SDWDATE_USER}" ip6 daddr ::1 counter accept
     fi
 
-    if [ -n "$SYSTEMCHECK_USER" ]; then
-      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip daddr 127.0.0.1 counter accept
+    if [ -n "${SYSTEMCHECK_USER}" ]; then
+      ${nftables_cmd} add rule inet filter output skuid "${SYSTEMCHECK_USER}" ip daddr 127.0.0.1 counter accept
       ## TODO: IPV6 test
-      $nftables_cmd add rule inet filter output skuid "$SYSTEMCHECK_USER" ip6 daddr ::1 counter accept
+      ${nftables_cmd} add rule inet filter output skuid "${SYSTEMCHECK_USER}" ip6 daddr ::1 counter accept
     fi
 
-    $nftables_cmd add rule inet filter output ip daddr 127.0.0.1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+    ${nftables_cmd} add rule inet filter output ip daddr 127.0.0.1 tcp dport "${CONTROL_PORT_FILTER_PROXY_PORT}" counter accept
     ## TODO: IPV6 test
-    $nftables_cmd add rule inet filter output ip6 daddr ::1 tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+    ${nftables_cmd} add rule inet filter output ip6 daddr ::1 tcp dport "${CONTROL_PORT_FILTER_PROXY_PORT}" counter accept
   fi
 
   ## Log.
   #$nftables_cmd add rule inet filter output counter log prefix \"Whonix_blocked_output4:\"
 
   ## Reject all other outgoing traffic.
-  $nftables_cmd add rule inet filter output counter reject
+  ${nftables_cmd} add rule inet filter output counter reject
 }
 
 variable_list="
@@ -476,7 +485,7 @@ source_only
 
 main() {
   get_options "${@}"
-  if [ "$source_only" = "1" ]; then
+  if [ "${source_only}" = "1" ]; then
     return 0
   fi
   init

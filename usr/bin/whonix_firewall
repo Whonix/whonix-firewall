@@ -11,6 +11,13 @@
 ## firewall starter wrapper
 #### meta end
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+
 set -eu -o pipefail -o errtrace
 
 if [ -f "/run/qubes/this-is-templatevm" ]; then
@@ -22,6 +29,6 @@ elif [ -f "/usr/share/anon-ws-base-files/workstation" ]; then
 elif [ -f "/usr/share/libvirt-dist/marker" ]; then
   whonix-host-firewall "$@"
 else
-  echo "ERROR: Neither file /usr/share/anon-gw-base-files/gateway nor file /usr/share/anon-ws-base-files/workstation exists! If this is a Whonix-Gateway, package anon-gw-base-files needs to be installed. If this is a Whonix-Workstation, package anon-ws-base-files needs to be installed." >&2
+  printf '%s\n' "ERROR: Neither file /usr/share/anon-gw-base-files/gateway nor file /usr/share/anon-ws-base-files/workstation exists! If this is a Whonix-Gateway, package anon-gw-base-files needs to be installed. If this is a Whonix-Workstation, package anon-ws-base-files needs to be installed." >&2
   exit 1
 fi
