@@ -1,9 +1,119 @@
+commit dcf310818a4351ae13c46565b109418cca6462ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 15 11:10:51 2026 -0400
+
+    refactoring
+
+commit cd642cd35ea025fc12a964f75781354b7599d23a
+Merge: 8b3bc94 eb007ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 15 11:10:03 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit eb007ee33569320b50e40cf60cf522b44ada6900
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Aug 14 18:12:16 2026 -0400
+
+    Remove some unnecessary shellcheck disable directives
+
+commit c9c83f5ba454416c3aafc2114a8bd21434820fa6
+Merge: 991243e b5cd151
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Aug 14 16:41:12 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit b5cd151d3cc3c5a377c188d38aebcc16aa36a7f9
+Author: claude (dev182 e09ec5cf-4ebf-4e1b-88e5-55fbac6ef1d3) <noreply@anthropic.com>
+Date:   Mon Aug 10 13:52:08 2026 -0400
+
+    reloadfirewall: capture firewall exit code under errexit
+
+    Running the firewall on one line and reading "$?" on the next aborted the
+    script under errexit whenever the firewall failed, so the ERROR branch and
+    its diagnostic never ran. Capture the result inline via an if so a nonzero
+    exit is reported instead of silently aborting.
+
+    Add a self-contained regression test that stubs a failing firewall on PATH
+    and asserts the ERROR branch is still reached (fails on the old code).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 3bd439c7b2c9cce5d6eb90110070e1026376aab2
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 08:10:25 2026 -0400
+
+    whonix-firewall: R-010 strict for the 10 standalone scripts
+
+    firewall-common is NOT converted: it is sourced by three of these scripts,
+    so a strict-mode block in it would rewrite each caller's shell options.
+
+    Real nounset trap fixed: enable-firewall used
+    '[ -n "${nftables_cmd}" ] || nftables_cmd="nft"', which aborts on the unset
+    variable before it can apply the default. firewall-common already uses the
+    safe '${nftables_cmd:-}' form one file over, so this is now consistent with
+    its sibling.
+
+    firewall30default and firewall50user are launched from .desktop 'Exec='
+    lines, so they are genuinely executed rather than sourced.
+
+    Also: safe-rm (R-120), echo -> printf (R-034), SC2046 quoting on the
+    qubesdb-read substitution in the stream-isolation proxy URL, SC2250 braces,
+    and 'source-path=SCRIPTDIR' plus a reasoned SC2154 waiver on the three
+    scripts that source firewall-common -- shellcheck resolves a relative
+    source= from the CWD, not the script's directory, and cannot follow the
+    fragment in an isolated checkout.
+
+    The branch was stale (already merged, 5 commits behind); fast-forwarded to
+    master first so CI runs the current workflow set, including the CodeQL
+    consumer workflow added since.
+
+    Verified in an ISOLATED checkout (ci-repro.sh), gate exit 0. Sandbox
+    differential vs the pre-change scripts, output AND exit code: 10 cases, all
+    identical -- which matters here, because a partially-applied ruleset is
+    worse than none.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit a13abdc76c4a19eac6fc8eb6c79993cf495381e5
+Merge: 8b3bc94 31a62bd
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Sat Aug 1 05:01:33 2026 -0400
+
+    Merge pull request #14 from org-ai-assisted/ai
+
+    add CodeQL consumer workflow (actions)
+
+commit 8b3bc94086820062397c3892c49d94abbc7bbd30
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 1 08:48:06 2026 +0000
+
+    bumped changelog version
+
 commit 13b9058a20af5e462ddd02a37b8715b39315c2b6
 Merge: 991243e 20deb2e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jul 31 13:19:29 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/org-ai-assisted/master'
+
+commit 31a62bd24be495bfe5c01ad7f133c4cf3ec93a0c
+Author: claude (dev142 b93fb2c6-e15f-4d45-8566-f3ded893b70e) <noreply@anthropic.com>
+Date:   Fri Jul 31 12:59:30 2026 -0400
+
+    add CodeQL consumer workflow (actions)
+
+    - Replaces GitHub default-setup CodeQL (web-UI state, no file
+      representation) with the org's file-based consumer wrapper.
+    - Byte-identical copy of
+      developer-meta-files/consumer-templates/.github/workflows/.
+    - No .github/dm-consumer.yml needed: consumer-codeql-actions.yml
+      passes no dm-consumer-section.
+    - queries stays the reusable's default security-and-quality,
+      a superset of the security-extended suite default setup used.
+
+    Generated with assistance from Claude Code.
 
 commit 20deb2ecfffaed678bde822113d75c025988cf7f
 Merge: 991243e 0db850b
