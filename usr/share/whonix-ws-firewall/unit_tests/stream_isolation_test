@@ -20,7 +20,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
-set -o pipefail
+export LC_ALL=C
 set -o errtrace
 
 error_handler() {
