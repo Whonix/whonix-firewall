@@ -1,3 +1,112 @@
+commit 46b0a51e8b00e394d26c3e2761e337c88ebb7fa6
+Merge: c9aabf6 2a82802
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 8 10:37:35 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 2a82802bf17d9411a9b4cde67b0c9e4e1958dd1c
+Merge: 1603b9c c9aabf6
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 6 01:22:06 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 1603b9cfa43a879d67204b7a9c2b2d56f0c247be
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Sep 4 19:22:52 2026 -0400
+
+    Cleanup a stray errtrace enable
+
+commit 4b3102ffbd6b770d5b526ec832acefbebc1af32d
+Merge: eb007ee b26284e
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Fri Sep 4 18:43:43 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit b26284e84f1572e2d830e025ccb44773d60e9713
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon Aug 24 23:31:35 2026 -0400
+
+    ci: drop orphaned consumer-codex-review.yml (reusable decommissioned)
+
+commit a7898d2d41bdf1370f71c28e9ecb45be39e6748b
+Author: assisted-by-ai (Bot Account) (Machine Account) <228987186+assisted-by-ai@users.noreply.github.com>
+Date:   Mon Aug 24 23:31:33 2026 -0400
+
+    ci: drop orphaned consumer-claude-code.yml (reusable decommissioned)
+
+commit 2b0476f7a10d275818e1317a2c3335d3ca4a49d6
+Author: claude (dev272 e8b76afb-795c-4739-8ebd-023de854021e) <noreply@anthropic.com>
+Date:   Fri Aug 21 05:17:05 2026 -0400
+
+    whonix-firewall: declare the safe-rm dependency
+
+    - firewall-common's init() and firewall-restarter use safe-rm; declare it in
+      Depends so a missing safe-rm cannot abort firewall load (fail-closed ->
+      network lockdown). ai-review (codex) flagged the previously-undeclared dep.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit ffb4a33e51368a917be8b439cb4aec4622df73e3
+Author: claude (dev272 e8b76afb-795c-4739-8ebd-023de854021e) <noreply@anthropic.com>
+Date:   Fri Aug 21 05:09:33 2026 -0400
+
+    whonix-firewall: drop redundant duplicate 'set -o pipefail' in stream_isolation_test
+
+    - Remove the redundant second 'set -o pipefail' after 'shopt -s shift_verbose';
+      add 'export LC_ALL=C' to complete the R-010 block.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 4a2becb0c3977b2cfb396b64ad86c81a8c2e0698
+Author: claude (dev272 e8b76afb-795c-4739-8ebd-023de854021e) <noreply@anthropic.com>
+Date:   Fri Aug 21 05:07:02 2026 -0400
+
+    whonix-firewall: source helper-scripts via HELPER_SCRIPTS_PATH + clear whole-file gate debt
+
+    firewall-common: SC1091 source conversion + full pre-push-static gate
+    cleanup. Sourced fragment; the three parent scripts (whonix-{gateway,
+    workstation,host}-firewall) already establish the full strict-mode block
+    (incl. shopt -s inherit_errexit) before sourcing it.
+
+    Conversion:
+    - source: /usr/libexec/helper-scripts/strings.bsh ->
+      "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
+      (runtime-identical when unset; overridable for isolated tests).
+
+    Whole-file gate debt fixed:
+    - R-013: split 'set -eu -o pipefail -o errtrace' into one 'set -o <name>'
+      per line, long names.
+    - R-010: added the full strict block (set -o errexit/nounset/pipefail/
+      errtrace, shopt -s inherit_errexit/shift_verbose, export LC_ALL=C).
+    - SC2250 (require-variable-braces): braced all 141 flagged occurrences
+      (shellcheck --format=diff autofix; braces only, no quoting changes).
+    - R-070/R-074: '"") break ;;' case arm split to its own lines.
+    - R-034: converted the 7 real echoes (error_handler x3, usage,
+      write_nft_script, output_cmd, output_trim) to printf '%s\n';
+      each verified output-equivalent, incl. echo "$@" -> printf '%s\n' "$*"
+      (space-joined + newline).
+    - R-120: 'rm -f' -> 'safe-rm -f' in init().
+
+    inherit_errexit audit (behavioural): errexit was already set and the
+    parents already run this fragment under inherit_errexit. Every command
+    substitution here is single-command, so its failure was ALWAYS governed
+    by the outer command's errexit -- inherit_errexit only changes
+    MULTI-command substitutions, of which there are none. The tolerant ones
+    already carry '|| true' (id -u lookups, lines 44-52) or '|| { ... }'
+    (bash -n, source_config_folder). Empirically confirmed. NO new '|| true'
+    guard was required; none added.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit c9aabf67e94b68d0da6a0d32449297a66c939f2c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Aug 17 05:01:01 2026 +0000
+
+    bumped changelog version
+
 commit dcf310818a4351ae13c46565b109418cca6462ee
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Aug 15 11:10:51 2026 -0400
