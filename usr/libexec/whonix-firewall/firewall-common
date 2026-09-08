@@ -5,10 +5,16 @@
 ## Copyright (C) 2024 - 2024 Benjamin Grande M. S. <ben.grande.b@gmail.com>
 ## See the file COPYING for copying conditions.
 
-set -eu -o pipefail -o errtrace
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
 
 # shellcheck source=../../../../../kicksecure/helper-scripts/usr/libexec/helper-scripts/strings.bsh
-source /usr/libexec/helper-scripts/strings.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/strings.bsh
 
 ## Function to use shellcheck on all the variables inside the function.
 # shellcheck disable=SC2034
@@ -122,15 +128,15 @@ print_variables() {
 }
 
 error_handler() {
-  echo "${0##*/} ##################################################"
-  echo "${0##*/} ERROR: Whonix firewall script failed!"
-  echo "${0##*/} ##################################################"
+  printf '%s\n' "${0##*/} ##################################################"
+  printf '%s\n' "${0##*/} ERROR: Whonix firewall script failed!"
+  printf '%s\n' "${0##*/} ##################################################"
   exit 1
 }
 trap "error_handler" ERR
 
 usage() {
-  echo "usage: ${0##*/} [options]
+  printf '%s\n' "usage: ${0##*/} [options]
  -s, --source              only source the script
  -n, --dry-run             dry-run, do not load new script
  -i, --info                print informational messages
@@ -165,7 +171,9 @@ get_options(){
           exit 1
         fi
         ;;
-      "") break ;;
+      "")
+        break
+        ;;
       -h | --help | *)
         usage
         exit 1
@@ -180,7 +188,7 @@ init() {
     output_cmd "OK: Firewall will not be loaded because dry-run is set"
   fi
   mkdir --parents "${firewall_dir}"
-  rm -f "${firewall_script}"
+  safe-rm -f "${firewall_script}"
 }
 
 source_config_folder() {
@@ -190,29 +198,29 @@ source_config_folder() {
     /etc/whonix_firewall.d/*.conf \
     /usr/local/etc/whonix_firewall.d/*.conf; do
     bash_n_exit_code="0"
-    bash_n_output="$(bash -n "$i" 2>&1)" || {
+    bash_n_output="$(bash -n "${i}" 2>&1)" || {
       bash_n_exit_code="$?"
       true
     }
-    if [ ! "$bash_n_exit_code" = "0" ]; then
-      output_cmd "ERROR: Invalid config file: $i
-   bash_n_exit_code: $bash_n_exit_code
+    if [ ! "${bash_n_exit_code}" = "0" ]; then
+      output_cmd "ERROR: Invalid config file: ${i}
+   bash_n_exit_code: ${bash_n_exit_code}
    bash_n_output:
-   $bash_n_output" >&2
+   ${bash_n_output}" >&2
       exit 1
     fi
     # shellcheck disable=SC1090
-    source "$i"
+    source "${i}"
   done
   shopt -u nullglob
 }
 
 write_nft_script() {
-  echo "$@" | tee -a "${firewall_script}" >/dev/null
+  printf '%s\n' "$*" | tee -a "${firewall_script}" >/dev/null
 }
 
 nft_script_header() {
-  $nftables_cmd "#!/usr/sbin/nft -f"
+  ${nftables_cmd} "#!/usr/sbin/nft -f"
 }
 
 nft_check() {
@@ -256,11 +264,11 @@ date_cmd() {
 }
 
 output_cmd() {
-  echo "$(date_cmd) - ${0##*/} - $*"
+  printf '%s\n' "$(date_cmd) - ${0##*/} - $*"
 }
 
 output_trim() {
-  echo "${1}" | tr -s "\n" " " | sed -e "s/^ //" -e "s/ $//"
+  printf '%s\n' "${1}" | tr -s "\n" " " | sed -e "s/^ //" -e "s/ $//"
 }
 
 firewall_mode_detection() {
@@ -298,7 +306,7 @@ firewall_mode_detection() {
     error_handler
   fi
 
-  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+  if [ "${firewall_mode_detected}" = "timesync-fail-closed" ]; then
     output_cmd "OK: Running in timesync-fail-closed mode."
     output_cmd "OK: (Only local Tor control port connections and torified sdwdate allowed.)"
   else
@@ -310,146 +318,146 @@ firewall_mode_detection() {
 nft_reject_invalid_outgoing_packages() {
   ## Drop invalid outgoing packages,
   ## unless NO_REJECT_INVALID_OUTGOING_PACKAGES is set to 1.
-  if [ ! "$NO_REJECT_INVALID_OUTGOING_PACKAGES" = "1" ]; then
+  if [ ! "${NO_REJECT_INVALID_OUTGOING_PACKAGES}" = "1" ]; then
     ## https://lists.torproject.org/pipermail/tor-talk/2014-March/032507.html
-    $nftables_cmd add rule inet filter output ct state invalid counter reject
+    ${nftables_cmd} add rule inet filter output ct state invalid counter reject
     #$nftables_cmd add rule inet filter output oifname != "lo" ip saddr != 127.0.0.1 ip daddr != 127.0.0.1 tcp flags "&" "(fin|ack)" == "fin|ack" counter reject
 
     ## DROP INVALID SYN PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject
-    $nftables_cmd add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject
+    ${nftables_cmd} add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|ack" counter reject
+    ${nftables_cmd} add rule inet filter output tcp flags "&" "(fin|syn)" == "fin|syn" counter reject
+    ${nftables_cmd} add rule inet filter output tcp flags "&" "(syn|rst)" == "syn|rst" counter reject
 
     ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
     ## TODO: IPv6?
-    $nftables_cmd add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject
+    ${nftables_cmd} add rule inet filter output ip frag-off "&" 0x1fff != 0 counter reject
 
     ## DROP INCOMING MALFORMED XMAS PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject
+    ${nftables_cmd} add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == "fin|syn|rst|psh|ack|urg" counter reject
 
     ## DROP INCOMING MALFORMED NULL PACKETS
-    $nftables_cmd add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject
+    ${nftables_cmd} add rule inet filter output tcp flags "&" "(fin|syn|rst|psh|ack|urg)" == 0x0 counter reject
   fi
 }
 
 nft_drop_invalid_incoming_packages() {
   ## DROP INVALID
-  $nftables_cmd add rule inet filter input ct state invalid counter drop
+  ${nftables_cmd} add rule inet filter input ct state invalid counter drop
 
   ## DROP INVALID SYN PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|ack" counter drop
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn)" == "fin|syn" counter drop
-  $nftables_cmd add rule inet filter input tcp flags "&" "(syn|rst)" == "syn|rst" counter drop
+  ${nftables_cmd} add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|ack" counter drop
+  ${nftables_cmd} add rule inet filter input tcp flags "&" "(fin|syn)" == "fin|syn" counter drop
+  ${nftables_cmd} add rule inet filter input tcp flags "&" "(syn|rst)" == "syn|rst" counter drop
 
   ## DROP PACKETS WITH INCOMING FRAGMENTS. THIS ATTACK ONCE RESULTED IN KERNEL PANICS
-  $nftables_cmd add rule inet filter input ip frag-off "&" 0x1fff != 0 counter drop
+  ${nftables_cmd} add rule inet filter input ip frag-off "&" 0x1fff != 0 counter drop
   ## TODO: Useful for IPv6?
 
   ## DROP INCOMING MALFORMED XMAS PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|psh|ack|urg" counter drop
+  ${nftables_cmd} add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" "fin|syn|rst|psh|ack|urg" counter drop
 
   ## DROP INCOMING MALFORMED NULL PACKETS
-  $nftables_cmd add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
+  ${nftables_cmd} add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
 }
 
 nft_input_rules_gateway() {
   ## Traffic on the loopback interface is accepted.
-  $nftables_cmd add rule inet filter input iifname "lo" counter accept
+  ${nftables_cmd} add rule inet filter input iifname "lo" counter accept
 
   ## Established incoming connections are always accepted.
   ## Optionally, allow Related incoming connections when
   ## GATEWAY_ALLOW_INCOMING_RELATED_STATE mode is enabled.
-  if [ "$GATEWAY_ALLOW_INCOMING_RELATED_STATE" = "1" ]; then
-    $nftables_cmd add rule inet filter input ct state related,established counter accept
+  if [ "${GATEWAY_ALLOW_INCOMING_RELATED_STATE}" = "1" ]; then
+    ${nftables_cmd} add rule inet filter input ct state related,established counter accept
   else
-    $nftables_cmd add rule inet filter input ct state established counter accept
+    ${nftables_cmd} add rule inet filter input ct state established counter accept
   fi
 
   ## Allow fragmentation-needed ICMP packets to avoid MTU problems
   ## when Whonix-Gateway is connected to a link that has smaller
   ## MTU than 1500 assumed by Whonix-Gateway
-  if [ "$GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED" = "1" ]; then
-    $nftables_cmd add rule inet filter input icmp type destination-unreachable icmp code frag-needed ct state related counter accept
+  if [ "${GATEWAY_ALLOW_INCOMING_ICMP_FRAG_NEEDED}" = "1" ]; then
+    ${nftables_cmd} add rule inet filter input icmp type destination-unreachable icmp code frag-needed ct state related counter accept
     ## ICMPv6 Packet Too Big is the IPv6 equivalent of ICMPv4 frag-needed.
     ## Required for IPv6 Path MTU Discovery.
-    $nftables_cmd add rule inet filter input icmpv6 type packet-too-big ct state related counter accept
+    ${nftables_cmd} add rule inet filter input icmpv6 type packet-too-big ct state related counter accept
   fi
 
   # Accept ICMPv6 neighbor discovery.
-  $nftables_cmd add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
+  ${nftables_cmd} add rule inet filter input icmpv6 type "{ nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect }" counter accept
 
   ## Drop all incoming ICMP traffic by default.
   ## All incoming connections are dropped by default anyway, but should a user
   ## allow incoming ports (such as for incoming SSH or FlashProxy), ICMP should
   ## still be dropped to filter for example ICMP time stamp requests.
-  if [ ! "$GATEWAY_ALLOW_INCOMING_ICMP" = "1" ]; then
-    $nftables_cmd add rule inet filter input ip protocol icmp counter drop
-    $nftables_cmd add rule inet filter input ip6 nexthdr icmpv6 counter drop
+  if [ ! "${GATEWAY_ALLOW_INCOMING_ICMP}" = "1" ]; then
+    ${nftables_cmd} add rule inet filter input ip protocol icmp counter drop
+    ${nftables_cmd} add rule inet filter input ip6 nexthdr icmpv6 counter drop
   fi
 
   ## Allow all incoming connections on the virtual VPN network interface,
   ## when VPN_FIREWALL mode is enabled.
   ## DISABLED BY DEFAULT.
-  if [ "$VPN_FIREWALL" = "1" ]; then
-    $nftables_cmd add rule inet filter input iifname "$VPN_INTERFACE" counter accept
+  if [ "${VPN_FIREWALL}" = "1" ]; then
+    ${nftables_cmd} add rule inet filter input iifname "${VPN_INTERFACE}" counter accept
   fi
 
   local ext_if_item
 
-  for ext_if_item in $EXT_IF; do
+  for ext_if_item in ${EXT_IF}; do
     ## Allow incoming SSH connections on the external interface.
     ## DISABLED BY DEFAULT. For testing/debugging only.
-    if [ "$GATEWAY_ALLOW_INCOMING_SSH" = "1" ]; then
-      $nftables_cmd add rule inet filter input iifname "$ext_if_item" tcp dport 22 counter accept
+    if [ "${GATEWAY_ALLOW_INCOMING_SSH}" = "1" ]; then
+      ${nftables_cmd} add rule inet filter input iifname "${ext_if_item}" tcp dport 22 counter accept
     fi
 
     ## Allow incoming Flash Proxy connections on the external interface.
     ## This has NOTHING to do with Adobe Flash.
     ## DISABLED BY DEFAULT.
-    if [ "$GATEWAY_ALLOW_INCOMING_FLASHPROXY" = "1" ]; then
-      $nftables_cmd add rule inet filter input iifname "$ext_if_item" tcp dport "$FLASHPROXY_PORT" counter accept
+    if [ "${GATEWAY_ALLOW_INCOMING_FLASHPROXY}" = "1" ]; then
+      ${nftables_cmd} add rule inet filter input iifname "${ext_if_item}" tcp dport "${FLASHPROXY_PORT}" counter accept
     fi
 
     local local_port_to_open
     if [ "${info_enabled}" = "1" ]; then
       output_cmd "INFO: Opening External TCP port(s): $(output_trim "${EXTERNAL_OPEN_PORTS:-"NONE"}")"
     fi
-    for local_port_to_open in $EXTERNAL_OPEN_PORTS; do
-      $nftables_cmd add rule inet filter input iifname "$ext_if_item" tcp dport "$local_port_to_open" counter accept
+    for local_port_to_open in ${EXTERNAL_OPEN_PORTS}; do
+      ${nftables_cmd} add rule inet filter input iifname "${ext_if_item}" tcp dport "${local_port_to_open}" counter accept
     done
 
     local local_udp_port_to_open
     if [ "${info_enabled}" = "1" ]; then
       output_cmd "INFO: Opening External UDP port(s): $(output_trim "${EXTERNAL_UDP_OPEN_PORTS:-"NONE"}")"
     fi
-    for local_udp_port_to_open in $EXTERNAL_UDP_OPEN_PORTS; do
-      $nftables_cmd add rule inet filter input udp dport "$local_udp_port_to_open" counter accept
+    for local_udp_port_to_open in ${EXTERNAL_UDP_OPEN_PORTS}; do
+      ${nftables_cmd} add rule inet filter input udp dport "${local_udp_port_to_open}" counter accept
     done
 
-    if [ "$EXTERNAL_OPEN_ALL" = "true" ]; then
+    if [ "${EXTERNAL_OPEN_ALL}" = "true" ]; then
       if [ "${info_enabled}" = "1" ]; then
         output_cmd "INFO: EXTERNAL_OPEN_ALL='true', opening all External ports"
       fi
-      $nftables_cmd add rule inet filter input counter accept
+      ${nftables_cmd} add rule inet filter input counter accept
     fi
   done
 
-  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+  if [ "${firewall_mode_detected}" = "timesync-fail-closed" ]; then
     true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
     return 0
   fi
 
-  for ext_if_item in $EXT_IF; do
+  for ext_if_item in ${EXT_IF}; do
     ## Allow incoming DIRPORT connections for an optional Tor relay.
     ## DISABLED BY DEFAULT.
-    if [ "$GATEWAY_ALLOW_INCOMING_DIR_PORT" = "1" ]; then
-      $nftables_cmd add rule inet filter input iifname "$ext_if_item" tcp dport "$DIR_PORT" counter accept
+    if [ "${GATEWAY_ALLOW_INCOMING_DIR_PORT}" = "1" ]; then
+      ${nftables_cmd} add rule inet filter input iifname "${ext_if_item}" tcp dport "${DIR_PORT}" counter accept
     fi
 
     ## Allow incoming ORPORT connections for an optional Tor relay.
     ## DISABLED BY DEFAULT.
-    if [ "$GATEWAY_ALLOW_INCOMING_OR_PORT" = "1" ]; then
-      $nftables_cmd add rule inet filter input iifname "$ext_if_item" tcp dport "$OR_PORT" counter accept
+    if [ "${GATEWAY_ALLOW_INCOMING_OR_PORT}" = "1" ]; then
+      ${nftables_cmd} add rule inet filter input iifname "${ext_if_item}" tcp dport "${OR_PORT}" counter accept
     fi
 
     ## Custom Open Ports on external interface
@@ -465,36 +473,36 @@ nft_input_rules_gateway() {
   local int_tif_item
   local int_if_item
 
-  for int_tif_item in $INT_TIF; do
-    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
+  for int_tif_item in ${INT_TIF}; do
+    if [ "${WORKSTATION_TRANSPARENT_DNS}" = "1" ]; then
       ## Allow DNS traffic to DnsPort.
-      $nftables_cmd add rule inet filter input iifname "$int_tif_item" udp dport "$DNS_PORT_WORKSTATION" counter accept
+      ${nftables_cmd} add rule inet filter input iifname "${int_tif_item}" udp dport "${DNS_PORT_WORKSTATION}" counter accept
     fi
   done
 
-  for int_if_item in $INT_IF; do
-    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
+  for int_if_item in ${INT_IF}; do
+    if [ "${WORKSTATION_TRANSPARENT_TCP}" = "1" ]; then
       ## Allow TCP traffic TransPort.
-      $nftables_cmd add rule inet filter input iifname "$int_if_item" tcp dport "$TRANS_PORT_WORKSTATION" counter accept
+      ${nftables_cmd} add rule inet filter input iifname "${int_if_item}" tcp dport "${TRANS_PORT_WORKSTATION}" counter accept
     fi
   done
 
-  for int_tif_item in $INT_TIF; do
+  for int_tif_item in ${INT_TIF}; do
     ## Allow TCP traffic to Control Port Filter Proxy.
-    if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
-      $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter accept
+    if [ "${CONTROL_PORT_FILTER_PROXY_ENABLE}" = "1" ]; then
+      ${nftables_cmd} add rule inet filter input iifname "${int_tif_item}" tcp dport "${CONTROL_PORT_FILTER_PROXY_PORT}" counter accept
     fi
 
     ## Allow socksified applications.
-    if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+    if [ "${WORKSTATION_ALLOW_SOCKSIFIED}" = "1" ]; then
       if [ "${info_enabled}" = "1" ]; then
         output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='1', Socks Ports will be reachable from the Workstation"
         output_cmd "INFO: opening Internal TCP port(s): $(output_trim "${INTERNAL_OPEN_PORTS}")"
       fi
       local socks_port_item
-      for socks_port_item in $INTERNAL_OPEN_PORTS; do
-        true "socks_port_item: $socks_port_item"
-        $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport "$socks_port_item" counter accept
+      for socks_port_item in ${INTERNAL_OPEN_PORTS}; do
+        true "socks_port_item: ${socks_port_item}"
+        ${nftables_cmd} add rule inet filter input iifname "${int_tif_item}" tcp dport "${socks_port_item}" counter accept
       done
 
       ## Accept ports 9152-9229 prepared for user custom applications.
@@ -502,64 +510,64 @@ nft_input_rules_gateway() {
       if [ "${info_enabled}" = "1" ]; then
         output_cmd "INFO: opening TCP port(s) 9152:9229 for user custom applications"
       fi
-      $nftables_cmd add rule inet filter input iifname "$int_tif_item" tcp dport 9152-9229 counter accept
+      ${nftables_cmd} add rule inet filter input iifname "${int_tif_item}" tcp dport 9152-9229 counter accept
     fi
   done
 
-  for int_if_item in $INT_IF; do
+  for int_if_item in ${INT_IF}; do
     ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
-    if [ "$CONTROL_PORT_FILTER_PROXY_ENABLE" = "1" ]; then
+    if [ "${CONTROL_PORT_FILTER_PROXY_ENABLE}" = "1" ]; then
       local workstation_dest_socksified_item
-      for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
-        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+      for workstation_dest_socksified_item in ${WORKSTATION_DEST_SOCKSIFIED}; do
+        ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" ip daddr "${workstation_dest_socksified_item}" tcp dport "${CONTROL_PORT_FILTER_PROXY_PORT}" counter redirect to :"${CONTROL_PORT_FILTER_PROXY_PORT}"
       done
       local workstation_dest_socksified_ipv6_item
-      for workstation_dest_socksified_ipv6_item in $WORKSTATION_DEST_SOCKSIFIED_IPV6; do
-        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport "$CONTROL_PORT_FILTER_PROXY_PORT" counter redirect to :"$CONTROL_PORT_FILTER_PROXY_PORT"
+      for workstation_dest_socksified_ipv6_item in ${WORKSTATION_DEST_SOCKSIFIED_IPV6}; do
+        ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" ip6 daddr "${workstation_dest_socksified_ipv6_item}" tcp dport "${CONTROL_PORT_FILTER_PROXY_PORT}" counter redirect to :"${CONTROL_PORT_FILTER_PROXY_PORT}"
         ## TODO: IPv6 test
       done
     fi
 
-    if [ "$WORKSTATION_ALLOW_SOCKSIFIED" = "1" ]; then
+    if [ "${WORKSTATION_ALLOW_SOCKSIFIED}" = "1" ]; then
       local socks_port_item
-      for socks_port_item in $INTERNAL_OPEN_PORTS; do
+      for socks_port_item in ${INTERNAL_OPEN_PORTS}; do
         local workstation_dest_socksified_item
-        for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
-          true "socks_port_item: $socks_port_item"
+        for workstation_dest_socksified_item in ${WORKSTATION_DEST_SOCKSIFIED}; do
+          true "socks_port_item: ${socks_port_item}"
           ## Redirect Browser/IRC/TorBirdy, etc. to SocksPort.
-          $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport "$socks_port_item" counter redirect to :"$socks_port_item"
+          ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" ip daddr "${workstation_dest_socksified_item}" tcp dport "${socks_port_item}" counter redirect to :"${socks_port_item}"
         done
         local workstation_dest_socksified_ipv6_item
-        for workstation_dest_socksified_ipv6_item in $WORKSTATION_DEST_SOCKSIFIED_IPV6; do
-          true "socks_port_item: $socks_port_item"
-          $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport "$socks_port_item" counter redirect to :"$socks_port_item"
+        for workstation_dest_socksified_ipv6_item in ${WORKSTATION_DEST_SOCKSIFIED_IPV6}; do
+          true "socks_port_item: ${socks_port_item}"
+          ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" ip6 daddr "${workstation_dest_socksified_ipv6_item}" tcp dport "${socks_port_item}" counter redirect to :"${socks_port_item}"
           ## TODO: IPv6 test
         done
       done
       ## Redirect ports 9152-9229 prepared for user custom applications.
       local workstation_dest_socksified_item
-      for workstation_dest_socksified_item in $WORKSTATION_DEST_SOCKSIFIED; do
-        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip daddr "$workstation_dest_socksified_item" tcp dport 9152-9229 counter redirect
+      for workstation_dest_socksified_item in ${WORKSTATION_DEST_SOCKSIFIED}; do
+        ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" ip daddr "${workstation_dest_socksified_item}" tcp dport 9152-9229 counter redirect
       done
       local workstation_dest_socksified_ipv6_item
-      for workstation_dest_socksified_ipv6_item in $WORKSTATION_DEST_SOCKSIFIED_IPV6; do
-        $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" ip6 daddr "$workstation_dest_socksified_ipv6_item" tcp dport 9152-9229 counter redirect
+      for workstation_dest_socksified_ipv6_item in ${WORKSTATION_DEST_SOCKSIFIED_IPV6}; do
+        ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" ip6 daddr "${workstation_dest_socksified_ipv6_item}" tcp dport 9152-9229 counter redirect
         ## TODO: IPv6 test
       done
     else
       output_cmd "INFO: WORKSTATION_ALLOW_SOCKSIFIED='${WORKSTATION_ALLOW_SOCKSIFIED}', Socks Ports will not be opened"
     fi
 
-    if [ "$WORKSTATION_TRANSPARENT_DNS" = "1" ]; then
+    if [ "${WORKSTATION_TRANSPARENT_DNS}" = "1" ]; then
       ## Redirect remaining DNS traffic to DNS_PORT_WORKSTATION.
       ## Only user installed applications not configured to use a SocksPort are affected.
-      $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" udp dport 53 counter redirect to :"$DNS_PORT_WORKSTATION"
+      ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" udp dport 53 counter redirect to :"${DNS_PORT_WORKSTATION}"
     fi
 
-    if [ "$WORKSTATION_TRANSPARENT_TCP" = "1" ]; then
+    if [ "${WORKSTATION_TRANSPARENT_TCP}" = "1" ]; then
       ## Catch all remaining TCP and redirect to TransPort.
       ## Only user installed applications not configured to use a SocksPort are affected.
-      $nftables_cmd add rule inet nat prerouting iifname "$int_if_item" tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"$TRANS_PORT_WORKSTATION"
+      ${nftables_cmd} add rule inet nat prerouting iifname "${int_if_item}" tcp flags "&" "(fin|syn|rst|ack)" == syn counter redirect to :"${TRANS_PORT_WORKSTATION}"
 
       ## Optionally restrict TransPort.
       ## Replace above rule with a more restrictive one, e.g.:
@@ -575,7 +583,7 @@ nft_input_defaults_gateway() {
   ## Reject anything not explicitly allowed above.
   ## Drop is better than reject here, because we do not want to reveal it's a Whonix-Gateway.
   ## (In case someone running Whonix-Gateway on bare metal.)
-  $nftables_cmd add rule inet filter input counter drop
+  ${nftables_cmd} add rule inet filter input counter drop
 }
 
 nft_forward_gateway() {
@@ -583,11 +591,11 @@ nft_forward_gateway() {
   #$nftables_cmd add rule inet filter forward counter log prefix \"Whonix_blocked_forward4:\"
 
   ## Reject everything.
-  $nftables_cmd add rule inet filter forward counter reject
+  ${nftables_cmd} add rule inet filter forward counter reject
 }
 
 qubes_gateway() {
-  if [ "$firewall_mode_detected" = "timesync-fail-closed" ]; then
+  if [ "${firewall_mode_detected}" = "timesync-fail-closed" ]; then
     true "timesync-fail-closed mode, skipping rest of function ${FUNCNAME[0]}"
     return 0
   fi
@@ -598,10 +606,10 @@ qubes_gateway() {
       ## IPv4: 'ip protocol' matches the IPv4 header protocol field.
       ## IPv6: 'ip6 nexthdr' matches the IPv6 next header field.
       ## ('ip6 protocol' is not valid nftables syntax.)
-      $nftables_cmd add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
-      $nftables_cmd add rule inet nat output ip6 nexthdr udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
-      $nftables_cmd add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
-      $nftables_cmd add rule inet nat output ip6 nexthdr tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
+      ${nftables_cmd} add rule inet nat output ip protocol udp skuid vm-updates ct state new counter dnat to "127.0.0.1:${DNS_PORT_GATEWAY}"
+      ${nftables_cmd} add rule inet nat output ip6 nexthdr udp skuid vm-updates ct state new counter dnat to "[::1]:${DNS_PORT_GATEWAY}"
+      ${nftables_cmd} add rule inet nat output ip protocol tcp skuid vm-updates ct state new counter dnat to "127.0.0.1:${TRANS_PORT_GATEWAY}"
+      ${nftables_cmd} add rule inet nat output ip6 nexthdr tcp skuid vm-updates ct state new counter dnat to "[::1]:${TRANS_PORT_GATEWAY}"
       ## TODO: IPv6: test
     fi
   fi
