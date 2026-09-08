@@ -21,7 +21,6 @@ set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
-set -o errtrace
 
 error_handler() {
   true "ERROR: ERROR!"
