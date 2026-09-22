@@ -283,6 +283,9 @@ test_gateway_timesync() {
   assert_not_contains "gateway-timesync" "${f}" "tcp dport 9108 counter reject"
   ## Transparent proxy rules should NOT be present (skipped in timesync-fail-closed).
   assert_not_contains "gateway-timesync" "${f}" "redirect to :9040"
+  ## uRPF anti-spoofing is UNCONDITIONAL: present even in timesync-fail-closed,
+  ## not gated behind the (absent here) redirect rules.
+  assert_contains "gateway-timesync" "${f}" "fib saddr . iif oif missing counter drop"
 }
 
 test_gateway_timesync_sdwdate_success() {

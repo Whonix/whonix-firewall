@@ -360,6 +360,22 @@ nft_drop_invalid_incoming_packages() {
   ${nftables_cmd} add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
 }
 
+nft_prerouting_antispoof_gateway() {
+  ## Unconditional ingress anti-spoofing (uRPF), independent of firewall_mode:
+  ## declare the chain and populate it together so every mode gets it (not gated
+  ## behind the full-mode redirect rules it defends). Drop a packet whose source
+  ## address is not reachable back via the interface it arrived on (IPv4 + IPv6).
+  ## A compromised Workstation can otherwise forge a source address; for IPv6 the
+  ## forged packet is redirected to a Tor port and the un-NAT'd reply routes out
+  ## the external interface (non-Tor egress). priority raw runs before the nat
+  ## prerouting redirect. IPv4 is also covered by rp_filter=1 (security-misc).
+  ${nftables_cmd} "add chain inet filter prerouting { type filter hook prerouting priority raw; }"
+  local int_if_item
+  for int_if_item in ${INT_IF}; do
+    ${nftables_cmd} add rule inet filter prerouting iifname "${int_if_item}" fib saddr . iif oif missing counter drop
+  done
+}
+
 nft_input_rules_gateway() {
   ## Traffic on the loopback interface is accepted.
   ${nftables_cmd} add rule inet filter input iifname "lo" counter accept
@@ -515,13 +531,6 @@ nft_input_rules_gateway() {
   done
 
   for int_if_item in ${INT_IF}; do
-    ## uRPF anti-spoofing: drop a packet whose source address is not reachable
-    ## back via the interface it arrived on (both IPv4 and IPv6). A compromised
-    ## Workstation can otherwise forge a source address; for IPv6 the forged
-    ## packet is redirected to a Tor port and the un-NAT'd reply routes out the
-    ## external interface (non-Tor egress). IPv4 is also covered by rp_filter=1.
-    ${nftables_cmd} add rule inet filter prerouting iifname "${int_if_item}" fib saddr . iif oif missing counter drop
-
     ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
     if [ "${CONTROL_PORT_FILTER_PROXY_ENABLE}" = "1" ]; then
       local workstation_dest_socksified_item
