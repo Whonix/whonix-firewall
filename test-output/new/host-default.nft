@@ -11,6 +11,7 @@ add table ip6 nat
 add chain inet filter input { type filter hook input priority 0; policy drop; }
 add chain inet filter forward { type filter hook forward priority 0; policy drop; }
 add chain inet filter output { type filter hook output priority 0; policy drop; }
+add chain inet filter prerouting { type filter hook prerouting priority raw; }
 add chain inet nat prerouting { type nat hook prerouting priority -100; }
 add chain inet nat output { type nat hook output priority -100; }
 add chain ip6 nat output { type nat hook output priority -100; }
@@ -28,6 +29,7 @@ add rule inet filter input icmpv6 type packet-too-big ct state related counter a
 add rule inet filter input icmpv6 type { nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect } counter accept
 add rule inet filter input ip protocol icmp counter drop
 add rule inet filter input ip6 nexthdr icmpv6 counter drop
+add rule inet filter prerouting iifname eth1 fib saddr . iif oif missing counter drop
 add rule inet filter input counter drop
 add rule inet filter forward counter reject
 add rule inet filter output ct state invalid counter reject

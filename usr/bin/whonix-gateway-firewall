@@ -266,6 +266,14 @@ nft_defaults() {
   ## Will be lifted below.
   ${nftables_cmd} "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 
+  ## Anti-spoofing (uRPF) at ingress. IPv4 is covered by rp_filter=1
+  ## (security-misc); IPv6 has no rp_filter kernel equivalent, so enforce it here
+  ## for both families. priority raw runs before the nat prerouting redirect, so a
+  ## forged-source packet is dropped before it can be redirected to a Tor port
+  ## (whose un-NAT'd reply would otherwise egress the external interface as
+  ## non-Tor traffic). Rules added by nft_input_rules_gateway.
+  ${nftables_cmd} "add chain inet filter prerouting { type filter hook prerouting priority raw; }"
+
   ${nftables_cmd} "add chain inet nat prerouting { type nat hook prerouting priority -100; }"
   ${nftables_cmd} "add chain inet nat output { type nat hook output priority -100; }"
 

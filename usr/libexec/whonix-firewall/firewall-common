@@ -515,6 +515,13 @@ nft_input_rules_gateway() {
   done
 
   for int_if_item in ${INT_IF}; do
+    ## uRPF anti-spoofing: drop a packet whose source address is not reachable
+    ## back via the interface it arrived on (both IPv4 and IPv6). A compromised
+    ## Workstation can otherwise forge a source address; for IPv6 the forged
+    ## packet is redirected to a Tor port and the un-NAT'd reply routes out the
+    ## external interface (non-Tor egress). IPv4 is also covered by rp_filter=1.
+    ${nftables_cmd} add rule inet filter prerouting iifname "${int_if_item}" fib saddr . iif oif missing counter drop
+
     ## Redirect Control Port Filter Proxy to Control Port Filter Proxy port.
     if [ "${CONTROL_PORT_FILTER_PROXY_ENABLE}" = "1" ]; then
       local workstation_dest_socksified_item

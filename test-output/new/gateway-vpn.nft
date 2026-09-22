@@ -11,6 +11,7 @@ add table ip6 nat
 add chain inet filter input { type filter hook input priority 0; policy drop; }
 add chain inet filter forward { type filter hook forward priority 0; policy drop; }
 add chain inet filter output { type filter hook output priority 0; policy drop; }
+add chain inet filter prerouting { type filter hook prerouting priority raw; }
 add chain inet nat prerouting { type nat hook prerouting priority -100; }
 add chain inet nat output { type nat hook output priority -100; }
 add chain ip6 nat output { type nat hook output priority -100; }
@@ -55,6 +56,7 @@ add rule inet filter input iifname eth1 tcp dport 9124 counter accept
 add rule inet filter input iifname eth1 tcp dport 9125 counter accept
 add rule inet filter input iifname eth1 tcp dport 9150 counter accept
 add rule inet filter input iifname eth1 tcp dport 9152-9229 counter accept
+add rule inet filter prerouting iifname eth1 fib saddr . iif oif missing counter drop
 add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9051 counter redirect to :9051
 add rule inet nat prerouting iifname eth1 ip6 daddr fd19:c33d:88bc::10 tcp dport 9051 counter redirect to :9051
 add rule inet nat prerouting iifname eth1 ip daddr 10.152.152.10 tcp dport 9050 counter redirect to :9050
