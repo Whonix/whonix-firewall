@@ -251,6 +251,8 @@ test_gateway_default() {
   assert_contains "gateway-default" "${f}" "tcp dport 9150 counter accept"
   ## ICMPv6 ND.
   assert_contains "gateway-default" "${f}" "nd-neighbor-solicit"
+  ## uRPF anti-spoofing on the internal interface (IPv4 + IPv6).
+  assert_contains "gateway-default" "${f}" "fib saddr . iif oif missing counter drop"
 }
 
 test_gateway_vpn() {
@@ -281,6 +283,9 @@ test_gateway_timesync() {
   assert_not_contains "gateway-timesync" "${f}" "tcp dport 9108 counter reject"
   ## Transparent proxy rules should NOT be present (skipped in timesync-fail-closed).
   assert_not_contains "gateway-timesync" "${f}" "redirect to :9040"
+  ## uRPF anti-spoofing is UNCONDITIONAL: present even in timesync-fail-closed,
+  ## not gated behind the (absent here) redirect rules.
+  assert_contains "gateway-timesync" "${f}" "fib saddr . iif oif missing counter drop"
 }
 
 test_gateway_timesync_sdwdate_success() {
@@ -397,6 +402,8 @@ test_host_default() {
   assert_contains "host-default" "${f}" "oifname lo counter accept"
   assert_contains "host-default" "${f}" "nd-neighbor-solicit"
   assert_contains "host-default" "${f}" "counter reject"
+  ## uRPF anti-spoofing on the internal interface (IPv4 + IPv6).
+  assert_contains "host-default" "${f}" "fib saddr . iif oif missing counter drop"
 }
 
 test_host_vpn() {
