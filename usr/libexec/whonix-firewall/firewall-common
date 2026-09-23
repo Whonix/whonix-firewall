@@ -360,6 +360,20 @@ nft_drop_invalid_incoming_packages() {
   ${nftables_cmd} add rule inet filter input tcp flags "&" "(fin|syn|rst|psh|ack|urg)" "==" 0x0 counter drop
 }
 
+nft_prerouting_antispoof_gateway() {
+  ## Drop a packet whose source address is not reachable back via the interface
+  ## it arrived on. Prevents an attack where a compromised workstation sends an
+  ## IP packet through Tor bearing an attacker-controlled server's source
+  ## address, causing the gateway to bounce the response back to the malicious
+  ## server over clearnet. Note that such an attack is not known to work even
+  ## when this configuration is missing.
+  ${nftables_cmd} "add chain inet filter prerouting { type filter hook prerouting priority raw; }"
+  local int_if_item
+  for int_if_item in ${INT_IF}; do
+    ${nftables_cmd} add rule inet filter prerouting iifname "${int_if_item}" fib saddr . iif oif missing counter drop
+  done
+}
+
 nft_input_rules_gateway() {
   ## Traffic on the loopback interface is accepted.
   ${nftables_cmd} add rule inet filter input iifname "lo" counter accept
