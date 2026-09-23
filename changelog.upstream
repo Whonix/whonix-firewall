@@ -1,3 +1,63 @@
+commit 687ec39dace3563d5e2d3925b62cfd5d97ddcc05
+Merge: 4c4a96f ccf9c6e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 23 03:52:05 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit ccf9c6e0949bcd0942ce78c46cfeef6de7ce4bfe
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 22 22:12:08 2026 -0400
+
+    comments
+
+commit cc452d61a9c46164f561eabda0cb2c25cfba7e2c
+Merge: 4c4a96f 6224584
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Sep 22 17:58:18 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 62245841deafc7ebdbbe517c378269222b2ec5c4
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Tue Sep 22 02:14:36 2026 -0400
+
+    Make uRPF anti-spoofing unconditional across modes
+
+    - Was added inside nft_input_rules_gateway (populated in full mode only),
+      so the ingress check was absent in timesync-fail-closed mode. Declare
+      the chain and rules together in nft_prerouting_antispoof_gateway, called
+      from nft_defaults, so it ships in every firewall mode.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit e991bd250a808acd6650738976206e2d7feb5b07
+Author: claude (dev626 2694adad-9457-4275-9dcf-e16e11e65327) <noreply@anthropic.com>
+Date:   Tue Sep 22 01:37:02 2026 -0400
+
+    Add IPv6 uRPF anti-spoofing at internal ingress
+
+    - IPv6 has no rp_filter kernel equivalent; a forged-source packet from a
+      compromised workstation is redirected to a Tor port and the un-NAT'd
+      reply egresses the external interface as non-Tor traffic.
+    - Dual-stack fib uRPF at prerouting priority raw; IPv4 also backstops
+      security-misc rp_filter=1.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit cd52695ddac2603edae86c7716a2cf76fa9cbd58
+Merge: b26284e 4c4a96f
+Author: claude <noreply@anthropic.com>
+Date:   Tue Sep 8 13:43:08 2026 -0400
+
+    Merge branch 'master' into ai
+
+commit 4c4a96f1776e627b8621d51d432aed51dc3ee1a8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 8 15:39:02 2026 +0000
+
+    bumped changelog version
+
 commit 46b0a51e8b00e394d26c3e2761e337c88ebb7fa6
 Merge: c9aabf6 2a82802
 Author: Patrick Schleizer <adrelanos@whonix.org>
