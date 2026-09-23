@@ -90,8 +90,7 @@ nft_defaults(){
   ## Will be lifted below.
   ${nftables_cmd} "add chain inet filter output { type filter hook output priority 0; policy drop; }"
 
-  ## Unconditional ingress anti-spoofing (uRPF); chain + rules together, all
-  ## firewall modes. See nft_prerouting_antispoof_gateway in firewall-common.
+  ## Unconditional ingress anti-spoofing.
   nft_prerouting_antispoof_gateway
 
   ${nftables_cmd} "add chain inet nat prerouting { type nat hook prerouting priority -100; }"

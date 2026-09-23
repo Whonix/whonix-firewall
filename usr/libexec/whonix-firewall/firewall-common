@@ -361,14 +361,12 @@ nft_drop_invalid_incoming_packages() {
 }
 
 nft_prerouting_antispoof_gateway() {
-  ## Unconditional ingress anti-spoofing (uRPF), independent of firewall_mode:
-  ## declare the chain and populate it together so every mode gets it (not gated
-  ## behind the full-mode redirect rules it defends). Drop a packet whose source
-  ## address is not reachable back via the interface it arrived on (IPv4 + IPv6).
-  ## A compromised Workstation can otherwise forge a source address; for IPv6 the
-  ## forged packet is redirected to a Tor port and the un-NAT'd reply routes out
-  ## the external interface (non-Tor egress). priority raw runs before the nat
-  ## prerouting redirect. IPv4 is also covered by rp_filter=1 (security-misc).
+  ## Drop a packet whose source address is not reachable back via the interface
+  ## it arrived on. Prevents an attack where a compromised workstation sends an
+  ## IP packet through Tor bearing an attacker-controlled server's source
+  ## address, causing the gateway to bounce the response back to the malicious
+  ## server over clearnet. Note that such an attack is not known to work even
+  ## when this configuration is missing.
   ${nftables_cmd} "add chain inet filter prerouting { type filter hook prerouting priority raw; }"
   local int_if_item
   for int_if_item in ${INT_IF}; do
